@@ -3,13 +3,14 @@
 
 {% if user.is_authenticated %}
     <h1>Hello, {{ request.user.username }}</h1>
+    <p>The current date and time is: <span id="current_time"></span></p>
     <a href="{% url 'users:logout' %}">Logout</a>
 
 {% else %}
 
 <div class="container" style="display: grid; place-items: center; height: calc( 100vh - 75px);">
     <div style="text-align: center; margin-bottom: 150px;">
-        <h1 class="MindMuse">MindMuse</h1>
+        <h1 class="MindMuse mb-4">MindMuse</h1>
         
         <a href="{% url 'users:login' %}" class="btn btn-primary">Login</a>
         <a href="{% url 'users:signup' %}" class="btn btn-primary">Sign Up</a>
@@ -18,4 +19,10 @@
 </div>
 {% endif %}
 
+<script>
+    update_current_time();
+    detectTimezoneAndSet();
+</script>
+
 {% endblock content %}
+
