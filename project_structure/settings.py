@@ -28,9 +28,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-CSRF_TRUSTED_ORIGINS = [
-    'https://kevonnem-super-happiness-jwq7j95wq4jhp7rr-8000.preview.app.github.dev'
-]
+CSRF_TRUSTED_ORIGINS = [config('CSRF_TRUSTED_ORIGINS')]
 
 # Application definition
 
