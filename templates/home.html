@@ -1,3 +1,21 @@
-<h1>Welcome</h1>
-<a href="{% url 'users:signup' %}" class="btn btn-primary">Sign Up</a>
-<a href="{% url 'users:login' %}" class="btn btn-primary">Login</a>
+{% extends 'base.html' %}
+{% block content %}
+
+{% if user.is_authenticated %}
+    <h1>Hello, {{ request.user.username }}</h1>
+    <a href="{% url 'users:logout' %}">Logout</a>
+
+{% else %}
+
+<div class="container" style="display: grid; place-items: center; height: calc( 100vh - 75px);">
+    <div style="text-align: center; margin-bottom: 150px;">
+        <h1 class="MindMuse">MindMuse</h1>
+        
+        <a href="{% url 'users:login' %}" class="btn btn-primary">Login</a>
+        <a href="{% url 'users:signup' %}" class="btn btn-primary">Sign Up</a>
+        
+    </div>
+</div>
+{% endif %}
+
+{% endblock content %}

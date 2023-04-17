@@ -7,8 +7,8 @@ from datetime import date
 
 # User model inheriting from Django's Abstract User.
 class CustomUser(AbstractUser):
-    date_of_birth = models.DateField(null=True)
-    age = models.IntegerField(null=True)
+    date_of_birth = models.DateField()
+    age = models.IntegerField()
     timezone = models.CharField(max_length=100, null=True, blank=True)
 
     def set_timezone(self, timezone_name):
