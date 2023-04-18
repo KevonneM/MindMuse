@@ -2,9 +2,9 @@
 {% block content %}
 
 {% if user.is_authenticated %}
-    <h1>Hello, {{ request.user.username }}</h1>
+
+    <h1>Hello, {{ request.user.first_name }} {{ request.user.last_name }}</h1>
     <p>The current date and time is: <span id="current_time"></span></p>
-    <a href="{% url 'users:logout' %}">Logout</a>
 
 {% else %}
 
@@ -21,7 +21,6 @@
 
 <script>
     update_current_time();
-    detectTimezoneAndSet();
 </script>
 
 {% endblock content %}

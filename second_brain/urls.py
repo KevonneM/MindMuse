@@ -5,5 +5,6 @@ app_name = 'second_brain'
 
 urlpatterns = [
     path('', views.home, name='home'),
+    path('profile/', views.profile, name='profile'),
     path('set_timezone', views.set_timezone, name='set_timezone'),
 ]
