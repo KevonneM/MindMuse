@@ -9,6 +9,9 @@ from django.http import JsonResponse
 def home(request):
     return render(request, 'home.html')
 
+def profile(request):
+    return render(request, 'profile.html')
+
 @csrf_exempt
 def set_timezone(request):
     if request.method == 'POST':

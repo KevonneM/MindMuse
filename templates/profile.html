@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<button id="set-timezone-btn">Set Timezone</button>
+
+<script>
+    var timezoneButton = document.getElementById('set-timezone-btn');
+  timezoneButton.addEventListener('click', function() {
+    detectTimezoneAndSet();
+  });
+</script>
+
+{% endblock content %}
