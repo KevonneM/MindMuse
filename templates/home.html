@@ -3,8 +3,34 @@
 
 {% if user.is_authenticated %}
 
-    <h1>Hello, {{ request.user.first_name }} {{ request.user.last_name }}</h1>
-    <p>The current date and time is: <span id="current_time"></span></p>
+      <div class="container-fluid" style="height: calc(100vh - 75px);">
+        <div class="row" style="height: 100%;">
+            <div class="col-12 col-md-6 d-flex align-items-start justify-content-center">
+                <div class="mt-3">
+                    <p id="day_of_week"></p>
+                    <p id="date"></p>
+                    <p id="current_time"></p>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 d-flex align-items-start justify-content-center">
+                <div class="card mt-3" style="width: 18rem;">
+                    <div class="card-body">
+                        <h5 class="card-title">Current weather in <span id="city_name"></span></h5>
+                        <div id="weather-info" class="card-text">
+                            <img id="weather-icon" src="" alt="Weather icon">
+                            <span id="condition"></span>
+                            <span id="temperature"></span>
+                            <span id="feels_like"></span>                           
+                        </div>
+                        <button id="refreshButton" class="btn btn-primary">Refresh Weather</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 d-flex align-items-end justify-content-center">
+                <h1 class="mb-3">Hello, {{ request.user.first_name }} {{ request.user.last_name }}</h1>
+            </div>
+        </div>
+    </div>
 
 {% else %}
 
@@ -21,6 +47,10 @@
 
 <script>
     update_current_time();
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('refreshButton').addEventListener('click', updateWeatherData);
+        updateWeatherData();
+    });
 </script>
 
 {% endblock content %}
