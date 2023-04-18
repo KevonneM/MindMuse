@@ -22,6 +22,11 @@
                             <span id="temperature"></span>
                             <span id="feels_like"></span>                           
                         </div>
+                        <div class="input-group mt-3">
+                            <input type="text" class="form-control" id="cityInput" placeholder="Enter city name">
+                            <button class="btn btn-primary" id="submitCity">Submit City</button>
+                            <button class="btn btn-secondary" id="useIP">Use My IP</button>
+                          </div>
                         <button id="refreshButton" class="btn btn-primary">Refresh Weather</button>
                     </div>
                 </div>
@@ -48,8 +53,10 @@
 <script>
     update_current_time();
     document.addEventListener('DOMContentLoaded', function() {
-        document.getElementById('refreshButton').addEventListener('click', updateWeatherData);
-        updateWeatherData();
+        document.getElementById('refreshButton').addEventListener('click', getLastTrackedCity);
+        document.getElementById('submitCity').addEventListener('click', fetchWeatherByCity);
+        document.getElementById('useIP').addEventListener('click', fetchCityByIP);
+        getLastTrackedCity();
     });
 </script>
 

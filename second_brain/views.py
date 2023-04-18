@@ -22,10 +22,10 @@ def set_timezone(request):
     else:
         return JsonResponse({'success': False})
 
-def fetch_weather(request):
+def fetch_weather(request, city=None):
     if request.user.is_authenticated:
-        # Replace 'user_city' with the actual city saved in the user's profile or obtained from the user's IP
-        user_city = 'San Antonio'
+        # Get the city from the user's profile or the 'city' parameter from search or ip geolocation api
+        user_city = city or request.user.last_tracked_city
         api_key = settings.OPENWEATHERMAP_API_KEY
 
         # Fetch weather data from OpenWeatherMap API
@@ -50,9 +50,19 @@ def fetch_weather(request):
                 'condition': condition,
             }
 
+            if city and city != request.user.last_tracked_city:
+                request.user.last_tracked_city = city
+                request.user.save()
+
             # Return the data as JSON
             return JsonResponse(context)
         else:
             return JsonResponse({'error': 'Failed to fetch weather data'}, status=500)
+    else:
+        return JsonResponse({'error': 'Unauthorized'}, status=401)
+
+def get_last_tracked_city(request):
+    if request.user.is_authenticated:
+        return JsonResponse({'last_tracked_city': request.user.last_tracked_city})
     else:
         return JsonResponse({'error': 'Unauthorized'}, status=401)
