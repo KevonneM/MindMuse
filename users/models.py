@@ -10,6 +10,7 @@ class CustomUser(AbstractUser):
     date_of_birth = models.DateField(null=True, blank=False)
     age = models.IntegerField(null=True, blank=False)
     timezone = models.CharField(max_length=100, null=True, blank=True)
+    last_tracked_city = models.CharField(max_length=100, null=True, blank=True)
 
     def set_timezone(self, timezone_name):
         self.timezone = timezone_name

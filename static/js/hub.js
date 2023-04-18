@@ -77,10 +77,11 @@ function getCookie(name) {
   return cookieValue;
 }
 
-function updateWeatherData() {
+function updateWeatherData(cityName) {
   console.log('Updating weather...');
   const weatherIconUrl = (iconCode) => `http://openweathermap.org/img/wn/${iconCode}.png`;
-  fetch('/fetch_weather/')
+  const cityParam = cityName ? cityName : '';
+  fetch(`/fetch_weather/${cityParam}`)
       .then(response => response.json())
       .then(data => {
           document.getElementById('city_name').innerText = data.city_name;
@@ -98,4 +99,46 @@ function updateWeatherData() {
       .catch(error => {
           console.error('Error fetching weather data:', error);
       });
+}
+
+// Function to handle city input
+function fetchWeatherByCity() {
+  const cityName = document.getElementById('cityInput').value;
+  if (cityName) {
+    updateWeatherData(cityName);
+  } else {
+    alert('Please enter a city name.');
+  }
+}
+
+function fetchCityByIP() {
+  fetch('http://ip-api.com/json/')
+    .then(response => response.json())
+    .then(data => {
+      const cityName = data.city;
+      if (cityName) {
+        updateWeatherData(cityName);
+      } else {
+        console.error('Failed to fetch city by IP:', data);
+      }
+    })
+    .catch(error => {
+      console.error('Error fetching city by IP:', error);
+    });
+}
+
+function getLastTrackedCity() {
+  fetch('/get_last_tracked_city/')
+    .then(response => response.json())
+    .then(data => {
+      const lastTrackedCity = data.last_tracked_city;
+      if (lastTrackedCity) {
+        updateWeatherData(lastTrackedCity);
+      } else {
+        fetchCityByIP();
+      }
+    })
+    .catch(error => {
+      console.error('Error fetching last tracked city:', error);
+    });
 }
