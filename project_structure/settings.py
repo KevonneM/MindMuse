@@ -35,6 +35,7 @@ CSRF_TRUSTED_ORIGINS = [config('CSRF_TRUSTED_ORIGINS')]
 
 INSTALLED_APPS = [
     'second_brain',
+    'insights',
     'users',
     'django.contrib.admin',
     'django.contrib.auth',

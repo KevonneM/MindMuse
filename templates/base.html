@@ -10,7 +10,7 @@
 
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg bg-body-tertiary" style="height: 75px">
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid">
           <a class="navbar-brand" href="{% url 'second_brain:home' %}">MindMuse</a>
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -18,15 +18,15 @@
           </button>
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
             {% if user.is_authenticated %}
-            <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+            <ul class="nav nav-pills mx-auto mb-2 mb-lg-0" id="myTab">
               <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="{% url 'second_brain:home' %}">Hub</a>
+                <a class="nav-link {% if url_name == 'second_brain:home' %}active{% endif %}" href="{% url 'second_brain:home' %}">Hub</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#">Metrics</a>
+                <a class="nav-link {% if url_name == 'insights:insights' %}active{% endif %}" href="{% url 'insights:insights' %}">Insights</a>
               </li>
               <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <a class="nav-link dropdown-toggle {% if url_name == 'second_brain:profile' %}active{% endif %}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                   Profile Img
                 </a>
                 <ul class="dropdown-menu">
@@ -40,11 +40,43 @@
           </div>
         </div>
       </nav>
-
+    
+    <div class="main-content">
     {% block content %}
+    
     {% endblock %}
+    </div>
 
     <!-- jQuery and Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
-</body>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const triggerTabList = document.querySelectorAll('#myTab .nav-link');
+        triggerTabList.forEach(triggerEl => {
+          const tabTrigger = new bootstrap.Tab(triggerEl);
+    
+          triggerEl.addEventListener('click', event => {
+            tabTrigger.show();
+          });
+        });
+      });
+    </script>
+
+    <style>
+            /* For larger screens */
+      @media (min-width: 992px) {
+        .navbar {
+          height: 75px;
+        }
+      }
+
+      /* For smaller screens */
+      @media (max-width: 991px) {
+        .main-content {
+          padding-top: 20px; /* Adjust this value if needed */
+        }
+      }
+    </style>
+
+  </body>
 </html>

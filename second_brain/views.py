@@ -8,7 +8,8 @@ import requests
 # Create your views here.
 
 def home(request):
-    return render(request, 'home.html')
+    context = {'url_name': 'second_brain:home'}
+    return render(request, 'home.html', context)
 
 def profile(request):
     return render(request, 'profile.html')
