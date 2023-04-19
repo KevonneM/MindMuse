@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <h1>Weekly Calendar</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Time</th>
+                <th>Monday</th>
+                <th>Tuesday</th>
+                <th>Wednesday</th>
+                <th>Thursday</th>
+                <th>Friday</th>
+                <th>Saturday</th>
+                <th>Sunday</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for hour in hours_range %}
+                <tr>
+                    <td>{{ hour }}:00 - {{ hour }}:59</td>
+                    {% for day in days %}
+                        <td>
+                            {% for event in events %}
+                                {% if event.start_time|date:"w" == day and event.start_time|date:"G" == hour %}
+                                    <div>{{ event.title }}</div>
+                                    <div>{{ event.start_time|date:"g:i A" }} - {{ event.end_time|date:"g:i A" }}</div>
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}

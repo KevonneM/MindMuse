@@ -88,6 +88,8 @@ function updateWeatherData(cityName) {
           document.getElementById('temperature').innerText = data.temperature + '°F';
           document.getElementById('feels_like').textContent = `Feels like: ${data.feels_like}°F, `;
           document.getElementById('condition').innerText = data.condition;
+          document.querySelector('.humidity-value').textContent = data.humidity;
+          document.querySelector('.wind-speed-value').textContent = data.wind_speed;
           
           const weatherIcon = document.getElementById('weather-icon');
           weatherIcon.src = weatherIconUrl(data.icon);

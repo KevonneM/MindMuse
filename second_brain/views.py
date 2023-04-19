@@ -3,6 +3,8 @@ from django.utils import timezone
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
+from datetime import datetime, timedelta
+from .models import Event
 import requests
 
 # Create your views here.
@@ -42,6 +44,8 @@ def fetch_weather(request, city=None):
             temperature = data['main']['temp']
             feels_like = data['main']['feels_like']
             condition = data['weather'][0]['description']
+            humidity = data['main']['humidity']
+            wind_speed = data['wind']['speed']
             
             context = {
                 'city_name': city_name,
@@ -49,6 +53,8 @@ def fetch_weather(request, city=None):
                 'temperature': temperature,
                 'feels_like': feels_like,
                 'condition': condition,
+                'humidity': humidity,
+                'wind_speed': wind_speed,
             }
 
             if city and city != request.user.last_tracked_city:
@@ -67,3 +73,52 @@ def get_last_tracked_city(request):
         return JsonResponse({'last_tracked_city': request.user.last_tracked_city})
     else:
         return JsonResponse({'error': 'Unauthorized'}, status=401)
+
+def weekly_calendar(request):
+    user = request.user
+    events = []
+
+    if user.is_authenticated:
+        now = datetime.now()
+        start_of_week = now - timedelta(days=now.weekday())
+        end_of_week = start_of_week + timedelta(days=7)
+        events = Event.objects.filter(user=user, start_time__gte=start_of_week, start_time__lt=end_of_week).order_by('start_time')
+        hours_range = list(range(24))
+
+    context = {
+        'days': [1, 2, 3, 4, 5, 6, 7],
+        'events': events,
+        'hours_range': hours_range,
+    }
+
+    return render(request, 'events/weekly_calendar.html', context)
+
+def create_event(request):
+    if request.method == "POST":
+        user = request.user
+        title = request.POST.get("title")
+        start_time = request.POST.get("start_time")
+        end_time = request.POST.get("end_time")
+
+        # Convert start_time and end_time to datetime objects, if they are in string format
+        start_time = datetime.strptime(start_time, "%Y-%m-%dT%H:%M:%S")
+        end_time = datetime.strptime(end_time, "%Y-%m-%dT%H:%M:%S")
+
+        if is_event_overlapping(user, start_time, end_time):
+            return HttpResponse("Event overlaps with an existing event.")
+        else:
+            # Create the event
+            event = Event(user=user, title=title, start_time=start_time, end_time=end_time)
+            event.save()
+            
+            return redirect("second_brain:weekly_calendar.html")
+
+    return render(request, "events/create_event.html")
+
+def is_event_overlapping(user, start_time, end_time):
+    overlapping_events = Event.objects.filter(
+        user=user,
+        start_time__lt=end_time,
+        end_time__gt=start_time
+    )
+    return overlapping_events.exists()
