@@ -1,20 +1,146 @@
 {% extends 'base.html' %}
 
 {% block content %}
+    
+<div class="card mx-auto" style="max-width: 600px;">
+    <div class="card-header">
+        Create Event
+    </div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="title" class="form-label">Title:</label>
+                <input type="text" name="title" id="title" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="start_date" class="form-label">Start Date:</label>
+                <input type="text" name="start_date" id="start_date" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="end_date" class="form-label">End Date:</label>
+                <input type="text" name="end_date" id="end_date" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="start_time" class="form-label">Start Time:</label>
+                <input type="time" name="start_time" id="start_time" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="end_time" class="form-label">End Time:</label>
+                <input type="time" name="end_time" id="end_time" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Create Event</button>
+        </form>
+    </div>
+</div>
 
-    <h1>Create Event</h1>
-    <form method="post">
-        {% csrf_token %}
-        <label for="title">Title:</label>
-        <input type="text" name="title" id="title" required>
-        <br>
-        <label for="start_time">Start Time:</label>
-        <input type="datetime-local" name="start_time" id="start_time" required>
-        <br>
-        <label for="end_time">End Time:</label>
-        <input type="datetime-local" name="end_time" id="end_time" required>
-        <br>
-        <button type="submit">Create Event</button>
-    </form>
+<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="errorModalLabel">Overlapping Events</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="errorModalBody">
+            <h1>This Event overlaps with an existing event.</h1>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const startDatepicker = document.getElementById('start_date');
+        const endDatepicker = document.getElementById('end_date');
+        const startTimePicker = document.getElementById('start_time');
+        const endTimePicker = document.getElementById('end_time');
+
+        const startPicker = new flatpickr(startDatepicker, {
+            dateFormat: 'Y-m-d',
+            minDate: 'today',
+            onChange: function (selectedDates, dateStr, instance) {
+                endPicker.set('minDate', dateStr);
+                if (selectedDates[0].toDateString() === new Date().toDateString()) {
+                    startTimeFlatpickr.set('minTime', new Date());
+                } else {
+                    startTimeFlatpickr.set('minTime', null);
+                }
+            },
+        });
+
+        const endPicker = new flatpickr(endDatepicker, {
+            dateFormat: 'Y-m-d',
+            minDate: 'today',
+            onChange: function (selectedDates, dateStr, instance) {
+                startPicker.set('maxDate', dateStr);
+            },
+        });
+
+        const startTimeFlatpickr = new flatpickr(startTimePicker, {
+            enableTime: true,
+            noCalendar: true,
+            dateFormat: 'h:i K',
+            time_24hr: false,
+            onChange: function (selectedDates, timeStr, instance) {
+                if (startDatepicker.value === endDatepicker.value) {
+                    endTimeFlatpickr.set('minTime', selectedDates[0]);
+                } else {
+                    endTimeFlatpickr.set('minTime', null);
+                }
+            },
+        });
+
+        const endTimeFlatpickr = new flatpickr(endTimePicker, {
+            enableTime: true,
+            noCalendar: true,
+            dateFormat: 'h:i K',
+            time_24hr: false,
+            onChange: function (selectedDates, timeStr, instance) {
+                if (startDatepicker.value === endDatepicker.value) {
+                    startTimeFlatpickr.set('maxTime', selectedDates[0]);
+                } else {
+                    startTimeFlatpickr.set('maxTime', null);
+                }
+            },
+        });
+
+        if (startPicker.selectedDates[0] && startPicker.selectedDates[0].toDateString() === new Date().toDateString()) {
+            startTimeFlatpickr.set('minTime', new Date());
+        }
+
+        // handles for submission
+        const form = document.querySelector("form");
+        form.addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            const formData = new FormData(form);
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", "{% url 'second_brain:create_event' %}", true);
+            xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
+
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    let response = JSON.parse(xhr.responseText);
+                    if (response.status === "success") {
+                        window.location.href = "{% url 'second_brain:weekly_calendar' %}";
+                    } else if (response.status === "error") {
+                        // Set the error message
+                        document.getElementById("errorModalBody").innerText = response.message;
+                        // Show the Bootstrap modal
+                        let errorModal = new bootstrap.Modal(document.getElementById("errorModal"));
+                        errorModal.show();
+                    }
+                }
+            };
+
+            xhr.send(formData);
+        });
+
+    });
+
+</script>
 
 {% endblock %}
