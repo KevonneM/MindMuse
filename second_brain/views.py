@@ -1,11 +1,12 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.utils import timezone
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from datetime import datetime, timedelta
 from .models import Event
 import requests
+import pytz
 
 # Create your views here.
 
@@ -79,10 +80,12 @@ def weekly_calendar(request):
     events = []
 
     if user.is_authenticated:
-        now = datetime.now()
+        user_timezone = pytz.timezone(user.timezone)
+        now = timezone.now().astimezone(user_timezone)
         start_of_week = now - timedelta(days=now.weekday())
         end_of_week = start_of_week + timedelta(days=7)
         events = Event.objects.filter(user=user, start_time__gte=start_of_week, start_time__lt=end_of_week).order_by('start_time')
+
         hours_range = list(range(24))
 
     context = {
@@ -93,27 +96,44 @@ def weekly_calendar(request):
 
     return render(request, 'events/weekly_calendar.html', context)
 
+from django.http import JsonResponse
+
 def create_event(request):
     if request.method == "POST":
         user = request.user
         title = request.POST.get("title")
+        start_date = request.POST.get("start_date")
         start_time = request.POST.get("start_time")
+        end_date = request.POST.get("end_date")
         end_time = request.POST.get("end_time")
 
-        # Convert start_time and end_time to datetime objects, if they are in string format
-        start_time = datetime.strptime(start_time, "%Y-%m-%dT%H:%M:%S")
-        end_time = datetime.strptime(end_time, "%Y-%m-%dT%H:%M:%S")
+        # Check if start_date, end_date, start_time, and end_time have values
+        if start_date and start_time and end_date and end_time:
+            # Convert start_date, end_date, start_time, and end_time to datetime objects for datepicker.
+            start_date = datetime.strptime(start_date, '%Y-%m-%d')
+            start_time = datetime.strptime(start_time, '%I:%M %p')
+            end_date = datetime.strptime(end_date, '%Y-%m-%d')
+            end_time = datetime.strptime(end_time, '%I:%M %p')
 
-        if is_event_overlapping(user, start_time, end_time):
-            return HttpResponse("Event overlaps with an existing event.")
+            # Combines the date and time
+            user_timezone = pytz.timezone(user.timezone)
+            start_datetime = user_timezone.localize(start_date.replace(hour=start_time.hour, minute=start_time.minute))
+            end_datetime = user_timezone.localize(end_date.replace(hour=end_time.hour, minute=end_time.minute))
+
+            if is_event_overlapping(user, start_datetime, end_datetime):
+                return JsonResponse({"status": "error", "message": "Event overlaps with an existing event."})
+            else:
+                # Create the event
+                event = Event(user=user, title=title, start_time=start_datetime, end_time=end_datetime)
+                event.save()
+
+                return JsonResponse({"status": "success"})
         else:
-            # Create the event
-            event = Event(user=user, title=title, start_time=start_time, end_time=end_time)
-            event.save()
-            
-            return redirect("second_brain:weekly_calendar.html")
+            # Handle the case when any of the required values are missing
+            return JsonResponse({"status": "error", "message": "Missing required values."})
 
     return render(request, "events/create_event.html")
+
 
 def is_event_overlapping(user, start_time, end_time):
     overlapping_events = Event.objects.filter(
@@ -121,4 +141,11 @@ def is_event_overlapping(user, start_time, end_time):
         start_time__lt=end_time,
         end_time__gt=start_time
     )
-    return overlapping_events.exists()
+
+    same_start_end_time = Event.objects.filter(
+        user=user,
+        start_time=start_time,
+        end_time=end_time
+    )
+
+    return overlapping_events.exists() or same_start_end_time.exists()
