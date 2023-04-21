@@ -75,28 +75,61 @@ def get_last_tracked_city(request):
     else:
         return JsonResponse({'error': 'Unauthorized'}, status=401)
 
-def weekly_calendar(request):
+def daily_view(request):
     user = request.user
     events = []
 
     if user.is_authenticated:
         user_timezone = pytz.timezone(user.timezone)
         now = timezone.now().astimezone(user_timezone)
-        start_of_week = now - timedelta(days=now.weekday())
+        today = now.date()
+        start_of_day = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        end_of_day = start_of_day + timezone.timedelta(days=1)
+        events = Event.objects.filter(user=user, start_time__gte=start_of_day, start_time__lt=end_of_day).order_by('start_time')
+
+    context = {
+        'today': today,
+        'events': events,
+    }
+
+    return render(request, 'events/daily_view.html', context)
+
+def weekly_calendar(request, start_date=None):
+    user = request.user
+    events = []
+
+    if user.is_authenticated:
+        user_timezone = pytz.timezone(user.timezone)
+        if start_date:
+            start_of_week = datetime.strptime(start_date, '%Y-%m-%d').replace(tzinfo=user_timezone)
+        else:
+            now = timezone.now().astimezone(user_timezone)
+            start_of_week = now - timedelta(days=now.weekday() + 1 % 7)
+
         end_of_week = start_of_week + timedelta(days=7)
         events = Event.objects.filter(user=user, start_time__gte=start_of_week, start_time__lt=end_of_week).order_by('start_time')
 
-        hours_range = list(range(24))
+        days = []
+        for i in range(7):
+            day_date = start_of_week + timedelta(days=i)
+            days.append({
+                'weekday': i,
+                'date': day_date
+            })
+
+        prev_week_start = start_of_week - timedelta(weeks=1)
+        next_week_start = start_of_week + timedelta(weeks=1)
 
     context = {
-        'days': [1, 2, 3, 4, 5, 6, 7],
+        'days': days,
+        'start_of_week': start_of_week,
+        'end_of_week': end_of_week,
+        'prev_week_start': prev_week_start,
+        'next_week_start': next_week_start,
         'events': events,
-        'hours_range': hours_range,
     }
 
     return render(request, 'events/weekly_calendar.html', context)
-
-from django.http import JsonResponse
 
 def create_event(request):
     if request.method == "POST":
