@@ -1,39 +1,38 @@
 {% extends 'base.html' %}
 
+{% load tz %}
+
 {% block content %}
 
-    <h1>Weekly Calendar</h1>
+<h2>Weekly view ({{ days.0.date|date:"F j, Y" }} - {{ days.6.date|date:"F j, Y" }})</h2>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Time</th>
-                <th>Monday</th>
-                <th>Tuesday</th>
-                <th>Wednesday</th>
-                <th>Thursday</th>
-                <th>Friday</th>
-                <th>Saturday</th>
-                <th>Sunday</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for hour in hours_range %}
-                <tr>
-                    <td>{{ hour }}:00 - {{ hour }}:59</td>
-                    {% for day in days %}
-                        <td>
-                            {% for event in events %}
-                                {% if event.start_time|date:"w" == day and event.start_time|date:"G" == hour %}
-                                    <div>{{ event.title }}</div>
-                                    <div>{{ event.start_time|date:"g:i A" }} - {{ event.end_time|date:"g:i A" }}</div>
+<div class="container">
+    <div class="d-flex justify-content-between mb-4">
+        <a href="{% url 'second_brain:weekly_calendar_change_week' prev_week_start|date:"Y-m-d" %}" class="btn btn-primary">&laquo; Previous Week</a>
+        <a href="{% url 'second_brain:weekly_calendar_change_week' next_week_start|date:"Y-m-d" %}" class="btn btn-primary">Next Week &raquo;</a>
+    </div>
+    <div class="row">
+        {% for day in days %}
+            <div class="col-12 col-md-6 col-lg-4 col-xl-2 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        {{ day.date|date:"D, F j" }}
+                    </div>
+                    <div class="card-body">
+                        {% for event in events %}
+                            {% with event.start_time|timezone:request.user.timezone as start_time %}
+                                {% if start_time.date|date:"Y-m-d" == day.date|date:"Y-m-d" %}
+                                    {% with event.end_time|timezone:request.user.timezone as end_time %}
+                                    <p>{{ event.title }} - {{ start_time.time|time:"h:i A" }} - {{ end_time.time|time:"h:i A" }}</p>
+                                    {% endwith %}
                                 {% endif %}
-                            {% endfor %}
-                        </td>
-                    {% endfor %}
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+                            {% endwith %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
 
 {% endblock %}
