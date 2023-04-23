@@ -11,28 +11,39 @@
         <a href="{% url 'second_brain:weekly_calendar_change_week' prev_week_start|date:"Y-m-d" %}" class="btn btn-primary">&laquo; Previous Week</a>
         <a href="{% url 'second_brain:weekly_calendar_change_week' next_week_start|date:"Y-m-d" %}" class="btn btn-primary">Next Week &raquo;</a>
     </div>
-    <div class="row">
-        {% for day in days %}
-            <div class="col-12 col-md-6 col-lg-4 col-xl-2 mb-4">
-                <div class="card">
-                    <div class="card-header">
-                        {{ day.date|date:"D, F j" }}
-                    </div>
-                    <div class="card-body">
-                        {% for event in events %}
-                            {% with event.start_time|timezone:request.user.timezone as start_time %}
-                                {% if start_time.date|date:"Y-m-d" == day.date|date:"Y-m-d" %}
+    <div class="calendar">
+        <div class="row">
+            {% for day in days %}
+                <div class="col-lg">
+                    <div class="card mb-2">
+                        <div class="card-header">
+                            {{ day.date|date:"D, F j" }}
+                        </div>
+                        <div class="card-body">
+                            {% for event in events %}
+                                {% with event.start_time|timezone:request.user.timezone as start_time %}
                                     {% with event.end_time|timezone:request.user.timezone as end_time %}
-                                    <p>{{ event.title }} - {{ start_time.time|time:"h:i A" }} - {{ end_time.time|time:"h:i A" }}</p>
+                                        {% if start_time.date|date:"Y-m-d" <= day.date|date:"Y-m-d" and end_time.date|date:"Y-m-d" >= day.date|date:"Y-m-d" %}
+                                            <div class="event" style="border: 2px solid {{ event.color }}; border-radius: 5px; padding: 5px; margin-bottom: 5px;">
+                                                <p>{{ event.title }}
+                                                    {% if start_time.date|date:"Y-m-d" == day.date|date:"Y-m-d" %}
+                                                        - {{ start_time.time|time:"h:i A" }}
+                                                    {% endif %}
+                                                    {% if end_time.date|date:"Y-m-d" == day.date|date:"Y-m-d" %}
+                                                        - {{ end_time.time|time:"h:i A" }}
+                                                    {% endif %}
+                                                </p>
+                                            </div>
+                                        {% endif %}
                                     {% endwith %}
-                                {% endif %}
-                            {% endwith %}
-                        {% endfor %}
+                                {% endwith %}
+                            {% endfor %}
+                        </div>
                     </div>
                 </div>
-            </div>
-        {% endfor %}
+            {% endfor %}
+        </div>
     </div>
 </div>
 
-{% endblock %}
+{% endblock content %}
