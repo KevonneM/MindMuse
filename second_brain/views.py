@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 from .models import Event
 import requests
 import pytz
+import hashlib # for string to color function
 
 # Create your views here.
 
@@ -109,6 +110,10 @@ def weekly_calendar(request, start_date=None):
         end_of_week = start_of_week + timedelta(days=7)
         events = Event.objects.filter(user=user, start_time__gte=start_of_week, start_time__lt=end_of_week).order_by('start_time')
 
+        # Color attribute for each event
+        for event in events:
+            event.color = string_to_color(event.title)
+
         days = []
         for i in range(7):
             day_date = start_of_week + timedelta(days=i)
@@ -182,3 +187,8 @@ def is_event_overlapping(user, start_time, end_time):
     )
 
     return overlapping_events.exists() or same_start_end_time.exists()
+
+def string_to_color(input_string):
+    hash_object = hashlib.md5(input_string.encode())
+    hexadecimal_of_hash = hash_object.hexdigest()
+    return '#' + hexadecimal_of_hash[:6]
