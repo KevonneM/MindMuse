@@ -3,7 +3,9 @@ from django.utils import timezone
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse, HttpResponse
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
+from django.db.models.functions import TruncDay
+from django.db.models import Count
 from .models import Event
 import requests
 import pytz
@@ -76,24 +78,30 @@ def get_last_tracked_city(request):
     else:
         return JsonResponse({'error': 'Unauthorized'}, status=401)
 
-def daily_view(request):
+def daily_view(request, year=None, month=None, day=None):
     user = request.user
     events = []
 
     if user.is_authenticated:
         user_timezone = pytz.timezone(user.timezone)
-        now = timezone.now().astimezone(user_timezone)
-        today = now.date()
-        start_of_day = now.replace(hour=0, minute=0, second=0, microsecond=0)
+
+        if year and month and day:
+            selected_date = datetime(year, month, day).date()
+        else:
+            now = timezone.now().astimezone(user_timezone)
+            selected_date = now.date()
+
+        start_of_day = user_timezone.localize(datetime(selected_date.year, selected_date.month, selected_date.day, 0, 0, 0))
         end_of_day = start_of_day + timezone.timedelta(days=1)
         events = Event.objects.filter(user=user, start_time__gte=start_of_day, start_time__lt=end_of_day).order_by('start_time')
 
     context = {
-        'today': today,
+        'today': selected_date,
         'events': events,
     }
 
     return render(request, 'events/daily_view.html', context)
+
 
 def weekly_calendar(request, start_date=None):
     user = request.user
@@ -135,6 +143,63 @@ def weekly_calendar(request, start_date=None):
     }
 
     return render(request, 'events/weekly_calendar.html', context)
+
+def monthly_calendar(request, year=None, month=None):
+    if request.user.is_authenticated:
+        user_timezone = pytz.timezone(request.user.timezone)
+    else:
+        user_timezone = pytz.UTC
+
+    now = timezone.now().astimezone(user_timezone)
+
+    if year is not None:
+        current_year = int(year)
+    else:
+        current_year = now.year
+
+    if month is not None:
+        current_month = int(month)
+    else:    
+        current_month = now.month
+
+    first_day_of_month = datetime(current_year, current_month, 1).date()
+    last_day_of_month = (first_day_of_month + timedelta(days=32)).replace(day=1) - timedelta(days=1)
+    first_day_to_display = first_day_of_month - timedelta(days=(first_day_of_month.weekday() + 1) % 7)
+    last_day_to_display = last_day_of_month + timedelta(days=(6 - last_day_of_month.weekday()))
+
+    event_counts = Event.objects.filter(user=request.user, start_time__year=current_year, start_time__month=current_month).annotate(day=TruncDay('start_time', tzinfo=user_timezone)).values('day').annotate(count=Count('id')).values('day', 'count')
+
+    event_by_day = {item['day'].date(): item['count'] for item in event_counts}
+
+    calendar_data = []
+
+    current_date = first_day_to_display
+    while current_date <= last_day_to_display:
+        week_data = []
+        for _ in range(7):
+            day_data = {
+                'date': current_date,
+                'event_count': event_by_day.get(current_date, 0) if current_date.month == current_month else None,
+            }
+            week_data.append(day_data)
+            current_date += timedelta(days=1)
+        calendar_data.append(week_data)
+
+    prev_month = first_day_of_month - timedelta(days=1)
+    next_month = last_day_of_month + timedelta(days=1)
+
+    context = {
+        'current_year': current_year,
+        'current_month': current_month,
+        'calendar_data': calendar_data,
+        'prev_year': prev_month.year,
+        'prev_month': prev_month.month,
+        'next_year': next_month.year,
+        'next_month': next_month.month,
+    }
+
+    return render(request, 'events/monthly_calendar.html', context)
+
 
 def create_event(request):
     if request.method == "POST":

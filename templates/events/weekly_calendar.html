@@ -11,7 +11,7 @@
         <a href="{% url 'second_brain:weekly_calendar_change_week' prev_week_start|date:"Y-m-d" %}" class="btn btn-primary">&laquo; Previous Week</a>
         <a href="{% url 'second_brain:weekly_calendar_change_week' next_week_start|date:"Y-m-d" %}" class="btn btn-primary">Next Week &raquo;</a>
     </div>
-    <div class="calendar">
+    <div class="calendar weekly-calendar">
         <div class="row">
             {% for day in days %}
                 <div class="col-lg">

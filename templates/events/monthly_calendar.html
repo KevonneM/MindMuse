@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% if user.is_authenticated %}
+	<div class="container mt-4">
+	  <div class="row">
+			<div class="col-md-12">
+				<div class="d-flex justify-content-between">
+					<a href="{% url 'second_brain:monthly_calendar_change_month' prev_year prev_month %}" class="btn btn-primary">&lt; Previous</a>
+					<h2 class="mb-3">{{ current_month }} {{ current_year }}</h2>
+					<a href="{% url 'second_brain:monthly_calendar_change_month' next_year next_month %}" class="btn btn-primary">Next &gt;</a>
+				</div>
+				<table class="table table-bordered">
+					<thead>
+						<tr>
+							<th scope="col">Sun</th>
+							<th scope="col">Mon</th>
+							<th scope="col">Tue</th>
+							<th scope="col">Wed</th>
+							<th scope="col">Thu</th>
+							<th scope="col">Fri</th>
+							<th scope="col">Sat</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for week_data in calendar_data %}
+							<tr>
+								{% for day_data in week_data %}
+									<td class="{{ day_data.date|date:'D' }}{% if day_data.event_count != None %} day-with-events{% endif %}" data-date="{{ day_data.date }}">
+										{% if day_data.event_count != None %}
+											<span>{{ day_data.date.day }}</span>
+											{% if day_data.event_count > 0 %}
+												<a href="{% url 'second_brain:daily_view_specific' day_data.date.year day_data.date.month day_data.date.day %}" class="badge btn btn-primary">{{ day_data.event_count }} Events</a>
+											{% endif %}
+										{% endif %}
+									</td>
+								{% endfor %}
+							</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+		</div>
+  </div>
+{% endif %}
+
+{% endblock content %}
