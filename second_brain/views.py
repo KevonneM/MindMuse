@@ -79,9 +79,6 @@ def get_last_tracked_city(request):
     else:
         return JsonResponse({'error': 'Unauthorized'}, status=401)
 
-from datetime import timedelta
-from django.db.models.functions import ExtractWeekDay
-
 def incoming_events_this_week(request):
     user = request.user
     events = []
