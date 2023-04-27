@@ -1,4 +1,4 @@
-/* Calendar css */
+/* Weekly Calendar css */
 .weekly-calendar .calendar {
   display: flex;
   flex-wrap: nowrap;
@@ -52,7 +52,37 @@
   cursor: pointer;
 }
 
-.badge {
-  color: black;
-  background-color: transparent;
+.calendar-table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.calendar-table td {
+  height: 100px;
+  vertical-align: top;
+  position: relative;
+}
+
+.calendar-table td span {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+}
+
+.calendar-table td .badge {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: calc(100% - 10px);
+}
+
+/* Incoming event css */
+
+.custom-countdown {
+  background-color: #007bff;
+  color: #fff;
+  /* Add any other desired styles */
 }

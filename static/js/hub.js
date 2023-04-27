@@ -144,3 +144,55 @@ function getLastTrackedCity() {
       console.error('Error fetching last tracked city:', error);
     });
 }
+
+// set up event listeners upon DOMContentLoaded event completion.
+
+function init() {
+  update_current_time();
+  document.getElementById('refreshButton').addEventListener('click', getLastTrackedCity);
+  document.getElementById('submitCity').addEventListener('click', fetchWeatherByCity);
+  document.getElementById('useIP').addEventListener('click', fetchCityByIP);
+  getLastTrackedCity();
+}
+
+document.addEventListener('DOMContentLoaded', init);
+
+// incoming weekly events js
+
+function updateCountdowns() {
+  const countdowns = document.querySelectorAll('.countdown');
+  const now = new Date();
+
+  countdowns.forEach(countdown => {
+    const eventStartTime = new Date(parseInt(countdown.dataset.eventStartTime) * 1000);
+    const remainingTime = eventStartTime - now;
+
+    if (remainingTime > 0) {
+      const days = Math.floor(remainingTime / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((remainingTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
+
+      let countdownText = '';
+
+      if (days > 0) {
+        countdownText += `${days}d `;
+      }
+      if (hours > 0) {
+        countdownText += `${hours}h `;
+      }
+      if (minutes > 0) {
+        countdownText += `${minutes}m `;
+      }
+      if (seconds > 0) {
+        countdownText += `${seconds}s`;
+      }
+
+      countdown.textContent = countdownText.trim();
+    } else {
+      countdown.textContent = 'Event started';
+    }
+  });
+}
+
+setInterval(updateCountdowns, 1000);
