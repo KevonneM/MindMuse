@@ -10,6 +10,7 @@ urlpatterns = [
     path('fetch_weather/', views.fetch_weather, name='fetch_weather'),
     path('fetch_weather/<str:city>/', views.fetch_weather, name='fetch_weather_city'),
     path('get_last_tracked_city/', views.get_last_tracked_city, name='get_last_tracked_city'),
+    path('incoming_events_this_week/', views.incoming_events_this_week, name='incoming_events_this_week'),
     path('daily-view', views.daily_view, name='daily_view'),
     path('daily-view/<int:year>/<int:month>/<int:day>/', views.daily_view, name='daily_view_specific'),
     path('weekly-calendar/', views.weekly_calendar, name='weekly_calendar'),

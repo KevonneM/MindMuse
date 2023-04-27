@@ -12,6 +12,7 @@
                     <p id="current_time"></p>
                 </div>
                 <div class="mt-3">
+                    <a href="{% url 'second_brain:incoming_events_this_week' %}" class="btn btn-primary">Incoming Events</a>
                     <a href="{% url 'second_brain:daily_view' %}" class="btn btn-primary">Daily View</a>
                     <a href="{% url 'second_brain:weekly_calendar' %}" class="btn btn-primary">Weekly Calendar</a>
                     <a href="{% url 'second_brain:monthly_calendar' %}" class="btn btn-primary">Monthly Calendar</a>
@@ -78,16 +79,6 @@
     </div>
 </div>
 {% endif %}
-
-<script>
-    update_current_time();
-    document.addEventListener('DOMContentLoaded', function() {
-        document.getElementById('refreshButton').addEventListener('click', getLastTrackedCity);
-        document.getElementById('submitCity').addEventListener('click', fetchWeatherByCity);
-        document.getElementById('useIP').addEventListener('click', fetchCityByIP);
-        getLastTrackedCity();
-    });
-</script>
 
 {% endblock content %}
 

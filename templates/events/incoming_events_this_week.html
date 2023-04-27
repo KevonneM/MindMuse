@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% load tz %}
+
+{% block content %}
+
+{% if user.is_authenticated %}
+
+  <div class="container mt-4">
+    <h2>Events This Week</h2>
+    {% if events %}
+      <ul class="list-group">
+        {% for event in events %}
+          {% with event.start_time|timezone:request.user.timezone as start_time %}
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            {{ event.title }}
+            <span class="badge badge-pill custom-countdown countdown" data-event-start-time="{{ start_time|date:'U' }}">Loading...</span>
+          </li>
+          <h2>{{ event.start_time }} - {{ request.user.timezone }}</h2>
+          {% endwith %}
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>No events this week.</p>
+    {% endif %}
+  </div>
+
+{% endif %}
+
+{% endblock content %}

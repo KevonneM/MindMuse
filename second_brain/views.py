@@ -4,6 +4,7 @@ from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse, HttpResponse
 from datetime import datetime, timedelta, date
+from calendar import month_name
 from django.db.models.functions import TruncDay
 from django.db.models import Count
 from .models import Event
@@ -77,6 +78,30 @@ def get_last_tracked_city(request):
         return JsonResponse({'last_tracked_city': request.user.last_tracked_city})
     else:
         return JsonResponse({'error': 'Unauthorized'}, status=401)
+
+from datetime import timedelta
+from django.db.models.functions import ExtractWeekDay
+
+def incoming_events_this_week(request):
+    user = request.user
+    events = []
+
+    if user.is_authenticated:
+        user_timezone = pytz.timezone(user.timezone)
+        now = timezone.now().astimezone(user_timezone)
+        today = now.date()
+
+        # Making Sunday the first day of the week
+        week_start = today - timedelta(days=((today.weekday() + 1) % 7))
+        week_end = week_start + timedelta(days=7)
+
+        events = Event.objects.filter(user=user, start_time__gte=week_start, start_time__lt=week_end).order_by('start_time')
+
+    context = {
+        'events': events,
+    }
+
+    return render(request, 'events/incoming_events_this_week.html', context)
 
 def daily_view(request, year=None, month=None, day=None):
     user = request.user
@@ -162,6 +187,8 @@ def monthly_calendar(request, year=None, month=None):
     else:    
         current_month = now.month
 
+    current_month_name = month_name[current_month]
+
     first_day_of_month = datetime(current_year, current_month, 1).date()
     last_day_of_month = (first_day_of_month + timedelta(days=32)).replace(day=1) - timedelta(days=1)
     first_day_to_display = first_day_of_month - timedelta(days=(first_day_of_month.weekday() + 1) % 7)
@@ -191,6 +218,7 @@ def monthly_calendar(request, year=None, month=None):
     context = {
         'current_year': current_year,
         'current_month': current_month,
+        'current_month_name': current_month_name,
         'calendar_data': calendar_data,
         'prev_year': prev_month.year,
         'prev_month': prev_month.month,

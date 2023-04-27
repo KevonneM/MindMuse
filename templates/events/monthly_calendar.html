@@ -2,15 +2,15 @@
 
 {% block content %}
 {% if user.is_authenticated %}
-	<div class="container mt-4">
+	<div class="container mt-2">
 	  <div class="row">
 			<div class="col-md-12">
-				<div class="d-flex justify-content-between">
+				<div class="d-flex justify-content-between mb-2">
 					<a href="{% url 'second_brain:monthly_calendar_change_month' prev_year prev_month %}" class="btn btn-primary">&lt; Previous</a>
-					<h2 class="mb-3">{{ current_month }} {{ current_year }}</h2>
+					<h2>{{ current_month_name }} {{ current_year }}</h2>
 					<a href="{% url 'second_brain:monthly_calendar_change_month' next_year next_month %}" class="btn btn-primary">Next &gt;</a>
 				</div>
-				<table class="table table-bordered">
+				<table class="table table-bordered calendar-table">
 					<thead>
 						<tr>
 							<th scope="col">Sun</th>
