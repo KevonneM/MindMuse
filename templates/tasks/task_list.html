@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>Task List</h1>
+  <a href="{% url 'second_brain:create_task' %}">Add new task</a>
+
+  <h2>Daily Tasks</h2>
+  <ul>
+    {% for task in daily_tasks %}
+      <li>
+        <a href="{% url 'second_brain:task_detail' task.pk %}">{{ task.title }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+
+  <h2>Weekly Tasks</h2>
+  <ul>
+    {% for task in weekly_tasks %}
+      <li>
+        <a href="{% url 'second_brain:task_detail' task.pk %}">{{ task.title }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+
+  <h2>Monthly Tasks</h2>
+  <ul>
+    {% for task in monthly_tasks %}
+      <li>
+        <a href="{% url 'second_brain:task_detail' task.pk %}">{{ task.title }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+  
+{% endblock %}

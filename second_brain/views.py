@@ -1,13 +1,15 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponse
 from datetime import datetime, timedelta, date
 from calendar import month_name
 from django.db.models.functions import TruncDay
 from django.db.models import Count
-from .models import Event
+from .models import Event, Task
+from .forms import TaskForm
 import requests
 import pytz
 import hashlib # for string to color function
@@ -18,6 +20,7 @@ def home(request):
     context = {'url_name': 'second_brain:home'}
     return render(request, 'home.html', context)
 
+@login_required
 def profile(request):
     return render(request, 'profile.html')
 
@@ -79,6 +82,9 @@ def get_last_tracked_city(request):
     else:
         return JsonResponse({'error': 'Unauthorized'}, status=401)
 
+# Code for Events
+
+@login_required
 def incoming_events_this_week(request):
     user = request.user
     events = []
@@ -100,6 +106,7 @@ def incoming_events_this_week(request):
 
     return render(request, 'events/incoming_events_this_week.html', context)
 
+@login_required
 def daily_view(request, year=None, month=None, day=None):
     user = request.user
     events = []
@@ -124,7 +131,7 @@ def daily_view(request, year=None, month=None, day=None):
 
     return render(request, 'events/daily_view.html', context)
 
-
+@login_required
 def weekly_calendar(request, start_date=None):
     user = request.user
     events = []
@@ -166,6 +173,7 @@ def weekly_calendar(request, start_date=None):
 
     return render(request, 'events/weekly_calendar.html', context)
 
+@login_required
 def monthly_calendar(request, year=None, month=None):
     if request.user.is_authenticated:
         user_timezone = pytz.timezone(request.user.timezone)
@@ -225,7 +233,7 @@ def monthly_calendar(request, year=None, month=None):
 
     return render(request, 'events/monthly_calendar.html', context)
 
-
+@login_required
 def create_event(request):
     if request.method == "POST":
         user = request.user
@@ -282,3 +290,54 @@ def string_to_color(input_string):
     hash_object = hashlib.md5(input_string.encode())
     hexadecimal_of_hash = hash_object.hexdigest()
     return '#' + hexadecimal_of_hash[:6]
+
+# Code for Tasks
+
+def task_list(request):
+    daily_tasks = Task.objects.filter(user=request.user, frequency='D')
+    weekly_tasks = Task.objects.filter(user=request.user, frequency='W')
+    monthly_tasks = Task.objects.filter(user=request.user, frequency='M')
+
+    context = {
+        'daily_tasks': daily_tasks,
+        'weekly_tasks': weekly_tasks,
+        'monthly_tasks': monthly_tasks,
+    }
+
+    return render(request, 'tasks/task_list.html', context)
+
+@login_required
+def task_detail(request, pk):
+    task = get_object_or_404(Task, pk=pk, user=request.user)
+    return render(request, 'tasks/task_detail.html', {'task': task})
+
+@login_required
+def create_task(request):
+    if request.method == 'POST':
+        form = TaskForm(request.POST)
+        if form.is_valid():
+            task = form.save(commit=False)
+            task.user = request.user
+            task.save()
+            return redirect('second_brain:task_list')
+    else:
+        form = TaskForm()
+    return render(request, 'tasks/task_form.html', {'form': form})
+
+@login_required
+def update_task(request, pk):
+    task = get_object_or_404(Task, pk=pk, user=request.user)
+    if request.method == 'POST':
+        form = TaskForm(request.POST, instance=task)
+        if form.is_valid():
+            task = form.save()
+            return redirect('second_brain:task_detail', pk=task.pk)
+    else:
+        form = TaskForm(instance=task)
+    return render(request, 'tasks/task_form.html', {'form': form})
+
+@login_required
+def delete_task(request, pk):
+    task = get_object_or_404(Task, pk=pk, user=request.user)
+    task.delete()
+    return redirect('second_brain:task_list')
