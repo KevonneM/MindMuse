@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>{{ task.title }}</h1>
+  <p>{{ task.description }}</p>
+  <p>Priority: {{ task.get_priority_display }}</p>
+  <p>Category: {{ task.get_category_display }}</p>
+  <p>Frequency: {{ task.get_frequency_display }}</p>
+  <p>Completion count: {{ task.completion_count }}</p>
+  <a href="{% url 'second_brain:update_task' task.pk %}">Edit</a>
+  <a href="{% url 'second_brain:delete_task' task.pk %}">Delete</a>
+  
+{% endblock %}

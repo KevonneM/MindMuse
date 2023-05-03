@@ -133,6 +133,7 @@ AUTH_USER_MODEL = 'users.CustomUser'
 
 LOGIN_REDIRECT_URL = 'second_brain:home'
 LOGOUT_REDIRECT_URL = 'second_brain:home'
+LOGIN_URL = 'users:login'
 
 MIME_TYPES = (
     ('.js', 'text/javascript'),
