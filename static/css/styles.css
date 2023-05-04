@@ -1,3 +1,7 @@
+.hidden {
+  display: none;
+}
+
 /* Weekly Calendar css */
 .weekly-calendar .calendar {
   display: flex;

@@ -6,7 +6,10 @@
   <p>Priority: {{ task.get_priority_display }}</p>
   <p>Category: {{ task.get_category_display }}</p>
   <p>Frequency: {{ task.get_frequency_display }}</p>
+  {% if task.completion_goal %}
   <p>Completion count: {{ task.completion_count }}</p>
+  <p>Completion goal: {{ task.completion_goal }}</p>
+  {% endif %}
   <a href="{% url 'second_brain:update_task' task.pk %}">Edit</a>
   <a href="{% url 'second_brain:delete_task' task.pk %}">Delete</a>
   
