@@ -20,21 +20,5 @@
     <button type="submit">Save</button>
   </form>
 
-  <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const completionCountInput = document.querySelector('#id_completion_count');
-    
-    function toggleCompletionCount() {
-      if (!completionCountInput.value && !{{ form.instance.pk|yesno:"true,false" }}) {
-        completionCountInput.parentElement.parentElement.style.display = 'none';
-      } else {
-        completionCountInput.parentElement.parentElement.style.display = '';
-      }
-    }
-    
-    toggleCompletionCount();
-  });
-</script>
-
 {% endblock content %}
 
