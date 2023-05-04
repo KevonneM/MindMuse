@@ -1,11 +1,40 @@
 {% extends 'base.html' %}
 
 {% block content %}
+  
   <h1>Add/Edit Task</h1>
+
   <form method="post">
     {% csrf_token %}
-    {{ form.as_p }}
+    {{ form.title.label_tag }} {{ form.title }}
+    {{ form.description.label_tag }} {{ form.description }}
+    {{ form.category.label_tag }} {{ form.category }}
+    {{ form.frequency.label_tag }} {{ form.frequency }}
+    {{ form.priority.label_tag }} {{ form.priority }}
+    {% if not form.instance.pk %}
+      <input type="hidden" name="completion_count" value="0">
+    {% else %}
+      {{ form.completion_count.label_tag }} {{ form.completion_count }}
+    {% endif %}
+    {{ form.completion_goal.label_tag }} {{ form.completion_goal }}
     <button type="submit">Save</button>
   </form>
-  
-{% endblock %}
+
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const completionCountInput = document.querySelector('#id_completion_count');
+    
+    function toggleCompletionCount() {
+      if (!completionCountInput.value && !{{ form.instance.pk|yesno:"true,false" }}) {
+        completionCountInput.parentElement.parentElement.style.display = 'none';
+      } else {
+        completionCountInput.parentElement.parentElement.style.display = '';
+      }
+    }
+    
+    toggleCompletionCount();
+  });
+</script>
+
+{% endblock content %}
+

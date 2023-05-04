@@ -39,8 +39,8 @@ class Task(models.Model):
     priority = models.CharField(max_length=1, choices=PRIORITY_CHOICES, null=True, blank=True)
     category = models.CharField(max_length=1, choices=CATEGORY_CHOICES)
     frequency = models.CharField(max_length=1, choices=FREQUENCY_CHOICES)
-    completion_goal = models.PositiveIntegerField(null=True, blank=True, help_text="Number of times the task should be completed in a week/month for weekly/monthly tasks")
-    completion_count = models.PositiveIntegerField(default=0, help_text="Number of times the task has been completed")
+    completion_goal = models.PositiveIntegerField(null=True, blank=True)
+    completion_count = models.PositiveIntegerField(default=0)
     status = models.BooleanField(default=False)
 
     def __str__(self):
