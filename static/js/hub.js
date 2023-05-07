@@ -153,8 +153,6 @@ function init() {
   document.getElementById('submitCity').addEventListener('click', fetchWeatherByCity);
   document.getElementById('useIP').addEventListener('click', fetchCityByIP);
   getLastTrackedCity();
-
-  toggleTaskFormCompletionCount();
 }
 
 document.addEventListener('DOMContentLoaded', init);
@@ -198,21 +196,3 @@ function updateCountdowns() {
 }
 
 setInterval(updateCountdowns, 1000);
-
-function toggleTaskFormCompletionCount() {
-  const completionCountInput = document.querySelector('#id_completion_count');
-  const formElement = document.querySelector('form[data-instance-pk]');
-  const instancePk = formElement ? formElement.getAttribute('data-instance-pk') : null;
-  
-  if (completionCountInput && instancePk !== null) {
-    function toggleCompletionCount() {
-      if (!completionCountInput.value && !Boolean(parseInt(instancePk))) {
-        completionCountInput.parentElement.parentElement.style.display = 'none';
-      } else {
-        completionCountInput.parentElement.parentElement.style.display = '';
-      }
-    }
-    
-    toggleCompletionCount();
-  }
-}

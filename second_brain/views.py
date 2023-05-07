@@ -309,7 +309,32 @@ def task_list(request):
 @login_required
 def task_detail(request, pk):
     task = get_object_or_404(Task, pk=pk, user=request.user)
-    return render(request, 'tasks/task_detail.html', {'task': task})
+    range_value = range(1, task.completion_goal + 1)
+
+    if request.method == 'POST':
+        if 'HTTP_X_REQUESTED_WITH' in request.META and request.META['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest':
+            print("AJAX request detected")
+            try:
+                completion_count = int(request.POST.get('completion_count'))
+                if completion_count < 0:
+                    raise ValueError('Invalid completion count')
+
+                task.completion_count = completion_count
+                task.status = completion_count >= task.completion_goal
+                task.save()
+                return JsonResponse({'success': True})
+
+            except (ValueError, TypeError) as e:
+                return JsonResponse({'success': False, 'message': str(e)}, status=400)
+        else:
+            print("not ajax")
+
+    context = {
+        'task': task,
+        'range': range_value
+    }
+
+    return render(request, 'tasks/task_detail.html', context)
 
 @login_required
 def create_task(request):
@@ -322,6 +347,7 @@ def create_task(request):
             return redirect('second_brain:task_list')
     else:
         form = TaskForm()
+
     return render(request, 'tasks/task_form.html', {'form': form})
 
 @login_required
@@ -334,10 +360,12 @@ def update_task(request, pk):
             return redirect('second_brain:task_detail', pk=task.pk)
     else:
         form = TaskForm(instance=task)
+
     return render(request, 'tasks/task_form.html', {'form': form})
 
 @login_required
 def delete_task(request, pk):
     task = get_object_or_404(Task, pk=pk, user=request.user)
     task.delete()
+
     return redirect('second_brain:task_list')

@@ -10,7 +10,19 @@
   <p>Completion count: {{ task.completion_count }}</p>
   <p>Completion goal: {{ task.completion_goal }}</p>
   {% endif %}
+
+  <p id="task-done-message" style="display:none;">Done!</p>
+  
+  {% for i in range %}
+    <input type="checkbox"
+      id="checkbox{{ forloop.counter }}"
+      value="{{ forloop.counter }}"
+      onclick="updateCompletionCount(this, {{ task.pk }}, {{ task.completion_goal }});"
+      {% if forloop.counter <= task.completion_count %}checked{% endif %}>
+{% endfor %}
+
+
   <a href="{% url 'second_brain:update_task' task.pk %}">Edit</a>
   <a href="{% url 'second_brain:delete_task' task.pk %}">Delete</a>
-  
+
 {% endblock %}
