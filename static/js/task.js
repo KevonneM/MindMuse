@@ -21,6 +21,7 @@ function toggleTaskFormCompletionCount() {
 function updateCompletionCount(checkboxElem, taskId, completionGoal) {
     const isChecked = checkboxElem.checked;
     const taskDoneMessage = document.getElementById("task-done-message");
+    const completionCountElem = document.getElementById("completion-count");
 
     const checkboxes = document.querySelectorAll(`input[type="checkbox"]`);
     let checkedCount = 0;
@@ -48,7 +49,8 @@ function updateCompletionCount(checkboxElem, taskId, completionGoal) {
     .then(data => {
         console.log("Response data: ", data);
         if (data.success) {
-        console.log('Completion count updated successfully');
+          completionCountElem.textContent = "Completion count: " + checkedCount;
+          console.log('Completion count updated successfully');
         if (checkedCount >= completionGoal) {
             taskDoneMessage.style.display = "block";
         } else {

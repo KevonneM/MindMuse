@@ -1,28 +1,38 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <h1>{{ task.title }}</h1>
-  <p>{{ task.description }}</p>
-  <p>Priority: {{ task.get_priority_display }}</p>
-  <p>Category: {{ task.get_category_display }}</p>
-  <p>Frequency: {{ task.get_frequency_display }}</p>
-  {% if task.completion_goal %}
-  <p>Completion count: {{ task.completion_count }}</p>
-  <p>Completion goal: {{ task.completion_goal }}</p>
-  {% endif %}
 
-  <p id="task-done-message" style="display:none;">Done!</p>
-  
-  {% for i in range %}
-    <input type="checkbox"
-      id="checkbox{{ forloop.counter }}"
-      value="{{ forloop.counter }}"
-      onclick="updateCompletionCount(this, {{ task.pk }}, {{ task.completion_goal }});"
-      {% if forloop.counter <= task.completion_count %}checked{% endif %}>
-{% endfor %}
+  <div class="card" style="width: 30rem;">
+    <div class="card-body">
+      <h1 class="card-title">{{ task.title }}</h1>
+      <p class="card-text">{{ task.description }}</p>
+      <p>Priority: {{ task.get_priority_display }}</p>
+      <p>Category: {{ task.get_category_display }}</p>
+      <p>Frequency: {{ task.get_frequency_display }}</p>
+      {% if task.completion_goal %}
+      <p id="completion-count">Completion count: {{ task.completion_count }}</p>
+      <p>Completion goal: {{ task.completion_goal }}</p>
+      {% endif %}
 
+      <p id="task-done-message" class="alert alert-success" role="alert" style="display:none;">Done!</p>
+      
+      <div>
+        {% for i in range %}
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox"
+              id="checkbox{{ forloop.counter }}"
+              value="{{ forloop.counter }}"
+              onclick="updateCompletionCount(this, {{ task.pk }}, {{ task.completion_goal }});"
+              {% if forloop.counter <= task.completion_count %}checked{% endif %}>
+          </div>
+        {% endfor %}
+      </div>
 
-  <a href="{% url 'second_brain:update_task' task.pk %}">Edit</a>
-  <a href="{% url 'second_brain:delete_task' task.pk %}">Delete</a>
+      <div class="d-flex mt-3">
+        <a href="{% url 'second_brain:update_task' task.pk %}" class="btn btn-primary me-2">Edit</a>
+        <a href="{% url 'second_brain:delete_task' task.pk %}" class="btn btn-danger">Delete</a>
+      </div>
+    </div>
+  </div>
 
 {% endblock %}
