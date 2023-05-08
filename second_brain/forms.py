@@ -4,7 +4,7 @@ from .models import Task
 class TaskForm(forms.ModelForm):
     priority = forms.ChoiceField(choices=[('', 'Choose a priority')] + list(Task.PRIORITY_CHOICES), required=False)
     completion_count = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control'}), required=False)
-    completion_goal = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control'}), required=False)
+    completion_goal = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control', 'min': 1, 'value': 1}), required=True)
 
     class Meta:
         model = Task
