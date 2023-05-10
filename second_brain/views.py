@@ -8,7 +8,7 @@ from datetime import datetime, timedelta, date
 from calendar import month_name
 from django.db.models.functions import TruncDay
 from django.db.models import Count
-from .models import Event, Task
+from .models import Event, Task, TaskHistory
 from .forms import TaskForm
 import requests
 import pytz
@@ -322,6 +322,13 @@ def task_detail(request, pk):
                 task.completion_count = completion_count
                 task.status = completion_count >= task.completion_goal
                 task.save()
+                # Get the most recent TaskHistory instance for this task
+                task_history = TaskHistory.objects.filter(task=task).latest('created_at')
+        
+                task_history.completion_count = task.completion_count
+                task_history.status = task.status
+                task_history.save()
+
                 return JsonResponse({'success': True})
 
             except (ValueError, TypeError) as e:
@@ -344,6 +351,7 @@ def create_task(request):
             task = form.save(commit=False)
             task.user = request.user
             task.save()
+            task.create_history()
             return redirect('second_brain:task_list')
     else:
         form = TaskForm()
@@ -357,6 +365,19 @@ def update_task(request, pk):
         form = TaskForm(request.POST, instance=task)
         if form.is_valid():
             task = form.save()
+            # Get the most recent TaskHistory instance for this task
+            task_history = TaskHistory.objects.filter(task=task).latest('created_at')
+            
+            task_history.title = task.title
+            task_history.description = task.description
+            task_history.priority = task.priority
+            task_history.category = task.category
+            task_history.frequency = task.frequency
+            task_history.completion_goal = task.completion_goal
+            task_history.completion_count = task.completion_count
+            task_history.status = task.status
+            task_history.save()
+
             return redirect('second_brain:task_detail', pk=task.pk)
     else:
         form = TaskForm(instance=task)

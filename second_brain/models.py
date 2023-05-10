@@ -43,5 +43,35 @@ class Task(models.Model):
     completion_count = models.PositiveIntegerField(default=0)
     status = models.BooleanField(default=False)
 
+    def create_history(self):
+        TaskHistory.objects.create(
+            task=self,
+            user=self.user,
+            title=self.title,
+            description=self.description,
+            priority=self.priority,
+            category=self.category,
+            frequency=self.frequency,
+            completion_goal=self.completion_goal,
+            completion_count=self.completion_count,
+            status=self.status
+        )
+
+    def __str__(self):
+        return self.title
+
+class TaskHistory(models.Model):
+    task = models.ForeignKey(Task, on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    title = models.CharField(max_length=100)
+    description = models.TextField()
+    priority = models.CharField(max_length=1, choices=Task.PRIORITY_CHOICES, null=True, blank=True)
+    category = models.CharField(max_length=1, choices=Task.CATEGORY_CHOICES)
+    frequency = models.CharField(max_length=1, choices=Task.FREQUENCY_CHOICES)
+    completion_goal = models.PositiveIntegerField(null=True, blank=True)
+    completion_count = models.PositiveIntegerField(default=0)
+    status = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
     def __str__(self):
         return self.title
