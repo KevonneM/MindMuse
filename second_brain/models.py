@@ -1,4 +1,8 @@
 from django.db import models
+from dateutil.relativedelta import relativedelta
+from django.utils import timezone
+import pytz
+from datetime import timedelta
 from users.models import CustomUser
 
 # Create your models here.
@@ -42,6 +46,7 @@ class Task(models.Model):
     completion_goal = models.PositiveIntegerField(null=True, blank=True)
     completion_count = models.PositiveIntegerField(default=0)
     status = models.BooleanField(default=False)
+    last_reset_date = models.DateField(auto_now_add=True, null=True)
 
     def create_history(self):
         TaskHistory.objects.create(
@@ -56,6 +61,27 @@ class Task(models.Model):
             completion_count=self.completion_count,
             status=self.status
         )
+
+    def calculate_next_reset_date(self):
+        # Get the current date in the user's timezone
+        user_tz = pytz.timezone(self.user.timezone) #convert to pytz.timezone object
+        now = timezone.localtime(timezone.now(), user_tz).date()
+        
+        if self.frequency == 'D':
+            # For daily tasks, the next reset date is simply the next day
+            return self.last_reset_date + timedelta(days=1)
+        elif self.frequency == 'W':
+            # For weekly tasks, find the next Sunday from the last reset date
+            days_until_sunday = (6 - self.last_reset_date.weekday()) % 7
+            next_sunday = self.last_reset_date + timedelta(days=days_until_sunday)
+            return next_sunday
+        elif self.frequency == 'M':
+            # For monthly tasks, the next reset date is the first day of the next month
+            if now.month == 12:
+                next_month = now.replace(year=now.year+1, month=1, day=1)
+            else:
+                next_month = now.replace(month=now.month+1, day=1)
+            return next_month
 
     def __str__(self):
         return self.title

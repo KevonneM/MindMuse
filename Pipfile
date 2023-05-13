@@ -8,6 +8,8 @@ django = "*"
 pytz = "*"
 python-decouple = "*"
 requests = "*"
+celery = {extras = ["redis"], version = "*"}
+django-celery-beat = "*"
 
 [dev-packages]
 
