@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'second_brain',
     'insights',
     'users',
+    'django_celery_beat',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -138,3 +139,5 @@ LOGIN_URL = 'users:login'
 MIME_TYPES = (
     ('.js', 'text/javascript'),
 )
+
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
