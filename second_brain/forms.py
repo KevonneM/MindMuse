@@ -1,5 +1,5 @@
 from django import forms
-from .models import Task
+from .models import Task, Passion, PassionActivity
 
 class TaskForm(forms.ModelForm):
     priority = forms.ChoiceField(choices=[('', 'Choose a priority')] + list(Task.PRIORITY_CHOICES), required=False)
@@ -34,3 +34,14 @@ class TaskForm(forms.ModelForm):
             'completion_count': 'This field is required for weekly and monthly tasks.',
             'completion_goal': 'This field is required for weekly and monthly tasks.',
         }
+
+class PassionForm(forms.ModelForm):
+    class Meta:
+        model = Passion
+        fields = ['name', 'description']
+
+
+class PassionActivityForm(forms.ModelForm):
+    class Meta:
+        model = PassionActivity
+        fields = ['date', 'duration']

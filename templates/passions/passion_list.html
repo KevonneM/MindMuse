@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <h1>My Passions</h1>
+    {% for passion in passions %}
+    <div>
+        <h2><a href="{% url 'second_brain:passion_detail' passion.pk %}">{{ passion.name }}</a></h2>
+        <p>{{ passion.description }}</p>
+    </div>
+    {% empty %}
+    <p>No passions yet. <a href="{% url 'second_brain:passion_create' %}">Add one?</a></p>
+    {% endfor %}
+    
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <h1>{{ passion.name }}</h1>
+    <p>{{ passion.description }}</p>
+    <h2>Activities</h2>
+    {% for activity in passion.activities.all %}
+    <div>
+        <p>{{ activity.date }}: {{ activity.notes }}</p>
+    </div>
+    {% empty %}
+    <p>No activities yet. <a href="{% url 'second_brain:passion_activity_create' passion.pk %}">Add one?</a></p>
+    {% endfor %}
+    <a href="{% url 'second_brain:passion_update' passion.pk %}">Edit</a>
+    <a href="{% url 'second_brain:passion_delete' passion.pk %}">Delete</a>
+
+    {% for i, day in week_days_range %}
+    {% for index, date in dates %}
+        {% if index == i %}
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox"
+                    id="checkbox{{ i }}"
+                    value="{{ i }}"
+                    onclick="recordPassionActivity(this, {{ passion.pk }}, '{{ date|date:'Y-m-d' }}');"
+                    {% if date|date:'Y-m-d' in activities_exist %}checked{% endif %}
+                    {% if i > current_weekday %}disabled{% endif %}
+                <label class="form-check-label" for="checkbox{{ i }}">
+                    {{ day }}
+                </label>
+            </div>
+        {% endif %}
+    {% endfor %}
+    {% endfor %}
+
+{% endblock %}

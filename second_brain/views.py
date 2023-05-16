@@ -8,8 +8,9 @@ from datetime import datetime, timedelta, date
 from calendar import month_name
 from django.db.models.functions import TruncDay
 from django.db.models import Count
-from .models import Event, Task, TaskHistory
-from .forms import TaskForm
+from .models import Event, Task, TaskHistory, Passion, PassionActivity
+from .forms import TaskForm, PassionForm, PassionActivityForm
+import json
 import requests
 import pytz
 import hashlib # for string to color function
@@ -390,3 +391,168 @@ def delete_task(request, pk):
     task.delete()
 
     return redirect('second_brain:task_list')
+
+# Code for Passions/hobby progression tracking
+
+@login_required
+def passion_list(request):
+    passions = Passion.objects.filter(user=request.user)
+
+    context = {
+        'passions': passions,
+    }
+
+    return render(request, 'passions/passion_list.html', context)
+
+@login_required
+def passion_detail(request, pk):
+    passion = get_object_or_404(Passion, pk=pk, user=request.user)
+    passion_activities = PassionActivity.objects.filter(passion=passion)
+
+    user_timezone = request.user.timezone
+    tz = pytz.timezone(user_timezone)
+
+    current_date = timezone.now().astimezone(tz).date()
+    current_weekday = (current_date.weekday() + 1) % 7
+
+    last_sunday = current_date - timedelta(days=current_date.weekday() + 1)
+
+    dates = [(i, last_sunday + timedelta(days=i)) for i in range(7)]
+    week_days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+
+    # Keep track of if checkbox has a recorded activity for that day.
+    activities_this_week = PassionActivity.objects.filter(
+        passion=passion,
+        date__range=(dates[0][1], dates[-1][1])
+    ).values_list('date', flat=True)
+
+    activities_this_week = [activity.isoformat() for activity in activities_this_week]
+
+    activities_exist = [date[1].isoformat() for date in dates if date[1].isoformat() in activities_this_week]
+
+    context = {
+        'passion': passion,
+        'passion_activities': passion_activities,
+        'dates': dates,
+        'current_date': current_date,
+        'current_weekday': current_weekday,
+        'week_days': week_days,
+        'week_days_range': zip(list(range(7)), week_days),
+        'activities_exist': activities_exist
+    }
+
+    return render(request, 'passions/passion_detail.html', context)
+
+@login_required
+def passion_create(request):
+    if request.method == 'POST':
+        form = PassionForm(request.POST)
+        if form.is_valid():
+            passion = form.save(commit=False)
+            passion.user = request.user
+            passion.save()
+            return redirect('second_brain:passion_detail', pk=passion.pk)
+    else:
+        form = PassionForm()
+
+    return render(request, 'passions/passion_form.html', {'form': form})
+
+@login_required
+def passion_update(request, pk):
+    passion = get_object_or_404(Passion, pk=pk, user=request.user)
+    
+    if request.method == 'POST':
+        form = PassionForm(request.POST, instance=passion)
+        if form.is_valid():
+            passion = form.save()
+            return redirect('second_brain:passion_detail', pk=passion.pk)
+    else:
+        form = PassionForm(instance=passion)
+
+    return render(request, 'passions/passion_form.html', {'form': form})
+
+@login_required
+def passion_delete(request, pk):
+    passion = get_object_or_404(Passion, pk=pk, user=request.user)
+    
+    if request.method == 'POST':
+        passion.delete()
+        return redirect('second_brain:passion_list')
+
+    return render(request, 'passions/passion_confirm_delete.html', {'passion': passion})
+
+# form submission from webpage
+@login_required
+def passion_activity_create(request, passion_pk):
+    passion = get_object_or_404(Passion, pk=passion_pk, user=request.user)
+    
+    if request.method == 'POST':
+        form = PassionActivityForm(request.POST)
+        if form.is_valid():
+            passion_activity = form.save(commit=False)
+            passion_activity.passion = passion
+            passion_activity.save()
+            return redirect('second_brain:passion_detail', pk=passion.pk)
+    else:
+        form = PassionActivityForm()
+
+    context = {
+        'form': form,
+        'passion': passion
+        }
+
+    return render(request, 'passions/passion_activity_form.html', context)
+
+# Ajax update for passion activity tracking
+@csrf_exempt
+@login_required
+def record_passion_activity(request):
+    if request.method == 'POST':
+        if 'HTTP_X_REQUESTED_WITH' in request.META and request.META['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest':
+            print("AJAX request detected")
+
+            data = json.loads(request.body)
+            passion_id = data.get('passion_id')
+            date = data.get('date')
+            hours = data.get('hours')
+            minutes = data.get('minutes')
+
+            passion = get_object_or_404(Passion, pk=passion_id, user=request.user)
+            duration = timedelta(hours=int(hours), minutes=int(minutes))
+
+            # Check if one exists, then update duration
+            passion_activity, created = PassionActivity.objects.get_or_create(
+                passion=passion,
+                date=date,
+                defaults={'duration': duration}
+            )
+
+            if not created:
+                passion_activity.duration = duration
+                passion_activity.save()
+
+            return JsonResponse({'success': True})
+
+    return JsonResponse({'success': False, 'message': 'Invalid request method'})
+
+@csrf_exempt
+@login_required
+def delete_passion_activity(request):
+    if request.method == 'POST':
+        if 'HTTP_X_REQUESTED_WITH' in request.META and request.META['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest':
+            print("AJAX delete request detected")
+
+            data = json.loads(request.body)
+            passion_id = data.get('passion_id')
+            date = data.get('date')
+
+            passion = get_object_or_404(Passion, pk=passion_id, user=request.user)
+
+            try:
+                passion_activity = PassionActivity.objects.get(passion=passion, date=date)
+                passion_activity.delete()
+                return JsonResponse({'success': True})
+            except PassionActivity.DoesNotExist:
+                return JsonResponse({'success': False, 'message': 'PassionActivity not found'})
+
+    return JsonResponse({'success': False, 'message': 'Invalid request method'})
