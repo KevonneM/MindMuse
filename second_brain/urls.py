@@ -33,5 +33,6 @@ urlpatterns = [
     path('passions/<int:pk>/delete/', views.passion_delete, name='passion_delete'),
     path('passions/<int:passion_pk>/activity/create/', views.passion_activity_create, name='passion_activity_create'),
     path('passions/record_activity/', views.record_passion_activity, name='record_passion_activity'),
-    path('passions/delete_activity/', views.delete_passion_activity, name='delete_passion_activity')
+    path('passions/delete_activity/', views.delete_passion_activity, name='delete_passion_activity'),
+    path('passions/update_passion_progress/<int:pk>/', views.update_passion_progress, name='update_passion_progress')
 ]

@@ -82,3 +82,30 @@ function recordPassionActivity(checkboxElem, passionId, dateStr) {
         }
     }
 }
+
+function updatePassionProgress(passionId) {
+    console.log('Checking for current passion activity week.')
+    
+    let xhr = new XMLHttpRequest();
+
+    xhr.open('GET', '/passions/update_passion_progress/' + passionId + '/', true);
+
+
+    xhr.onload = function() {
+        if (xhr.status == 200) {
+            // Parse the JSON response
+            let response = JSON.parse(xhr.responseText);
+            let activitiesExist = response.activities_exist;
+
+            // Update the checkboxes
+            for (let i = 0; i < activitiesExist.length; i++) {
+                let checkbox = document.getElementById('checkbox' + i);
+                checkbox.checked = activitiesExist[i];
+            }
+        } else {
+            console.error('AJAX request failed with status ' + xhr.status);
+        }
+    }
+
+    xhr.send();
+}
