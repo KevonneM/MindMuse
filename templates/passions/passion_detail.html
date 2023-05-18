@@ -33,4 +33,13 @@
     {% endfor %}
     {% endfor %}
 
+<script>
+    updatePassionProgress({{ passion.pk }})
+    // Call the function every minute
+    setInterval(function() {
+        let passionId = {{ passion.pk }};
+        updatePassionProgress(passionId);
+    }, 60000);
+</script>
+
 {% endblock %}

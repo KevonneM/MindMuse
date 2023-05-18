@@ -15,16 +15,16 @@ function update_current_time() {
     var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
     var date_string = `${months[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
 
-    day_of_week_element.textContent = day_of_week;
-    date_element.textContent = date_string;
-    current_time_element.textContent = current_time;
+    if(day_of_week_element) day_of_week_element.textContent = day_of_week;
+    if(date_element) date_element.textContent = date_string;
+    if(current_time_element) current_time_element.textContent = current_time;
 
     intervalRunning = true;
     
     // Update time every second.
     setInterval(function() {
       current_time = new Date().toLocaleTimeString();
-      current_time_element.textContent = current_time;
+      if(current_time_element) current_time_element.textContent = current_time;
 
     }, 1000);
 
@@ -33,9 +33,9 @@ function update_current_time() {
       now = new Date();
 
       day_of_week = days[now.getDay()];
-      day_of_week_element.textContent = day_of_week;
+      if(day_of_week_element) day_of_week_element.textContent = day_of_week;
       date_string = `${months[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
-      date_element.textContent = date_string;
+      if(date_element) date_element.textContent = date_string;
     }, 60000);
   }
 }
@@ -82,25 +82,33 @@ function updateWeatherData(cityName) {
   const weatherIconUrl = (iconCode) => `http://openweathermap.org/img/wn/${iconCode}.png`;
   const cityParam = cityName ? cityName : '';
   fetch(`/fetch_weather/${cityParam}`)
-      .then(response => response.json())
-      .then(data => {
-          document.getElementById('city_name').innerText = data.city_name;
-          document.getElementById('temperature').innerText = data.temperature + '°F';
-          document.getElementById('feels_like').textContent = `Feels like: ${data.feels_like}°F, `;
-          document.getElementById('condition').innerText = data.condition;
-          document.querySelector('.humidity-value').textContent = data.humidity;
-          document.querySelector('.wind-speed-value').textContent = data.wind_speed;
-          
-          const weatherIcon = document.getElementById('weather-icon');
-          weatherIcon.src = weatherIconUrl(data.icon);
-          weatherIcon.alt = data.condition;
+    .then(response => response.json())
+    .then(data => {
+      const cityNameElement = document.getElementById('city_name');
+      const temperatureElement = document.getElementById('temperature');
+      const feelsLikeElement = document.getElementById('feels_like');
+      const conditionElement = document.getElementById('condition');
+      const humidityElement = document.querySelector('.humidity-value');
+      const windSpeedElement = document.querySelector('.wind-speed-value');
+      const weatherIconElement = document.getElementById('weather-icon');
 
-          // Schedule the next update in 5 minutes (300,000 ms).
-          setTimeout(updateWeatherData, 500000);
-      })
-      .catch(error => {
-          console.error('Error fetching weather data:', error);
-      });
+      if(cityNameElement) cityNameElement.innerText = data.city_name;
+      if(temperatureElement) temperatureElement.innerText = data.temperature + '°F';
+      if(feelsLikeElement) feelsLikeElement.textContent = `Feels like: ${data.feels_like}°F, `;
+      if(conditionElement) conditionElement.innerText = data.condition;
+      if(humidityElement) humidityElement.textContent = data.humidity;
+      if(windSpeedElement) windSpeedElement.textContent = data.wind_speed;
+      if(weatherIconElement) {
+        weatherIconElement.src = weatherIconUrl(data.icon);
+        weatherIconElement.alt = data.condition;
+      }
+
+      // Schedule the next update in 5 minutes (300,000 ms).
+      setTimeout(updateWeatherData, 500000);
+    })
+    .catch(error => {
+      console.error('Error fetching weather data:', error);
+    });
 }
 
 // Function to handle city input
@@ -149,10 +157,17 @@ function getLastTrackedCity() {
 
 function init() {
   update_current_time();
-  document.getElementById('refreshButton').addEventListener('click', getLastTrackedCity);
-  document.getElementById('submitCity').addEventListener('click', fetchWeatherByCity);
-  document.getElementById('useIP').addEventListener('click', fetchCityByIP);
-  getLastTrackedCity();
+  var refreshButton = document.getElementById('refreshButton');
+  var submitCity = document.getElementById('submitCity');
+  var useIP = document.getElementById('useIP');
+
+  if (refreshButton) refreshButton.addEventListener('click', getLastTrackedCity);
+  if (submitCity) submitCity.addEventListener('click', fetchWeatherByCity);
+  if (useIP) useIP.addEventListener('click', fetchCityByIP);
+  
+  if (document.getElementById('city_name')) {
+    getLastTrackedCity();
+  }
 }
 
 document.addEventListener('DOMContentLoaded', init);

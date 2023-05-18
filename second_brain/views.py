@@ -556,3 +556,22 @@ def delete_passion_activity(request):
                 return JsonResponse({'success': False, 'message': 'PassionActivity not found'})
 
     return JsonResponse({'success': False, 'message': 'Invalid request method'})
+
+def update_passion_progress(request, pk):
+    
+    passion = get_object_or_404(Passion, pk=pk, user=request.user)
+    tz = pytz.timezone(request.user.timezone)
+    current_date = timezone.now().astimezone(tz).date()
+
+    last_sunday = current_date - timedelta(days=current_date.weekday() + 1)
+    dates = [(i, last_sunday + timedelta(days=i)) for i in range(7)]
+
+    activities_this_week = PassionActivity.objects.filter(
+        passion=passion,
+        date__range=(dates[0][1], dates[-1][1])
+    ).values_list('date', flat=True)
+
+    activities_this_week = [activity.isoformat() for activity in activities_this_week]
+    activities_exist = [str(date[1]) in activities_this_week for date in dates]
+
+    return JsonResponse({'activities_exist': activities_exist})
