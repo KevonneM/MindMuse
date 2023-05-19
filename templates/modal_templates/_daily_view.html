@@ -1,0 +1,23 @@
+{% load tz %}
+
+<div class="modal-header">
+    <h5 class="modal-title">Events for {{ today|date:"l, F j, Y" }}</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+    {% if events %}
+        <ul class="list-group">
+            {% for event in events %}
+                <li class="list-group-item">
+                    {% with event.start_time|timezone:request.user.timezone as start_time %}
+                    {% with event.end_time|timezone:request.user.timezone as end_time %}
+                    {{ event.title }} - {{ start_time.time|time:"h:i A" }} - {{ end_time.time|time:"h:i A" }}
+                    {% endwith %}
+                    {% endwith %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No events today.</p>
+    {% endif %}
+</div>

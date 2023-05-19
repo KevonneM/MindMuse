@@ -18,7 +18,24 @@ import hashlib # for string to color function
 # Create your views here.
 
 def home(request):
-    context = {'url_name': 'second_brain:home'}
+    user = request.user
+    events = []
+
+    if user.is_authenticated:
+        user_timezone = pytz.timezone(user.timezone)
+        now = timezone.now().astimezone(user_timezone)
+        today = now.date()
+
+        # Making Sunday the first day of the week
+        week_start = today - timedelta(days=((today.weekday() + 1) % 7))
+        week_end = week_start + timedelta(days=7)
+
+        events = Event.objects.filter(user=user, start_time__gte=week_start, start_time__lt=week_end).order_by('start_time')
+
+    context = {
+        'events': events,
+        'url_name': 'second_brain:home',
+    }
     return render(request, 'home.html', context)
 
 @login_required
@@ -86,28 +103,6 @@ def get_last_tracked_city(request):
 # Code for Events
 
 @login_required
-def incoming_events_this_week(request):
-    user = request.user
-    events = []
-
-    if user.is_authenticated:
-        user_timezone = pytz.timezone(user.timezone)
-        now = timezone.now().astimezone(user_timezone)
-        today = now.date()
-
-        # Making Sunday the first day of the week
-        week_start = today - timedelta(days=((today.weekday() + 1) % 7))
-        week_end = week_start + timedelta(days=7)
-
-        events = Event.objects.filter(user=user, start_time__gte=week_start, start_time__lt=week_end).order_by('start_time')
-
-    context = {
-        'events': events,
-    }
-
-    return render(request, 'events/incoming_events_this_week.html', context)
-
-@login_required
 def daily_view(request, year=None, month=None, day=None):
     user = request.user
     events = []
@@ -129,8 +124,10 @@ def daily_view(request, year=None, month=None, day=None):
         'today': selected_date,
         'events': events,
     }
-
-    return render(request, 'events/daily_view.html', context)
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return render(request, 'modal_templates/_daily_view.html', context)
+    else:
+        return render(request, 'events/daily_view.html', context)
 
 @login_required
 def weekly_calendar(request, start_date=None):
@@ -171,8 +168,10 @@ def weekly_calendar(request, start_date=None):
         'next_week_start': next_week_start,
         'events': events,
     }
-
-    return render(request, 'events/weekly_calendar.html', context)
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return render(request, 'modal_templates/_weekly_calendar.html', context)
+    else:
+        return render(request, 'events/weekly_calendar.html', context)
 
 @login_required
 def monthly_calendar(request, year=None, month=None):
@@ -231,8 +230,10 @@ def monthly_calendar(request, year=None, month=None):
         'next_year': next_month.year,
         'next_month': next_month.month,
     }
-
-    return render(request, 'events/monthly_calendar.html', context)
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return render(request, 'modal_templates/_monthly_calendar.html', context)
+    else:
+        return render(request, 'events/monthly_calendar.html', context)
 
 @login_required
 def create_event(request):
