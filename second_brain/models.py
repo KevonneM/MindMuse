@@ -26,6 +26,7 @@ class Task(models.Model):
     )
 
     CATEGORY_CHOICES = (
+        ('R', 'Routine'),
         ('P', 'Physical'),
         ('M', 'Mental'),
         ('S', 'Spiritual'),
@@ -43,8 +44,6 @@ class Task(models.Model):
     priority = models.CharField(max_length=1, choices=PRIORITY_CHOICES, null=True, blank=True)
     category = models.CharField(max_length=1, choices=CATEGORY_CHOICES)
     frequency = models.CharField(max_length=1, choices=FREQUENCY_CHOICES)
-    completion_goal = models.PositiveIntegerField(null=True, blank=True)
-    completion_count = models.PositiveIntegerField(default=0)
     status = models.BooleanField(default=False)
     last_reset_date = models.DateField(auto_now_add=True, null=True)
 
@@ -57,8 +56,6 @@ class Task(models.Model):
             priority=self.priority,
             category=self.category,
             frequency=self.frequency,
-            completion_goal=self.completion_goal,
-            completion_count=self.completion_count,
             status=self.status
         )
 
@@ -94,8 +91,6 @@ class TaskHistory(models.Model):
     priority = models.CharField(max_length=1, choices=Task.PRIORITY_CHOICES, null=True, blank=True)
     category = models.CharField(max_length=1, choices=Task.CATEGORY_CHOICES)
     frequency = models.CharField(max_length=1, choices=Task.FREQUENCY_CHOICES)
-    completion_goal = models.PositiveIntegerField(null=True, blank=True)
-    completion_count = models.PositiveIntegerField(default=0)
     status = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
