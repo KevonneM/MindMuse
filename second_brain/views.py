@@ -32,10 +32,22 @@ def home(request):
 
         events = Event.objects.filter(user=user, start_time__gte=week_start, start_time__lt=week_end).order_by('start_time')
 
-    context = {
-        'events': events,
-        'url_name': 'second_brain:home',
-    }
+        # Task info for hub display
+        daily_tasks = Task.objects.filter(user=request.user, frequency='D')
+        weekly_tasks = Task.objects.filter(user=request.user, frequency='W')
+        monthly_tasks = Task.objects.filter(user=request.user, frequency='M')
+
+        context = {
+            'events': events,
+            'daily_tasks': daily_tasks,
+            'weekly_tasks': weekly_tasks,
+            'monthly_tasks': monthly_tasks,
+            'url_name': 'second_brain:home'
+        }
+    else:
+        context = {
+            'url_name': 'second_brain:home'
+        }
     return render(request, 'home.html', context)
 
 @login_required
@@ -311,23 +323,17 @@ def task_list(request):
 @login_required
 def task_detail(request, pk):
     task = get_object_or_404(Task, pk=pk, user=request.user)
-    range_value = range(1, task.completion_goal + 1)
 
     if request.method == 'POST':
         if 'HTTP_X_REQUESTED_WITH' in request.META and request.META['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest':
             print("AJAX request detected")
             try:
-                completion_count = int(request.POST.get('completion_count'))
-                if completion_count < 0:
-                    raise ValueError('Invalid completion count')
-
-                task.completion_count = completion_count
-                task.status = completion_count >= task.completion_goal
+                task.status = request.POST.get('status') == 'true' # Get status from form
                 task.save()
+
                 # Get the most recent TaskHistory instance for this task
                 task_history = TaskHistory.objects.filter(task=task).latest('created_at')
         
-                task_history.completion_count = task.completion_count
                 task_history.status = task.status
                 task_history.save()
 
@@ -340,7 +346,6 @@ def task_detail(request, pk):
 
     context = {
         'task': task,
-        'range': range_value
     }
 
     return render(request, 'tasks/task_detail.html', context)
@@ -354,7 +359,7 @@ def create_task(request):
             task.user = request.user
             task.save()
             task.create_history()
-            return redirect('second_brain:task_list')
+            return redirect('second_brain:home')
     else:
         form = TaskForm()
 
@@ -375,12 +380,10 @@ def update_task(request, pk):
             task_history.priority = task.priority
             task_history.category = task.category
             task_history.frequency = task.frequency
-            task_history.completion_goal = task.completion_goal
-            task_history.completion_count = task.completion_count
             task_history.status = task.status
             task_history.save()
 
-            return redirect('second_brain:task_detail', pk=task.pk)
+            return redirect('second_brain:home')
     else:
         form = TaskForm(instance=task)
 
