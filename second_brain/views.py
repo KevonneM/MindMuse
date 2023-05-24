@@ -22,6 +22,7 @@ def home(request):
     events = []
 
     if user.is_authenticated:
+
         user_timezone = pytz.timezone(user.timezone)
         now = timezone.now().astimezone(user_timezone)
         today = now.date()
@@ -37,12 +38,41 @@ def home(request):
         weekly_tasks = Task.objects.filter(user=request.user, frequency='W')
         monthly_tasks = Task.objects.filter(user=request.user, frequency='M')
 
+        # Passion info for hub display
+        passions = Passion.objects.filter(user=request.user)
+        passion_details = []
+
+        week_days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+        dates = [(i, week_start + timedelta(days=i)) for i in range(7)]
+        current_weekday = (today.weekday() + 1) % 7
+
+        for passion in passions:
+            # Keep track of if checkbox has a recorded activity for that day.
+            activities_this_week = PassionActivity.objects.filter(
+                passion=passion,
+                date__range=(dates[0][1], dates[-1][1])
+            ).values_list('date', flat=True)
+
+            activities_this_week = [activity.isoformat() for activity in activities_this_week]
+
+            activities_exist = [date[1].isoformat() for date in dates if date[1].isoformat() in activities_this_week]
+
+            passion_details.append({
+                'passion': passion,
+                'dates': dates,
+                'week_days': week_days,
+                'week_days_range': zip(list(range(7)), week_days),
+                'activities_exist': activities_exist
+            })
+
         context = {
             'events': events,
             'daily_tasks': daily_tasks,
             'weekly_tasks': weekly_tasks,
             'monthly_tasks': monthly_tasks,
-            'url_name': 'second_brain:home'
+            'url_name': 'second_brain:home',
+            'passion_details': passion_details,
+            'current_weekday': current_weekday
         }
     else:
         context = {
@@ -455,7 +485,7 @@ def passion_create(request):
             passion = form.save(commit=False)
             passion.user = request.user
             passion.save()
-            return redirect('second_brain:passion_detail', pk=passion.pk)
+            return redirect('second_brain:home')
     else:
         form = PassionForm()
 

@@ -6,19 +6,12 @@
 {% if user.is_authenticated %}
 
 <div class="container-fluid" style="height: calc(100vh - 75px);">
-    <div class="row" style="height: 100%;">
+    <div class="row d-flex justify-content-center" style="height: 100%;">
         
-        <div class="col-12 col-lg-6">
+        <div class="col-lg-6 col-md-10 col-sm-12 order-2 order-lg-1">
             <div class="row">
-                <div class="col-12 col-md-6 d-flex align-items-center justify-content-center flex-column">
-                    <!-- Time div -->
-                    <div class="mt-3">
-                        <p id="day_of_week"></p>
-                        <p id="date"></p>
-                        <p id="current_time"></p>
-                    </div>
-                </div>
-                <div class="col-12 col-md-6 d-flex align-items-center justify-content-center flex-column">
+                <div class="col-md-6 col-sm-12">
+                    <div class="card-header text-center">
                     <!-- Accordion div -->
                     <div class="accordion mt-3" id="incomingEventsAccordion">
                         <div class="accordion-item">
@@ -73,6 +66,7 @@
                             </div>
                         </div>
                     </div>
+                    </div>
                 </div>
 
                  <!-- Modals -->
@@ -100,9 +94,9 @@
                     </div>
                 </div>
 
-                <div class="col-lg-12 col-md-6 d-flex align-items-center justify-content-center flex-column">
+                <div class="col-md-6 col-sm-12">
 
-                    <div class="card mt-3" style="width: 400px;">
+                    <div class="card mt-3">
                         <div class="card-header">
                             <div class="d-flex justify-content-between align-items-center">
                             <span>Tasks</span>
@@ -190,17 +184,70 @@
                         </div>
                     </div>
 
-
                     <div class="mt-3">
                         <a href="{% url 'second_brain:task_list' %}" class="btn btn-primary">Tasks</a>
                         <a href="{% url 'second_brain:passion_list' %}" class="btn btn-primary">My Passions</a>
                     </div>
                 </div>
             </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="card mt-3">
+                        <div class="card-header">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>Passions</span>
+                                <a href="{% url 'second_brain:passion_create' %}" class="btn btn-primary">Add Passion</a>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            {% for passion_detail in passion_details %}
+                                <h5 class="card-title">{{ passion_detail.passion.name }}</h5>
+                                <h6 class="card-subtitle mb-2 text-muted">{{ passion_detail.passion.description }}</h6>
+                                <div class="week-container">
+                                    {% for i, day in passion_detail.week_days_range %}
+                                        {% for index, date in passion_detail.dates %}
+                                            {% if index == i %}
+                                                <div class="weekday-box">
+                                                    <div class="weekday-label">{{ day|slice:":3" }}</div>
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="checkbox"
+                                                            id="checkbox{{ i }}{{ passion_detail.passion.pk }}"
+                                                            value="{{ i }}"
+                                                            onclick="recordPassionActivity(this, {{ passion_detail.passion.pk }}, '{{ date|date:'Y-m-d' }}');"
+                                                            {% if date|date:'Y-m-d' in passion_detail.activities_exist %}checked{% endif %}
+                                                            {% if i > current_weekday %}disabled{% endif %}
+                                                        <label class="form-check-label" for="checkbox{{ i }}{{ passion_detail.passion.pk }}"></label>
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endfor %}
+                                </div>
+                                <hr>
+                                <script>
+                                    updatePassionProgress({{ passion_detail.passion.pk }})
+                                    setInterval(function() {
+                                        let passionId = {{ passion_detail.passion.pk }};
+                                        updatePassionProgress(passionId);
+                                    }, 60000);
+                                </script>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
-        <div class="col-12 col-lg-6 d-flex align-items-start justify-content-center mt-3">
+        <div class="col-12 col-lg-6 col-sm-8 order-1 order-lg-2 d-flex align-items-start justify-content-center mt-3">
             <div class="card" style="width: 100%;">
+                <!-- Time div -->
+                <div class="card-header text-center">
+                    <p id="day_of_week"></p>
+                    <p id="date"></p>
+                    <p id="current_time"></p>
+                </div>
                 <div class="card-body">
                     <h5 class="card-title"><span id="city_name"></span></h5>
                     <div id="weather-info" class="card-text d-flex flex-column justify-content-center align-items-center">
@@ -242,7 +289,7 @@
             </div>
         </div>
         <div class="col-12 d-flex align-items-end justify-content-center">
-            <h1 class="mb-3">Hello, {{ request.user.first_name }} {{ request.user.last_name }}</h1>
+            <h1 class="mb-2 mt-2">Hello, {{ request.user.first_name }} {{ request.user.last_name }}</h1>
         </div>
     </div>
 </div>

@@ -99,7 +99,7 @@ function updatePassionProgress(passionId) {
 
             // Update the checkboxes
             for (let i = 0; i < activitiesExist.length; i++) {
-                let checkbox = document.getElementById('checkbox' + i);
+                let checkbox = document.getElementById('checkbox' + i + passionId);
                 checkbox.checked = activitiesExist[i];
             }
         } else {
