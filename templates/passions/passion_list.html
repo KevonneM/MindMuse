@@ -3,6 +3,9 @@
 {% block content %}
 
     <h1>My Passions</h1>
+    {% if passions %}
+    <p>Have more passions? <a href="{% url 'second_brain:passion_create' %}">Add another?</a></p>
+    {% endif %}
     {% for passion in passions %}
     <div>
         <h2><a href="{% url 'second_brain:passion_detail' passion.pk %}">{{ passion.name }}</a></h2>
@@ -11,5 +14,5 @@
     {% empty %}
     <p>No passions yet. <a href="{% url 'second_brain:passion_create' %}">Add one?</a></p>
     {% endfor %}
-    
+
 {% endblock %}

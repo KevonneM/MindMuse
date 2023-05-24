@@ -1,6 +1,19 @@
 .hidden {
   display: none;
 }
+/* Weather/Time card css */
+.card-header p {
+  display: inline;
+  border-right: 1px solid #ccc;
+  padding-right: 10px;
+  margin-right: 10px;
+}
+
+.card-header p:last-child {
+  border-right: none;
+  padding-right: 0;
+  margin-right: 0;
+}
 
 /* Weekly Calendar css */
 .weekly-calendar .calendar {
@@ -127,4 +140,29 @@ ul li {
   max-width: 80%;
   overflow: hidden;
   white-space: nowrap;
+}
+
+/* Passion card styling */
+.week-container {
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid #eaeaea;
+}
+
+.weekday-box {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  border-right: 1px solid #eaeaea;
+}
+
+.weekday-box:last-child {
+  border-right: none;
+}
+
+.weekday-label {
+  margin-bottom: 10px;
 }
