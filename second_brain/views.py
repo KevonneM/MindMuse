@@ -41,6 +41,7 @@ def home(request):
         # Passion info for hub display
         passions = Passion.objects.filter(user=request.user)
         passion_details = []
+        passion_count = len(passions)
 
         week_days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
         dates = [(i, week_start + timedelta(days=i)) for i in range(7)]
@@ -72,7 +73,8 @@ def home(request):
             'monthly_tasks': monthly_tasks,
             'url_name': 'second_brain:home',
             'passion_details': passion_details,
-            'current_weekday': current_weekday
+            'current_weekday': current_weekday,
+            'passion_count': passion_count
         }
     else:
         context = {
@@ -427,56 +429,6 @@ def delete_task(request, pk):
     return redirect('second_brain:task_list')
 
 # Code for Passions/hobby progression tracking
-
-@login_required
-def passion_list(request):
-    passions = Passion.objects.filter(user=request.user)
-
-    context = {
-        'passions': passions,
-    }
-
-    return render(request, 'passions/passion_list.html', context)
-
-@login_required
-def passion_detail(request, pk):
-    passion = get_object_or_404(Passion, pk=pk, user=request.user)
-    passion_activities = PassionActivity.objects.filter(passion=passion)
-
-    user_timezone = request.user.timezone
-    tz = pytz.timezone(user_timezone)
-
-    current_date = timezone.now().astimezone(tz).date()
-    current_weekday = (current_date.weekday() + 1) % 7
-
-    last_sunday = current_date - timedelta(days=current_date.weekday() + 1)
-
-    dates = [(i, last_sunday + timedelta(days=i)) for i in range(7)]
-    week_days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-
-    # Keep track of if checkbox has a recorded activity for that day.
-    activities_this_week = PassionActivity.objects.filter(
-        passion=passion,
-        date__range=(dates[0][1], dates[-1][1])
-    ).values_list('date', flat=True)
-
-    activities_this_week = [activity.isoformat() for activity in activities_this_week]
-
-    activities_exist = [date[1].isoformat() for date in dates if date[1].isoformat() in activities_this_week]
-
-    context = {
-        'passion': passion,
-        'passion_activities': passion_activities,
-        'dates': dates,
-        'current_date': current_date,
-        'current_weekday': current_weekday,
-        'week_days': week_days,
-        'week_days_range': zip(list(range(7)), week_days),
-        'activities_exist': activities_exist
-    }
-
-    return render(request, 'passions/passion_detail.html', context)
-
 @login_required
 def passion_create(request):
     if request.method == 'POST':
@@ -488,8 +440,9 @@ def passion_create(request):
             return redirect('second_brain:home')
     else:
         form = PassionForm()
-
-    return render(request, 'passions/passion_form.html', {'form': form})
+    
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return render(request, 'modal_templates/_passion_form.html', {'form':form})
 
 @login_required
 def passion_update(request, pk):
@@ -499,11 +452,12 @@ def passion_update(request, pk):
         form = PassionForm(request.POST, instance=passion)
         if form.is_valid():
             passion = form.save()
-            return redirect('second_brain:passion_detail', pk=passion.pk)
+            return redirect('second_brain:home')
     else:
         form = PassionForm(instance=passion)
 
-    return render(request, 'passions/passion_form.html', {'form': form})
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return render(request, 'modal_templates/_passion_form.html', {'form':form})
 
 @login_required
 def passion_delete(request, pk):
@@ -511,9 +465,10 @@ def passion_delete(request, pk):
     
     if request.method == 'POST':
         passion.delete()
-        return redirect('second_brain:passion_list')
+        return redirect('second_brain:home')
 
-    return render(request, 'passions/passion_confirm_delete.html', {'passion': passion})
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return render(request, 'modal_templates/_passion_confirm_delete.html', {'passion': passion})
 
 # form submission from webpage
 @login_required
@@ -526,7 +481,7 @@ def passion_activity_create(request, passion_pk):
             passion_activity = form.save(commit=False)
             passion_activity.passion = passion
             passion_activity.save()
-            return redirect('second_brain:passion_detail', pk=passion.pk)
+            return redirect('second_brain:home')
     else:
         form = PassionActivityForm()
 
@@ -535,7 +490,8 @@ def passion_activity_create(request, passion_pk):
         'passion': passion
         }
 
-    return render(request, 'passions/passion_activity_form.html', context)
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return render(request, 'modal_templates/_passion_activity_form.html', context)
 
 # Ajax update for passion activity tracking
 @csrf_exempt
@@ -591,6 +547,7 @@ def delete_passion_activity(request):
 
     return JsonResponse({'success': False, 'message': 'Invalid request method'})
 
+# Periodically update the passion checkboxes to match db info
 def update_passion_progress(request, pk):
     
     passion = get_object_or_404(Passion, pk=pk, user=request.user)
