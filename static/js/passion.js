@@ -79,6 +79,8 @@ function recordPassionActivity(checkboxElem, passionId, dateStr) {
             .catch(error => {
                 console.error('Failed to delete passion activity', error);
             });
+        } else {
+            checkboxElem.checked = true;
         }
     }
 }
