@@ -1,4 +1,4 @@
-function updateTaskStatus(checkboxElem, taskId) {
+function updateTaskStatus(checkboxElem, taskId, isModalCheckbox) {
   const isChecked = checkboxElem.checked;
   let taskMessage;
 
@@ -42,10 +42,10 @@ function updateTaskStatus(checkboxElem, taskId) {
               taskMessage.classList.remove('fadeOut');
           }, 2000);
         }, 2000);
-      
       } else {
         taskMessage.style.display = 'none';
       }
+      syncCheckboxStatus(checkboxElem, taskId, isModalCheckbox);
       } else {
           console.error('Failed to update task status:', data.message);
       }
@@ -53,4 +53,17 @@ function updateTaskStatus(checkboxElem, taskId) {
   .catch(error => {
       console.error('Failed to update task status', error);
   });
+}
+
+function syncCheckboxStatus(checkboxElem, taskId, isModalCheckbox) {
+  // Get checkbox id based on where the checkbox is clicked, either modal or hub
+  let checkboxId = isModalCheckbox ? `taskCheckbox${taskId}` : `modalTaskCheckbox${taskId}`;
+  
+  // get the other checkbox element
+  let otherCheckbox = document.getElementById(checkboxId);
+
+  // update its status to match
+  if (otherCheckbox) {
+      otherCheckbox.checked = checkboxElem.checked;
+  }
 }

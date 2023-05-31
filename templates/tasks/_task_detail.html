@@ -1,0 +1,19 @@
+<div class="modal-body">
+  <p><strong>Description:</strong> {{ task.description }}</p>
+  <p><strong>Priority:</strong> {{ task.get_priority_display }}</p>
+  <p><strong>Category:</strong> {{ task.get_category_display }}</p>
+  <p><strong>Frequency:</strong> {{ task.get_frequency_display }}</p>
+  {% if task.completion_goal %}
+  <p id="completion-count"><strong>Completion count:</strong> {{ task.completion_count }}</p>
+  <p><strong>Completion goal:</strong> {{ task.completion_goal }}</p>
+  {% endif %}
+</div>
+<div class="modal-footer">
+  <div class="form-check">
+    <input class="form-check-input" type="checkbox" id="modalTaskCheckbox{{ task.pk }}"
+    onclick="updateTaskStatus(this, {{ task.pk }}, true);" {% if task.status %}checked{% endif %}>
+    <label class="form-check-label" for="taskStatus">
+      Mark as complete
+    </label>
+  </div>
+</div>

@@ -1,0 +1,11 @@
+<div class="modal-body">
+    <form method="POST" action="{% url 'second_brain:passion_update' passion.pk %}">
+        {% csrf_token %}
+        <div class="form-group">
+            {{ form.as_p }}
+        </div>
+        <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+    </form>
+</div>

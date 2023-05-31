@@ -1,7 +1,7 @@
 <div class="modal-body">
     <h2>Delete {{ passion.name }}?</h2>
     <p>Are you sure you want to delete this passion?</p>
-    <form method="POST">
+    <form method="POST" action="{% url 'second_brain:passion_delete' passion.pk %}">
         {% csrf_token %}
         <div class="modal-footer">
             <button type="submit" class="btn btn-danger">Confirm</button>

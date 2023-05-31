@@ -136,10 +136,12 @@ ul li {
 }
 
 .task-title {
-  display: inline-block;
-  max-width: 80%;
-  overflow: hidden;
-  white-space: nowrap;
+  text-decoration: none;
+  color: #333;
+}
+
+.task-title:hover {
+  color: #007BFF;
 }
 
 /* Passion card styling */
