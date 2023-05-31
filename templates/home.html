@@ -32,12 +32,16 @@
                                     {% if events %}
                                     <ul class="list-group">
                                         {% for event in events %}
-                                        {% with event.start_time|timezone:request.user.timezone as start_time %}
-                                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                                            {{ event.title }}
-                                            <span class="badge badge-pill custom-countdown countdown" data-event-start-time="{{ start_time|date:'U' }}" data-event-end-time="{{ end_time|date:'U' }}">Loading...</span>
-                                        </li>
-                                        {% endwith %}
+                                            {% with event.event.start_time|timezone:request.user.timezone as start_time %}
+                                            {% with event.event.end_time|timezone:request.user.timezone as end_time %}
+                                            {% if event.is_visible %}
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    {{ event.event.title }}
+                                                    <span class="badge badge-pill custom-countdown countdown" data-event-start-time="{{ start_time|date:'U' }}" data-event-end-time="{{ end_time|date:'U' }}">Loading...</span>
+                                                </li>
+                                            {% endif %}
+                                            {% endwith %}
+                                            {% endwith %}
                                         {% endfor %}
                                     </ul>
                                     {% else %}
@@ -480,6 +484,7 @@
             noCalendar: true,
             dateFormat: 'h:i K',
             time_24hr: false,
+            allowInput: true,
             onChange: function (selectedDates, timeStr, instance) {
                 if (startDatepicker.value === endDatepicker.value) {
                     endTimeFlatpickr.set('minTime', selectedDates[0]);
@@ -494,6 +499,7 @@
             noCalendar: true,
             dateFormat: 'h:i K',
             time_24hr: false,
+            allowInput: true,
             onChange: function (selectedDates, timeStr, instance) {
                 if (startDatepicker.value === endDatepicker.value) {
                     startTimeFlatpickr.set('maxTime', selectedDates[0]);
