@@ -19,7 +19,6 @@ urlpatterns = [
     path('monthly-calendar/<int:year>/<int:month>/', views.monthly_calendar, name='monthly_calendar_change_month'),
     path('create-event/', views.create_event, name='create_event'),
     # Task URLS
-    path('tasks/', views.task_list, name='task_list'),
     path('tasks/<int:pk>/', views.task_detail, name='task_detail'),
     path('tasks/create/', views.create_task, name='create_task'),
     path('tasks/<int:pk>/edit/', views.update_task, name='update_task'),

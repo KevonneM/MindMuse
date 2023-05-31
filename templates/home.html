@@ -35,7 +35,7 @@
                                         {% with event.start_time|timezone:request.user.timezone as start_time %}
                                         <li class="list-group-item d-flex justify-content-between align-items-center">
                                             {{ event.title }}
-                                            <span class="badge badge-pill custom-countdown countdown" data-event-start-time="{{ start_time|date:'U' }}">Loading...</span>
+                                            <span class="badge badge-pill custom-countdown countdown" data-event-start-time="{{ start_time|date:'U' }}" data-event-end-time="{{ end_time|date:'U' }}">Loading...</span>
                                         </li>
                                         {% endwith %}
                                         {% endfor %}
@@ -68,7 +68,7 @@
                                     </button>
                                 </div>
                                 <div class="accordion-body">
-                                    <a href="{% url 'second_brain:create_event' %}" class="btn btn-success">Add Event</a>
+                                    <a href="#" class="btn btn-success" onclick="loadEventCreateModal(); return false;">Add Event</a>
                                 </div>
                             </div>
                         </div>
@@ -101,16 +101,24 @@
                     </div>
                 </div>
 
+                <div class="modal fade" id="createEventModal" tabindex="-1" aria-labelledby="createEventModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content" id="createEventModalContent">
+                            <!-- js content -->
+                        </div>
+                    </div>
+                </div>
+
                 <div class="col-md-6 col-sm-12">
 
                     <div class="card mt-3">
                         <div class="card-header">
                             <div class="d-flex justify-content-between align-items-center">
                             <span>Tasks</span>
-                                <a href="{% url 'second_brain:create_task' %}" class="btn btn-primary">Add</a>
+                                <a href="#" class="btn btn-primary" onclick="loadCreateTaskModal('{% url 'second_brain:create_task' %}'); return false;">Add</a>
                             </div>
                         </div>
-                        <ul class="nav nav-pills" id="myTab" role="tablist">
+                        <ul class="nav nav-pills justify-content-center" id="myTab" role="tablist">
                             <li class="nav-item" role="presentation">
                             <button class="nav-link active" id="daily-tab" data-bs-toggle="pill" data-bs-target="#daily" type="button" role="tab" aria-controls="daily" aria-selected="true">Daily</button>
                             </li>
@@ -126,20 +134,27 @@
                             <ul>
                             {% for task in daily_tasks %}
                                 <li>
-                                <input type="checkbox" id="taskCheckbox{{task.pk}}" onclick="updateTaskStatus(this, {{task.pk}})" {% if task.status %}checked{% endif %}>
-                                <label for="taskCheckbox{{task.pk}}">
-                                    <a href="{% url 'second_brain:task_detail' task.pk %}">{{ task.title }}</a>
-                                </label>
-                                <span class="alert alert-success taskCompleteMessage" id="taskCompleteMessage{{task.pk}}" style="display: none;">Done!</span>
-                                <div class="dropdown">
-                                <button class="btn btn-secondary dropdown-toggle" type="button" id="taskDropdown{{task.pk}}" data-bs-toggle="dropdown" aria-expanded="false">
-                                    Options
-                                </button>
-                                <ul class="dropdown-menu" aria-labelledby="taskDropdown{{task.pk}}">
-                                    <li><a class="dropdown-item" href="{% url 'second_brain:update_task' task.pk %}">Edit</a></li>
-                                    <li><a class="dropdown-item" href="{% url 'second_brain:delete_task' task.pk %}">Delete</a></li>
-                                </ul>
-                                </div>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <input type="checkbox" id="taskCheckbox{{task.pk}}" onclick="updateTaskStatus(this, {{task.pk}}, false)" {% if task.status %}checked{% endif %}>
+                                            <label for="taskCheckbox{{task.pk}}"></label>
+                                            <a class="task-title" onclick="loadTaskDetailsModal(event, {{ task.pk }}); event.preventDefault();">{{ task.title }}</a>
+                                            <span class="alert alert-success taskCompleteMessage" id="taskCompleteMessage{{task.pk}}" style="display: none;">Done!</span>
+                                        </div>
+                                        <div class="dropdown">
+                                            <button class="btn btn-primary btn-sm me-2 dropdown-toggle" type="button" id="taskDropdown{{task.pk}}" data-bs-toggle="dropdown" aria-expanded="false">
+                                                Options
+                                            </button>
+                                            <ul class="dropdown-menu" aria-labelledby="taskDropdown{{task.pk}}">
+                                                <li>
+                                                    <a class="dropdown-item" href="#" onclick="loadUpdateTaskModal({{ task.pk }}); return false;">Edit</a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item" href="#" onclick="loadTaskDeleteModal({{task.pk}}); return false;">Delete</a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
                                 </li>
                             {% endfor %}
                             </ul>
@@ -148,20 +163,27 @@
                             <ul>
                             {% for task in weekly_tasks %}
                                 <li>
-                                <input type="checkbox" id="taskCheckbox{{task.pk}}" onclick="updateTaskStatus(this, {{task.pk}})" {% if task.status %}checked{% endif %}>
-                                <label for="taskCheckbox{{task.pk}}">
-                                    <a href="{% url 'second_brain:task_detail' task.pk %}">{{ task.title }}</a>
-                                </label>
-                                <span class="alert alert-success taskCompleteMessage" id="taskCompleteMessage{{task.pk}}" style="display: none;">Done!</span>
-                                <div class="dropdown">
-                                <button class="btn btn-secondary dropdown-toggle" type="button" id="taskDropdown{{task.pk}}" data-bs-toggle="dropdown" aria-expanded="false">
-                                    Options
-                                </button>
-                                <ul class="dropdown-menu" aria-labelledby="taskDropdown{{task.pk}}">
-                                    <li><a class="dropdown-item" href="{% url 'second_brain:update_task' task.pk %}">Edit</a></li>
-                                    <li><a class="dropdown-item" href="{% url 'second_brain:delete_task' task.pk %}">Delete</a></li>
-                                </ul>
-                                </div>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <input type="checkbox" id="taskCheckbox{{task.pk}}" onclick="updateTaskStatus(this, {{task.pk}}, false)" {% if task.status %}checked{% endif %}>
+                                            <label for="taskCheckbox{{task.pk}}"></label>
+                                            <a class="task-title" onclick="loadTaskDetailsModal(event, {{ task.pk }}); event.preventDefault();">{{ task.title }}</a>
+                                            <span class="alert alert-success taskCompleteMessage" id="taskCompleteMessage{{task.pk}}" style="display: none;">Done!</span>
+                                        </div>
+                                        <div class="dropdown">
+                                            <button class="btn btn-primary btn-sm me-2 dropdown-toggle" type="button" id="taskDropdown{{task.pk}}" data-bs-toggle="dropdown" aria-expanded="false">
+                                                Options
+                                            </button>
+                                            <ul class="dropdown-menu" aria-labelledby="taskDropdown{{task.pk}}">
+                                                <li>
+                                                    <a class="dropdown-item" href="#" onclick="loadUpdateTaskModal({{ task.pk }}); return false;">Edit</a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item" href="#" onclick="loadTaskDeleteModal({{task.pk}}); return false;">Delete</a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
                                 </li>
                             {% endfor %}
                             </ul>
@@ -170,29 +192,62 @@
                             <ul>
                             {% for task in monthly_tasks %}
                                 <li>
-                                <input type="checkbox" id="taskCheckbox{{task.pk}}" onclick="updateTaskStatus(this, {{task.pk}})" {% if task.status %}checked{% endif %}>
-                                <label for="taskCheckbox{{task.pk}}">
-                                    <a href="{% url 'second_brain:task_detail' task.pk %}">{{ task.title }}</a>
-                                </label>
-                                <span class="alert alert-success taskCompleteMessage" id="taskCompleteMessage{{task.pk}}" style="display: none;">Done!</span>
-                                <div class="dropdown">
-                                <button class="btn btn-secondary dropdown-toggle" type="button" id="taskDropdown{{task.pk}}" data-bs-toggle="dropdown" aria-expanded="false">
-                                    Options
-                                </button>
-                                <ul class="dropdown-menu" aria-labelledby="taskDropdown{{task.pk}}">
-                                    <li><a class="dropdown-item" href="{% url 'second_brain:update_task' task.pk %}">Edit</a></li>
-                                    <li><a class="dropdown-item" href="{% url 'second_brain:delete_task' task.pk %}">Delete</a></li>
-                                </ul>
-                                </div>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <input type="checkbox" id="taskCheckbox{{task.pk}}" onclick="updateTaskStatus(this, {{task.pk}}, false)" {% if task.status %}checked{% endif %}>
+                                            <label for="taskCheckbox{{task.pk}}"></label>
+                                            <a class="task-title" onclick="loadTaskDetailsModal(event, {{ task.pk }}); event.preventDefault();">{{ task.title }}</a>
+                                            <span class="alert alert-success taskCompleteMessage" id="taskCompleteMessage{{task.pk}}" style="display: none;">Done!</span>
+                                        </div>
+                                        <div class="dropdown">
+                                            <button class="btn btn-primary btn-sm me-2 dropdown-toggle" type="button" id="taskDropdown{{task.pk}}" data-bs-toggle="dropdown" aria-expanded="false">
+                                                Options
+                                            </button>
+                                            <ul class="dropdown-menu" aria-labelledby="taskDropdown{{task.pk}}">
+                                                <li>
+                                                    <a class="dropdown-item" href="#" onclick="loadUpdateTaskModal({{ task.pk }}); return false;">Edit</a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item" href="#" onclick="loadTaskDeleteModal({{task.pk}}); return false;">Delete</a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
                                 </li>
                             {% endfor %}
                             </ul>
                             </div>
                         </div>
-                    </div>
+                        <!-- Task Modals -->
+                        <div class="modal fade" id="createTaskModal" tabindex="-1" aria-labelledby="createTaskModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content" id="createTaskModalContent">
+                                    <!-- Content loaded by js -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal fade" id="taskDetailModal" tabindex="-1" aria-labelledby="taskDetailModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content" id="taskDetailModalContent">
+                                    <!-- Content loaded by js -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal fade" id="updateTaskModal" tabindex="-1" aria-labelledby="updateTaskModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content" id="updateTaskModalContent">
+                                    <!-- Content loaded by js -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal fade" id="taskDeleteModal" tabindex="-1" aria-labelledby="taskDeleteModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content" id="taskDeleteModalContent">
+                                    <!-- Content loaded by js -->
+                                </div>
+                            </div>
+                        </div>
 
-                    <div class="mt-3">
-                        <a href="{% url 'second_brain:task_list' %}" class="btn btn-primary">Tasks</a>
                     </div>
                 </div>
             </div>
@@ -221,9 +276,9 @@
                                                 Options
                                             </button>
                                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                                <li><button type="button" class="btn btn-primary" onclick="loadPassionActivityCreateModal({{passion_detail.passion.pk}})">Add Session</button></li>
-                                                <li><button type="button" class="btn btn-primary" onclick="loadPassionUpdateModal({{passion_detail.passion.pk}})">Edit Passion</button></li>
-                                                <li><button type="button" class="btn btn-primary" onclick="loadPassionDeleteModal({{passion_detail.passion.pk}})">Delete Passion</button></li>
+                                                <li><a class="dropdown-item" href="#" onclick="loadPassionActivityCreateModal({{passion_detail.passion.pk}}); return false;">Add Session</a></li>
+                                                <li><a class="dropdown-item" href="#" onclick="loadPassionUpdateModal({{passion_detail.passion.pk}}); return false;">Edit Passion</a></li>
+                                                <li><a class="dropdown-item" href="#" onclick="loadPassionDeleteModal({{passion_detail.passion.pk}}); return false;">Delete Passion</a></li>
                                             </ul>
                                         </div>
                                     </div>
@@ -362,7 +417,7 @@
 {% endif %}
 
 <script>
-
+    // Scheduling modal js
     async function loadDailyModal() {
         let response = await fetch("{% url 'second_brain:daily_view' %}", {headers: {'X-Requested-With': 'XMLHttpRequest'}});
         let data = await response.text();
@@ -387,6 +442,135 @@
         myModal.show();
     }
 
+    async function loadEventCreateModal() {
+        let response = await fetch("/create-event/", {headers: {'X-Requested-With': 'XMLHttpRequest'}});
+        let data = await response.text();
+        document.getElementById('createEventModalContent').innerHTML = data;
+        var myModal = new bootstrap.Modal(document.getElementById('createEventModal'));
+        myModal.show();
+
+        const startDatepicker = document.getElementById('start_date');
+        const endDatepicker = document.getElementById('end_date');
+        const startTimePicker = document.getElementById('start_time');
+        const endTimePicker = document.getElementById('end_time');
+
+        const startPicker = new flatpickr(startDatepicker, {
+            dateFormat: 'Y-m-d',
+            minDate: 'today',
+            onChange: function (selectedDates, dateStr, instance) {
+                endPicker.set('minDate', dateStr);
+                if (selectedDates[0].toDateString() === new Date().toDateString()) {
+                    startTimeFlatpickr.set('minTime', new Date());
+                } else {
+                    startTimeFlatpickr.set('minTime', null);
+                }
+            },
+        });
+
+        const endPicker = new flatpickr(endDatepicker, {
+            dateFormat: 'Y-m-d',
+            minDate: 'today',
+            onChange: function (selectedDates, dateStr, instance) {
+                startPicker.set('maxDate', dateStr);
+            },
+        });
+
+        const startTimeFlatpickr = new flatpickr(startTimePicker, {
+            enableTime: true,
+            noCalendar: true,
+            dateFormat: 'h:i K',
+            time_24hr: false,
+            onChange: function (selectedDates, timeStr, instance) {
+                if (startDatepicker.value === endDatepicker.value) {
+                    endTimeFlatpickr.set('minTime', selectedDates[0]);
+                } else {
+                    endTimeFlatpickr.set('minTime', null);
+                }
+            },
+        });
+
+        const endTimeFlatpickr = new flatpickr(endTimePicker, {
+            enableTime: true,
+            noCalendar: true,
+            dateFormat: 'h:i K',
+            time_24hr: false,
+            onChange: function (selectedDates, timeStr, instance) {
+                if (startDatepicker.value === endDatepicker.value) {
+                    startTimeFlatpickr.set('maxTime', selectedDates[0]);
+                } else {
+                    startTimeFlatpickr.set('maxTime', null);
+                }
+            },
+        });
+
+        if (startPicker.selectedDates[0] && startPicker.selectedDates[0].toDateString() === new Date().toDateString()) {
+            startTimeFlatpickr.set('minTime', new Date());
+        }
+
+        // handles form submission
+        const form = document.querySelector("form");
+        form.addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            const formData = new FormData(form);
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", "{% url 'second_brain:create_event' %}", true);
+            xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
+
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    let response = JSON.parse(xhr.responseText);
+                    if (response.status === "success") {
+                        window.location.href = "{% url 'second_brain:home' %}";
+                    } else if (response.status === "error") {
+                        // Set the error message
+                        document.getElementById("errorModalBody").innerText = response.message;
+                        // Show the Bootstrap modal
+                        let errorModal = new bootstrap.Modal(document.getElementById("errorModal"));
+                        errorModal.show();
+                    }
+                }
+            };
+
+            xhr.send(formData);
+        });
+    }
+
+    // Task modal js
+    async function loadCreateTaskModal() {
+        let response = await fetch("{% url 'second_brain:create_task' %}", {headers: {'X-Requested-With': 'XMLHttpRequest'}});
+        let data = await response.text();
+        document.getElementById('createTaskModalContent').innerHTML = data;
+        var myModal = new bootstrap.Modal(document.getElementById('createTaskModal'));
+        myModal.show();
+    }
+
+    async function loadTaskDetailsModal(event, taskId) {
+        event.stopPropagation();  // Prevent event from bubbling up to parent elements
+        let response = await fetch(`/tasks/${taskId}/`, {headers: {'X-Requested-With': 'XMLHttpRequest'}});
+        let data = await response.text();
+        document.getElementById('taskDetailModalContent').innerHTML = data;
+        var myModal = new bootstrap.Modal(document.getElementById('taskDetailModal'));
+        myModal.show();
+    }
+
+    async function loadUpdateTaskModal(taskId) {
+        let response = await fetch(`/tasks/${taskId}/edit/`, {headers: {'X-Requested-With': 'XMLHttpRequest'}});
+        let data = await response.text();
+        document.getElementById('updateTaskModalContent').innerHTML = data;
+        var myModal = new bootstrap.Modal(document.getElementById('updateTaskModal'));
+        myModal.show();
+    }
+
+    async function loadTaskDeleteModal(taskId) {
+        let response = await fetch(`/tasks/${taskId}/delete/`, {headers: {'X-Requested-With': 'XMLHttpRequest'}});
+        let data = await response.text();
+        document.getElementById('taskDeleteModalContent').innerHTML = data;
+        var myModal = new bootstrap.Modal(document.getElementById('taskDeleteModal'));
+        myModal.show();
+    }
+
+    // Passion modal js
     async function loadPassionCreateModal() {
         let response = await fetch("/passions/create/", {headers: {'X-Requested-With': 'XMLHttpRequest'}});
         let data = await response.text();

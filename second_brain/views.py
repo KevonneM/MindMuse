@@ -3,7 +3,7 @@ from django.utils import timezone
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, HttpResponseBadRequest
 from datetime import datetime, timedelta, date
 from calendar import month_name
 from django.db.models.functions import TruncDay
@@ -169,9 +169,9 @@ def daily_view(request, year=None, month=None, day=None):
         'events': events,
     }
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        return render(request, 'modal_templates/_daily_view.html', context)
+        return render(request, 'events/_daily_view.html', context)
     else:
-        return render(request, 'events/daily_view.html', context)
+        return redirect('second_brain:home')
 
 @login_required
 def weekly_calendar(request, start_date=None):
@@ -213,9 +213,9 @@ def weekly_calendar(request, start_date=None):
         'events': events,
     }
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        return render(request, 'modal_templates/_weekly_calendar.html', context)
+        return render(request, 'events/_weekly_calendar.html', context)
     else:
-        return render(request, 'events/weekly_calendar.html', context)
+        return redirect('second_brain:home')
 
 @login_required
 def monthly_calendar(request, year=None, month=None):
@@ -275,9 +275,9 @@ def monthly_calendar(request, year=None, month=None):
         'next_month': next_month.month,
     }
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        return render(request, 'modal_templates/_monthly_calendar.html', context)
+        return render(request, 'events/_monthly_calendar.html', context)
     else:
-        return render(request, 'events/monthly_calendar.html', context)
+        return redirect('second_brain:home')
 
 @login_required
 def create_event(request):
@@ -314,8 +314,9 @@ def create_event(request):
             # Handle the case when any of the required values are missing
             return JsonResponse({"status": "error", "message": "Missing required values."})
 
-    return render(request, "events/create_event.html")
-
+    else:
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return render(request, "events/_create_event.html")
 
 def is_event_overlapping(user, start_time, end_time):
     overlapping_events = Event.objects.filter(
@@ -338,49 +339,30 @@ def string_to_color(input_string):
     return '#' + hexadecimal_of_hash[:6]
 
 # Code for Tasks
-
-def task_list(request):
-    daily_tasks = Task.objects.filter(user=request.user, frequency='D')
-    weekly_tasks = Task.objects.filter(user=request.user, frequency='W')
-    monthly_tasks = Task.objects.filter(user=request.user, frequency='M')
-
-    context = {
-        'daily_tasks': daily_tasks,
-        'weekly_tasks': weekly_tasks,
-        'monthly_tasks': monthly_tasks,
-    }
-
-    return render(request, 'tasks/task_list.html', context)
-
 @login_required
 def task_detail(request, pk):
     task = get_object_or_404(Task, pk=pk, user=request.user)
-
     if request.method == 'POST':
         if 'HTTP_X_REQUESTED_WITH' in request.META and request.META['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest':
-            print("AJAX request detected")
             try:
                 task.status = request.POST.get('status') == 'true' # Get status from form
                 task.save()
 
                 # Get the most recent TaskHistory instance for this task
                 task_history = TaskHistory.objects.filter(task=task).latest('created_at')
-        
                 task_history.status = task.status
                 task_history.save()
 
-                return JsonResponse({'success': True})
-
+                return JsonResponse({"success": True})
             except (ValueError, TypeError) as e:
-                return JsonResponse({'success': False, 'message': str(e)}, status=400)
+                return JsonResponse({"success": False, "errors": str(e)}, status=400)
         else:
-            print("not ajax")
-
-    context = {
-        'task': task,
-    }
-
-    return render(request, 'tasks/task_detail.html', context)
+            return redirect('second_brain:home')
+    else:
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return render(request, 'tasks/_task_detail.html', {'task': task})
+        else:
+            return redirect('second_brain:home')
 
 @login_required
 def create_task(request):
@@ -391,11 +373,17 @@ def create_task(request):
             task.user = request.user
             task.save()
             task.create_history()
-            return redirect('second_brain:home')
+            
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({"success": True})
+            else:
+                return redirect('second_brain:home')
     else:
         form = TaskForm()
-
-    return render(request, 'tasks/task_form.html', {'form': form})
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return render(request, 'tasks/_create_task_form.html', {'form': form})
+    else:
+        return redirect('second_brain:home')
 
 @login_required
 def update_task(request, pk):
@@ -415,18 +403,31 @@ def update_task(request, pk):
             task_history.status = task.status
             task_history.save()
 
-            return redirect('second_brain:home')
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({"success": True})
+            else:
+                return redirect('second_brain:home')
     else:
         form = TaskForm(instance=task)
-
-    return render(request, 'tasks/task_form.html', {'form': form})
+        
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return render(request, 'tasks/_update_task_form.html', {'form': form, 'task': task})
+    else:
+        return redirect('second_brain:home')
 
 @login_required
 def delete_task(request, pk):
     task = get_object_or_404(Task, pk=pk, user=request.user)
-    task.delete()
 
-    return redirect('second_brain:task_list')
+    if request.method == 'POST':
+        task.delete()
+        return redirect('second_brain:home')
+    
+    elif request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return render(request, 'tasks/_task_confirm_delete.html', {'task': task})
+
+    else:
+        return HttpResponseBadRequest("Invalid request")
 
 # Code for Passions/hobby progression tracking
 @login_required
@@ -442,7 +443,7 @@ def passion_create(request):
         form = PassionForm()
     
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        return render(request, 'modal_templates/_passion_form.html', {'form':form})
+        return render(request, 'passions/_passion_form.html', {'form':form})
 
 @login_required
 def passion_update(request, pk):
@@ -457,7 +458,7 @@ def passion_update(request, pk):
         form = PassionForm(instance=passion)
 
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        return render(request, 'modal_templates/_passion_form.html', {'form':form})
+        return render(request, 'passions/_passion_update_form.html', {'form':form, 'passion': passion})
 
 @login_required
 def passion_delete(request, pk):
@@ -468,7 +469,7 @@ def passion_delete(request, pk):
         return redirect('second_brain:home')
 
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        return render(request, 'modal_templates/_passion_confirm_delete.html', {'passion': passion})
+        return render(request, 'passions/_passion_confirm_delete.html', {'passion': passion})
 
 # form submission from webpage
 @login_required
@@ -491,7 +492,7 @@ def passion_activity_create(request, passion_pk):
         }
 
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        return render(request, 'modal_templates/_passion_activity_form.html', context)
+        return render(request, 'passions/_passion_activity_form.html', context)
 
 # Ajax update for passion activity tracking
 @csrf_exempt
@@ -547,14 +548,12 @@ def delete_passion_activity(request):
 
     return JsonResponse({'success': False, 'message': 'Invalid request method'})
 
-# Periodically update the passion checkboxes to match db info
 def update_passion_progress(request, pk):
-    
     passion = get_object_or_404(Passion, pk=pk, user=request.user)
     tz = pytz.timezone(request.user.timezone)
     current_date = timezone.now().astimezone(tz).date()
 
-    last_sunday = current_date - timedelta(days=current_date.weekday() + 1)
+    last_sunday = current_date - timedelta(days=(current_date.weekday() + 1) % 7)
     dates = [(i, last_sunday + timedelta(days=i)) for i in range(7)]
 
     activities_this_week = PassionActivity.objects.filter(

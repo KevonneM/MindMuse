@@ -1,0 +1,52 @@
+<div class="modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title">Create Event</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+        <form id="createEventForm" method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="title" class="form-label">Title:</label>
+                <input type="text" name="title" id="title" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="start_date" class="form-label">Start Date:</label>
+                <input type="text" name="start_date" id="start_date" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="end_date" class="form-label">End Date:</label>
+                <input type="text" name="end_date" id="end_date" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="start_time" class="form-label">Start Time:</label>
+                <input type="time" name="start_time" id="start_time" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="end_time" class="form-label">End Time:</label>
+                <input type="time" name="end_time" id="end_time" class="form-control" required>
+            </div>
+        </form>
+        <div class="modal-footer">
+            <button type="submit" class="btn btn-primary" form="createEventForm">Create Event</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="errorModalLabel">Overlapping Events</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="errorModalBody">
+            <h1>This Event overlaps with an existing event.</h1>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>

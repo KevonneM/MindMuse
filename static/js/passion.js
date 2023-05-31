@@ -97,6 +97,7 @@ function updatePassionProgress(passionId) {
         if (xhr.status == 200) {
             // Parse the JSON response
             let response = JSON.parse(xhr.responseText);
+            console.log(response);
             let activitiesExist = response.activities_exist;
 
             // Update the checkboxes

@@ -180,6 +180,8 @@ function updateCountdowns() {
 
   countdowns.forEach(countdown => {
     const eventStartTime = new Date(parseInt(countdown.dataset.eventStartTime) * 1000);
+    const eventEndTime = new Date(parseInt(countdown.dataset.eventEndTime) * 1000);
+    const oneHourInMilliseconds = 60 * 60 * 1000;
     const remainingTime = eventStartTime - now;
 
     if (remainingTime > 0) {
@@ -204,6 +206,15 @@ function updateCountdowns() {
       }
 
       countdown.textContent = countdownText.trim();
+    } else if (endTimePassed > 0) {
+      // Check if the event ended over an hour ago.
+      if (endTimePassed > oneHourInMilliseconds) {
+        // If yes, remove the event from the DOM.
+        countdown.parentElement.remove();
+      } else {
+        // If the event ended less than an hour ago, show the 'Event ended' message.
+        countdown.textContent = 'Event ended';
+      }
     } else {
       countdown.textContent = 'Event started';
     }

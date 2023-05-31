@@ -1,5 +1,5 @@
 <div class="modal-body">
-    <form method="POST">
+    <form method="POST" action="{% url 'second_brain:passion_create' %}">
         {% csrf_token %}
         <div class="form-group">
             {{ form.as_p }}
