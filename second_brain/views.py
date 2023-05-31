@@ -31,8 +31,6 @@ def home(request):
         week_start = today - timedelta(days=((today.weekday() + 1) % 7))
         week_end = week_start + timedelta(days=7)
 
-        events = Event.objects.filter(user=user, start_time__gte=week_start, start_time__lt=week_end).order_by('start_time')
-
         # Task info for hub display
         daily_tasks = Task.objects.filter(user=request.user, frequency='D')
         weekly_tasks = Task.objects.filter(user=request.user, frequency='W')
@@ -66,8 +64,27 @@ def home(request):
                 'activities_exist': activities_exist
             })
 
+        # Event information for hub
+        events = Event.objects.filter(user=user, start_time__gte=week_start, start_time__lt=week_end).order_by('start_time')
+        visible_events = []
+        for event in events:
+            event_start_time = event.start_time.replace(tzinfo=pytz.UTC)
+            event_end_time = event.end_time.replace(tzinfo=pytz.UTC)
+
+            # calculate the visibility of the event based on its start and end times
+            day_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+            is_visible = now >= day_start and now < event_end_time + timedelta(minutes=5)
+            
+            # add the event to the list with its visibility status
+            visible_events.append({
+                'event': event,
+                'is_visible': is_visible,
+            })
+
+        print(visible_events)  # print out the list of visible events
+
         context = {
-            'events': events,
+            'events': visible_events,
             'daily_tasks': daily_tasks,
             'weekly_tasks': weekly_tasks,
             'monthly_tasks': monthly_tasks,

@@ -181,44 +181,53 @@ function updateCountdowns() {
   countdowns.forEach(countdown => {
     const eventStartTime = new Date(parseInt(countdown.dataset.eventStartTime) * 1000);
     const eventEndTime = new Date(parseInt(countdown.dataset.eventEndTime) * 1000);
-    const oneHourInMilliseconds = 60 * 60 * 1000;
+    const fiveMinutesInMilliseconds = 5 * 60 * 1000;
     const remainingTime = eventStartTime - now;
+    const endTimePassed = now - eventEndTime;
 
+    // If the event hasn't started yet, countdown to start time
     if (remainingTime > 0) {
-      const days = Math.floor(remainingTime / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((remainingTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
-
-      let countdownText = '';
-
-      if (days > 0) {
-        countdownText += `${days}d `;
-      }
-      if (hours > 0) {
-        countdownText += `${hours}h `;
-      }
-      if (minutes > 0) {
-        countdownText += `${minutes}m `;
-      }
-      if (seconds > 0) {
-        countdownText += `${seconds}s`;
-      }
-
-      countdown.textContent = countdownText.trim();
-    } else if (endTimePassed > 0) {
-      // Check if the event ended over an hour ago.
-      if (endTimePassed > oneHourInMilliseconds) {
-        // If yes, remove the event from the DOM.
-        countdown.parentElement.remove();
-      } else {
-        // If the event ended less than an hour ago, show the 'Event ended' message.
-        countdown.textContent = 'Event ended';
-      }
-    } else {
-      countdown.textContent = 'Event started';
+      countdown.textContent = 'Starts in: ' + formatCountdown(remainingTime);
+    }
+    // If the event has started but not ended, countdown to end time
+    else if (now < eventEndTime) {
+      const remainingEndTime = eventEndTime - now;
+      countdown.textContent = 'Ends in: ' + formatCountdown(remainingEndTime);
+    }
+    // If the event has ended less than five minutes ago, countdown until removal
+    else if (endTimePassed < fiveMinutesInMilliseconds) {
+      countdown.textContent = 'Removing in: ' + formatCountdown(fiveMinutesInMilliseconds - endTimePassed);
+    }
+    // If the event has ended more than five minutes ago, remove it
+    else {
+      countdown.parentElement.remove();
     }
   });
+}
+
+// This function formats the countdown time (given in milliseconds)
+function formatCountdown(time) {
+  const days = Math.floor(time / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((time % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const minutes = Math.floor((time % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((time % (1000 * 60)) / 1000);
+
+  let countdownText = '';
+
+  if (days > 0) {
+    countdownText += `${days}d `;
+  }
+  if (hours > 0) {
+    countdownText += `${hours}h `;
+  }
+  if (minutes > 0) {
+    countdownText += `${minutes}m `;
+  }
+  if (seconds > 0) {
+    countdownText += `${seconds}s`;
+  }
+
+  return countdownText.trim();
 }
 
 setInterval(updateCountdowns, 1000);
