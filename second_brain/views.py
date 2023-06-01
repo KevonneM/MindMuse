@@ -81,8 +81,6 @@ def home(request):
                 'is_visible': is_visible,
             })
 
-        print(visible_events)  # print out the list of visible events
-
         context = {
             'events': visible_events,
             'daily_tasks': daily_tasks,
