@@ -113,3 +113,9 @@ class PassionActivity(models.Model):
 
     def __str__(self):
         return f'{self.passion.name} on {self.date}'
+
+class Quote(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    quote = models.TextField()
+    author = models.CharField(max_length=200)
+    date_added = models.DateTimeField(auto_now_add=True)

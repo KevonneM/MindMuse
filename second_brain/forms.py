@@ -1,5 +1,5 @@
 from django import forms
-from .models import Task, Passion, PassionActivity
+from .models import Task, Passion, PassionActivity, Quote
 
 class TaskForm(forms.ModelForm):
     title = forms.CharField(max_length=20, widget=forms.TextInput(attrs={'placeholder': 'Enter task title'}))
@@ -35,3 +35,8 @@ class PassionActivityForm(forms.ModelForm):
     class Meta:
         model = PassionActivity
         fields = ['date', 'duration']
+
+class QuoteForm(forms.ModelForm):
+    class Meta:
+        model = Quote
+        fields = ['quote', 'author']

@@ -8,8 +8,8 @@ from datetime import datetime, timedelta, date
 from calendar import month_name
 from django.db.models.functions import TruncDay
 from django.db.models import Count
-from .models import Event, Task, TaskHistory, Passion, PassionActivity
-from .forms import TaskForm, PassionForm, PassionActivityForm
+from .models import Event, Task, TaskHistory, Passion, PassionActivity, Quote
+from .forms import TaskForm, PassionForm, PassionActivityForm, QuoteForm
 import json
 import requests
 import pytz
@@ -20,6 +20,7 @@ import hashlib # for string to color function
 def home(request):
     user = request.user
     events = []
+    user_quotes = []
 
     if user.is_authenticated:
 
@@ -80,6 +81,8 @@ def home(request):
                 'event': event,
                 'is_visible': is_visible,
             })
+        # Quotes for hub
+        user_quotes = Quote.objects.filter(user=request.user)
 
         context = {
             'events': visible_events,
@@ -89,7 +92,8 @@ def home(request):
             'url_name': 'second_brain:home',
             'passion_details': passion_details,
             'current_weekday': current_weekday,
-            'passion_count': passion_count
+            'passion_count': passion_count,
+            'user_quotes': user_quotes,
         }
     else:
         context = {
@@ -580,3 +584,24 @@ def update_passion_progress(request, pk):
     activities_exist = [str(date[1]) in activities_this_week for date in dates]
 
     return JsonResponse({'activities_exist': activities_exist})
+
+# Code for quotes
+@login_required
+def quote_create(request):
+    if request.method == 'POST':
+        form = QuoteForm(request.POST)
+        if form.is_valid():
+            new_quote = form.save(commit=False)
+            new_quote.user = request.user
+            new_quote.save()
+
+            return redirect('second_brain:home')
+    else:
+        form = QuoteForm()
+    
+    context = {'form': form}
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return render(request, 'quotes/_quote_form.html', context)
+
+    return redirect('second_brain:home')

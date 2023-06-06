@@ -5,7 +5,7 @@
 
 {% if user.is_authenticated %}
 
-<div class="container-fluid" style="height: calc(100vh - 75px);">
+<div class="container-fluid" style="height: calc(100vh - 75px); width: 100%;">
 
     <div class="row">
         <div class="col-12 d-flex align-items-center justify-content-center">
@@ -354,55 +354,125 @@
             </div>
 
         </div>
+        
+        <div class="col-12 col-lg-6 col-md-8 col-sm-8 order-1 order-lg-2 justify-content-center mt-3">
+            <div class="row flex-column flex-lg-row">
+                <div class="card" style="width: 100%;">
+                    <!-- Time div -->
+                    <div class="card-header text-center">
+                        <p id="day_of_week"></p>
+                        <p id="date"></p>
+                        <p id="current_time"></p>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title"><span id="city_name"></span></h5>
+                        <div id="weather-info" class="card-text d-flex flex-column justify-content-center align-items-center">
+                            <div class="d-flex justify-content-between w-100" style="padding-right: 10%;">
+                                <span id="temperature" class="fs-1"></span>
+                                <span id="condition"></span>
+                            </div>
+                            <div class="d-flex justify-content-between w-100" style="padding-right: 10%;">
+                                <span id="feels_like"></span>
+                                <img id="weather-icon" src="" alt="Weather icon" class="weather-icon">
+                            </div>
+                            <div class="d-flex justify-content-between w-100">
+                                <span id="wind_speed"><i class="fas fa-wind fa-lg"></i>  <span class="wind-speed-value"></span> mph</span>
+                            </div>
+                            <div class="d-flex justify-content-between w-100">
+                                <span id="humidity"><i class="fas fa-tint fa-lg"></i>  <span class="humidity-value"></span>%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="d-flex justify-content-end">
+                            <button class="btn btn-secondary me-2" id="useIP">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </button>
+                            <button id="refreshButton" class="btn btn-primary me-2">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                            <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#searchCollapse" aria-expanded="false" aria-controls="searchCollapse">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                        <div class="collapse mt-3" id="searchCollapse">
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="cityInput" placeholder="Enter city name">
+                                <button class="btn btn-primary" id="submitCity">Submit City</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-        <div class="col-12 col-lg-6 col-sm-8 order-1 order-lg-2 d-flex align-items-start justify-content-center mt-3">
-            <div class="card" style="width: 100%;">
-                <!-- Time div -->
-                <div class="card-header text-center">
-                    <p id="day_of_week"></p>
-                    <p id="date"></p>
-                    <p id="current_time"></p>
-                </div>
-                <div class="card-body">
-                    <h5 class="card-title"><span id="city_name"></span></h5>
-                    <div id="weather-info" class="card-text d-flex flex-column justify-content-center align-items-center">
-                        <div class="d-flex justify-content-between w-100" style="padding-right: 10%;">
-                            <span id="temperature" class="fs-1"></span>
-                            <span id="condition"></span>
+
+                <div class="col-12 col-lg-6 mt-3" style="width: 100%;">
+                    <ul class="nav nav-tabs" id="quoteTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="quoteOfDay-tab" data-bs-toggle="tab" data-bs-target="#quoteOfDay" type="button" role="tab" aria-controls="quoteOfDay" aria-selected="true">Quote of the Day</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="savedQuotes-tab" data-bs-toggle="tab" data-bs-target="#savedQuotes" type="button" role="tab" aria-controls="savedQuotes" aria-selected="false">Saved Quotes</button>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="quoteTabsContent">
+                        <div class="tab-pane fade show active" id="quoteOfDay" role="tabpanel" aria-labelledby="quoteOfDay-tab">
+                            <div class="carousel slide" id="quoteOfDayCarousel" data-bs-ride="carousel">
+                                <div class="carousel-inner">
+                                    <div class="carousel-item active">
+                                        <div class="quote-card">
+                                            <p class="quote">"{{quote_of_the_day.q}}" - {{quote_of_the_day.a}}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="carousel-control-prev" type="button" data-bs-target="#quoteOfDayCarousel" data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Previous</span>
+                                </button>
+                                <button class="carousel-control-next" type="button" data-bs-target="#quoteOfDayCarousel" data-bs-slide="next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Next</span>
+                                </button>
+                            </div>
+                            <button class="btn btn-primary" onclick="getNewQuote()">Get New Quote</button>
                         </div>
-                        <div class="d-flex justify-content-between w-100" style="padding-right: 10%;">
-                            <span id="feels_like"></span>
-                            <img id="weather-icon" src="" alt="Weather icon" class="weather-icon">
-                        </div>
-                        <div class="d-flex justify-content-between w-100">
-                            <span id="wind_speed"><i class="fas fa-wind fa-lg"></i>  <span class="wind-speed-value"></span> mph</span>
-                        </div>
-                        <div class="d-flex justify-content-between w-100">
-                            <span id="humidity"><i class="fas fa-tint fa-lg"></i>  <span class="humidity-value"></span>%</span>
+                        <div class="tab-pane fade" id="savedQuotes" role="tabpanel" aria-labelledby="savedQuotes-tab">
+                            <div class="carousel slide" id="savedQuotesCarousel" data-bs-ride="carousel">
+                                <div class="carousel-inner">
+                                    {% for quote in user_quotes %}
+                                    <div class="carousel-item{% if forloop.first %} active{% endif %}">
+                                        <div class="quote-card">
+                                            <p class="quote">"{{quote.quote}}" - {{quote.author}}</p>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                <button class="carousel-control-prev" type="button" data-bs-target="#savedQuotesCarousel" data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Previous</span>
+                                </button>
+                                <button class="carousel-control-next" type="button" data-bs-target="#savedQuotesCarousel" data-bs-slide="next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Next</span>
+                                </button>
+                            </div>
+                            <div class="d-flex justify-content-center">
+                            <button type="button" class="btn btn-primary" onclick="loadQuoteModal()">
+                                Add Quote
+                            </button>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="card-footer">
-                    <div class="d-flex justify-content-end">
-                        <button class="btn btn-secondary me-2" id="useIP">
-                            <i class="fas fa-map-marker-alt"></i>
-                        </button>
-                        <button id="refreshButton" class="btn btn-primary me-2">
-                            <i class="fas fa-sync-alt"></i>
-                        </button>
-                        <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#searchCollapse" aria-expanded="false" aria-controls="searchCollapse">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </div>
-                    <div class="collapse mt-3" id="searchCollapse">
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="cityInput" placeholder="Enter city name">
-                            <button class="btn btn-primary" id="submitCity">Submit City</button>
+                    <div class="modal fade" id="quoteModal" tabindex="-1" aria-labelledby="quoteModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content" id="quoteModalContent">
+                                <!-- content loaded by JS -->
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
     </div>
 </div>
 
@@ -606,6 +676,15 @@
         let data = await response.text();
         document.getElementById('passionDeleteModalContent').innerHTML = data;
         var myModal = new bootstrap.Modal(document.getElementById('passionDeleteModal'));
+        myModal.show();
+    }
+
+    // Quote modal js
+    async function loadQuoteModal() {
+        let response = await fetch("{% url 'second_brain:quote_create' %}", {headers: {'X-Requested-With': 'XMLHttpRequest'}});
+        let data = await response.text();
+        document.getElementById('quoteModalContent').innerHTML = data;
+        var myModal = new bootstrap.Modal(document.getElementById('quoteModal'));
         myModal.show();
     }
 
