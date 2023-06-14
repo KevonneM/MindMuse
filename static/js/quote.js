@@ -1,5 +1,4 @@
-var quoteCarousel;
-var starredQuoteId = -1;
+var starredQuoteIndex = -1;
 var quoteIndex = 0;
 var quotes = [];
 var timer = null;
@@ -17,17 +16,18 @@ async function getQuotes() {
     let data = await response.json();
 
     quotes = data.quotes;
-    starredQuoteId = quotes.findIndex(quote => quote.starred);
+    starredQuoteIndex = quotes.findIndex(quote => quote.starred);
 
     console.log(data.status, quotes)
 
     if (data.status === "quote found") {
-        displayQuote(starredQuoteId);
-        pauseCarousel();
+        displayQuote(starredQuoteIndex, true);
     } else if (data.status === "no starred quote") {
         quoteIndex = 0;
-        displayQuote(quoteIndex);
+        displayQuote(quoteIndex, false);
         startCarousel();
+    } else {
+        console.error("Error while fetching quotes: ", data.status);
     }
 }
 
@@ -74,14 +74,14 @@ function displayQuote(index, shouldPause) {
             handleStarClick(e.target);
         });
 
-        if (shouldPause) {
+        if (shouldPause || (starredQuoteIndex !== -1 && index === starredQuoteIndex)) {
             pauseCarousel();
+        } else if (starredQuoteIndex !== -1 && quoteIndex !== starredQuoteIndex) {
+            startInactivityTimer();
         } else {
             startCarousel();
         }
-
-        startInactivityTimer();
-
+        
     // Adjust delay based on existance.
     }, oldCarouselItems.length > 0 ? 700 : 0); 
 }
@@ -96,7 +96,6 @@ function startCarousel() {
         quoteIndex = (quoteIndex + 1) % quotes.length;
         displayQuote(quoteIndex, false);
     }, 10000);
-    startInactivityTimer();
 }
 
 function pauseCarousel() {
@@ -119,9 +118,10 @@ function handleStarClick(starIcon) {
         if (data.status === 'ok') {
             getQuotes();
         } else {
-            // Handle failure
+            console.error("Error while handling star click:", data.status);
         }
-    });
+    })
+    .catch(error => console.error('Error:', error));
 }
 
 function startInactivityTimer() {
@@ -131,9 +131,10 @@ function startInactivityTimer() {
     }
 
     // If there is a starred quote, set a new timer to navigate to it after 20 seconds
-    if (starredQuoteId !== -1) {
+    if (starredQuoteIndex !== -1 && quoteIndex !== starredQuoteIndex) {
         inactivityTimer = setTimeout(function () {
-            displayQuote(starredQuoteId, true);
+            displayQuote(starredQuoteIndex, true);
+            pauseCarousel();
         }, 20000);
     }
 }
@@ -153,10 +154,10 @@ window.onload = function () {
 
 function nextQuote() {
     quoteIndex = (quoteIndex + 1) % quotes.length;
-    displayQuote(quoteIndex, starredQuoteId !== -1 && quoteIndex !== starredQuoteId);
+    displayQuote(quoteIndex, false);
 }
 
 function prevQuote() {
     quoteIndex = (quoteIndex - 1 + quotes.length) % quotes.length;
-    displayQuote(quoteIndex, starredQuoteId !== -1 && quoteIndex !== starredQuoteId);
+    displayQuote(quoteIndex, false);
 }
