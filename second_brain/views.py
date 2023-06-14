@@ -605,3 +605,40 @@ def quote_create(request):
         return render(request, 'quotes/_quote_form.html', context)
 
     return redirect('second_brain:home')
+
+@login_required
+def quote_star(request, pk):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        quote = get_object_or_404(Quote, pk=pk, user=request.user)
+
+        if quote.starred:
+            quote.starred = False
+        else:
+            Quote.objects.filter(user=request.user, starred=True).update(starred=False)
+            quote.starred = True
+
+        quote.save()
+
+        return JsonResponse({'status': 'ok'})
+    else:
+        return JsonResponse({'status': 'fail', 'message': 'Not an AJAX request'})
+
+@login_required
+def get_starred(request):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        all_quotes = list(Quote.objects.filter(user=request.user))
+    
+        try:
+            quote = Quote.objects.get(user=request.user, starred=True)
+            all_quotes.remove(quote)
+            all_quotes.insert(0, quote)
+            quotes_json = [{'quote': q.quote, 'author': q.author, 'id': q.id, 'starred': q.starred} for q in all_quotes]
+            return JsonResponse({
+                'status': 'quote found',
+                'quotes': quotes_json
+            })
+        except Quote.DoesNotExist:
+            quotes_json = [{'quote': q.quote, 'author': q.author, 'id': q.id, 'starred': q.starred} for q in all_quotes]
+            return JsonResponse({'status': 'no starred quote', 'quotes': quotes_json})
+    else:
+        return JsonResponse({'status': 'fail', 'message': 'Not an AJAX request'})

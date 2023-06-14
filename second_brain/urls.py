@@ -33,4 +33,6 @@ urlpatterns = [
     path('passions/update_passion_progress/<int:pk>/', views.update_passion_progress, name='update_passion_progress'),
     # Quote URLS
     path('quotes/create/', views.quote_create, name='quote_create'),
+    path('quotes/<int:pk>/star/', views.quote_star, name='quote_star'),
+    path('quotes/get_starred/', views.get_starred, name='get_starred'),
 ]

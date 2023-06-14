@@ -437,20 +437,23 @@
                         </div>
                         <div class="tab-pane fade" id="savedQuotes" role="tabpanel" aria-labelledby="savedQuotes-tab">
                             <div class="carousel slide" id="savedQuotesCarousel" data-bs-ride="carousel">
-                                <div class="carousel-inner">
+                                <div class="carousel-inner" id="carousel-inner">
                                     {% for quote in user_quotes %}
-                                    <div class="carousel-item{% if forloop.first %} active{% endif %}">
+                                    <div id="quote-{{ quote.id }}" data-id="{{ quote.id }}" class="carousel-item{% if forloop.first %} active{% endif %}">
                                         <div class="quote-card">
                                             <p class="quote">"{{quote.quote}}" - {{quote.author}}</p>
+                                            <div class="star-container">
+                                                <i class="quote-star fas fa-star" data-quote-id="{{ quote.id }}"></i>
+                                            </div>
                                         </div>
                                     </div>
                                     {% endfor %}
                                 </div>
-                                <button class="carousel-control-prev" type="button" data-bs-target="#savedQuotesCarousel" data-bs-slide="prev">
+                                <button class="carousel-control-prev" type="button">
                                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                                     <span class="visually-hidden">Previous</span>
                                 </button>
-                                <button class="carousel-control-next" type="button" data-bs-target="#savedQuotesCarousel" data-bs-slide="next">
+                                <button class="carousel-control-next" type="button">
                                     <span class="carousel-control-next-icon" aria-hidden="true"></span>
                                     <span class="visually-hidden">Next</span>
                                 </button>

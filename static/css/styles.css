@@ -175,3 +175,30 @@ ul li {
 .weekday-label {
   margin-bottom: 10px;
 }
+
+/* quote carousel styling */
+.quote-star {
+  font-size: 2em;
+  color: gray;
+  cursor: pointer;
+}
+
+.quote-star:hover {
+  color: gold;
+}
+
+.star-container {
+  display: flex;
+  justify-content: center;
+  padding-top: 15px;
+}
+/* carousel css */
+.carousel-item {
+  opacity: 0;
+  transition: opacity 1s ease ease-out;
+}
+
+.carousel-item.active {
+  opacity: 1;
+  transition: opacity 1s ease-out
+}
