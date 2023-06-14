@@ -35,4 +35,6 @@ urlpatterns = [
     path('quotes/create/', views.quote_create, name='quote_create'),
     path('quotes/<int:pk>/star/', views.quote_star, name='quote_star'),
     path('quotes/get_starred/', views.get_starred, name='get_starred'),
+    path('quotes/<int:pk>/delete/', views.quote_delete, name='quote_delete'),
+    path('quotes/<int:pk>/edit/', views.quote_edit, name='quote_edit')
 ]

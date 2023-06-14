@@ -1,0 +1,21 @@
+<div class="modal-header">
+    <h5 class="modal-title" id="quoteModalLabel">Edit Quote</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+    <form id="quoteForm" method="post" action="{% url 'second_brain:quote_edit' quote.pk %}">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="quote-text" class="form-label">Quote:</label>
+            <textarea class="form-control" id="quote-text" name="quote">{{ form.quote.value }}</textarea>
+        </div>
+        <div class="mb-3">
+            <label for="quote-author" class="form-label">Author:</label>
+            <input type="text" class="form-control" id="quote-author" name="author" value="{{ form.author.value }}">
+        </div>
+    </form>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+    <button type="submit" form="quoteForm" class="btn btn-primary">Update Quote</button>
+</div>

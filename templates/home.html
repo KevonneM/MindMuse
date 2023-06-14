@@ -441,9 +441,11 @@
                                     {% for quote in user_quotes %}
                                     <div id="quote-{{ quote.id }}" data-id="{{ quote.id }}" class="carousel-item{% if forloop.first %} active{% endif %}">
                                         <div class="quote-card">
-                                            <p class="quote">"{{quote.quote}}" - {{quote.author}}</p>
-                                            <div class="star-container">
-                                                <i class="quote-star fas fa-star" data-quote-id="{{ quote.id }}"></i>
+                                            <p class="quote">"${quote.quote}" - ${quote.author}</p>
+                                            <div class="action-container">
+                                                <i class="quote-edit fas fa-pencil-alt" data-quote-id="${quote.id}" data-bs-toggle="tooltip" title="Edit quote"></i>
+                                                <i class="quote-star fas fa-star" data-quote-id="${quote.id}" data-bs-toggle="tooltip" title="Star quote"></i>
+                                                <i class="quote-delete fas fa-trash" data-quote-id="${quote.id}" data-bs-toggle="tooltip" title="Delete quote"></i>
                                             </div>
                                         </div>
                                     </div>
@@ -469,6 +471,20 @@
                         <div class="modal-dialog">
                             <div class="modal-content" id="quoteModalContent">
                                 <!-- content loaded by JS -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade" id="quoteDeleteModal" tabindex="-1" aria-labelledby="deletequoteModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content" id="quoteDeleteModalContent">
+                            <!-- content loaded by JS -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade" id="quoteEditModal" tabindex="-1" aria-labelledby="quoteEditModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content" id="quoteEditModalContent">
+                            <!-- content loaded by JS -->
                             </div>
                         </div>
                     </div>
@@ -688,6 +704,23 @@
         let data = await response.text();
         document.getElementById('quoteModalContent').innerHTML = data;
         var myModal = new bootstrap.Modal(document.getElementById('quoteModal'));
+        myModal.show();
+    }
+
+    async function loadQuoteDeleteModal(quoteId) {
+        console.log("quoteId:", quoteId);
+        let response = await fetch(`/quotes/${quoteId}/delete/`, {headers: {'X-Requested-With': 'XMLHttpRequest'}});
+        let data = await response.text();
+        document.getElementById('quoteDeleteModalContent').innerHTML = data;
+        var myModal = new bootstrap.Modal(document.getElementById('quoteDeleteModal'));
+        myModal.show();
+    }
+
+    async function loadQuoteEditModal(quoteId) {
+        let response = await fetch(`/quotes/${quoteId}/edit/`, {headers: {'X-Requested-With': 'XMLHttpRequest'}});
+        let data = await response.text();
+        document.getElementById('quoteEditModalContent').innerHTML = data;
+        var myModal = new bootstrap.Modal(document.getElementById('quoteEditModal'));
         myModal.show();
     }
 

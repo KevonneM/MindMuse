@@ -40,8 +40,10 @@ function displayQuote(index, shouldPause) {
     newCarouselItem.innerHTML = `
         <div class="quote-card">
             <p class="quote">"${quote.quote}" - ${quote.author}</p>
-            <div class="star-container">
-                <i class="quote-star fas fa-star" data-quote-id="${quote.id}"></i>
+            <div class="action-container">
+                <i class="quote-edit fas fa-pencil-alt" data-quote-id="${quote.id}" data-bs-toggle="tooltip" title="Edit quote"></i>
+                <i class="quote-star fas fa-star" data-quote-id="${quote.id}" data-bs-toggle="tooltip" title="Star quote"></i>
+                <i class="quote-delete fas fa-trash" data-quote-id="${quote.id}" data-bs-toggle="tooltip" title="Delete quote"></i>
             </div>
         </div>`;
 
@@ -70,8 +72,23 @@ function displayQuote(index, shouldPause) {
         newCarouselItem.style.opacity = 1;
         newCarouselItem.classList.add('active');  // Add the 'active' class
 
-        newCarouselItem.querySelector(".quote-star").addEventListener("click", function(e) {
-            handleStarClick(e.target);
+        newCarouselItem.querySelectorAll(".quote-star, .quote-delete, .quote-edit").forEach((icon) => {
+            console.log("Adding click event listener to icon:", icon);
+            icon.addEventListener("click", function(e) {
+                console.log("Icon clicked:", e.target);
+                if (e.target.classList.contains('quote-star')) {
+                    handleStarClick(e.target);
+                }
+                else if (e.target.classList.contains('quote-delete')) {
+                    loadQuoteDeleteModal(e.target.getAttribute('data-quote-id'));
+                }
+                else if (e.target.classList.contains('quote-edit')) {
+                    loadQuoteEditModal(e.target.getAttribute('data-quote-id'));
+                }
+            });
+        });        
+        newCarouselItem.querySelectorAll("[data-bs-toggle='tooltip']").forEach(function (elem) {
+            new bootstrap.Tooltip(elem);
         });
 
         if (shouldPause || (starredQuoteIndex !== -1 && index === starredQuoteIndex)) {

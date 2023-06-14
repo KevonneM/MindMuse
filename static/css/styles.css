@@ -180,18 +180,28 @@ ul li {
 .quote-star {
   font-size: 2em;
   color: gray;
-  cursor: pointer;
 }
 
 .quote-star:hover {
   color: gold;
 }
 
-.star-container {
-  display: flex;
-  justify-content: center;
-  padding-top: 15px;
+.quote-edit {
+  color: gray;
 }
+
+.quote-edit:hover {
+  color: #007bff;
+}
+
+.quote-delete {
+  color: gray;
+}
+
+.quote-delete:hover {
+  color: #dc3545
+}
+
 /* carousel css */
 .carousel-item {
   opacity: 0;
@@ -201,4 +211,13 @@ ul li {
 .carousel-item.active {
   opacity: 1;
   transition: opacity 1s ease-out
+}
+
+.action-container {
+  display: flex;
+  justify-content: space-around;
+}
+
+.action-container i {
+  cursor: pointer;
 }

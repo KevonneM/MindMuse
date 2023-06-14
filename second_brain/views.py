@@ -642,3 +642,30 @@ def get_starred(request):
             return JsonResponse({'status': 'no starred quote', 'quotes': quotes_json})
     else:
         return JsonResponse({'status': 'fail', 'message': 'Not an AJAX request'})
+
+@login_required
+def quote_delete(request, pk):
+    quote = get_object_or_404(Quote, pk=pk, user=request.user)
+    
+    if request.method == 'POST':
+        quote.delete()
+        return redirect('second_brain:home')
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return render(request, 'quotes/_quote_confirm_delete.html', {'quote': quote})
+
+@login_required
+def quote_edit(request, pk):
+    quote = get_object_or_404(Quote, pk=pk, user=request.user)
+
+    if request.method == 'POST':
+        form = QuoteForm(request.POST, instance=quote)
+        if form.is_valid():
+            form.save()
+            return redirect('second_brain:home')
+
+    else:
+        form = QuoteForm(instance=quote)
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return render(request, 'quotes/_quote_edit_form.html', {'form': form, 'quote': quote})
