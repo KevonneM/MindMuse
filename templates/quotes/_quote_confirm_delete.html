@@ -1,0 +1,10 @@
+<div class="modal-body">
+    <h2>Delete {{ quote.author }}'s quote?</h2>
+    <p>Are you sure you want to delete this quote?</p>
+    <form method="POST" action="{% url 'second_brain:quote_delete' quote.pk %}">
+        {% csrf_token %}
+        <div class="modal-footer">
+            <button type="submit" class="btn btn-danger">Confirm</button>
+        </div>
+    </form>
+</div>
