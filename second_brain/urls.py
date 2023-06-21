@@ -36,5 +36,7 @@ urlpatterns = [
     path('quotes/<int:pk>/star/', views.quote_star, name='quote_star'),
     path('quotes/get_starred/', views.get_starred, name='get_starred'),
     path('quotes/<int:pk>/delete/', views.quote_delete, name='quote_delete'),
-    path('quotes/<int:pk>/edit/', views.quote_edit, name='quote_edit')
+    path('quotes/<int:pk>/edit/', views.quote_edit, name='quote_edit'),
+    path('get_quotes_of_the_day/', views.get_quotes_of_the_day, name='get_quotes_of_the_day'),
+    path('qotd_save/<int:quote_id>/', views.qotd_save, name='qotd_save'),
 ]

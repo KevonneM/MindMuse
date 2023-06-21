@@ -16,3 +16,10 @@ app.conf.beat_schedule = {
         'schedule': crontab(),  # Execute every minute
     },
 }
+
+app.conf.beat_schedule = {
+    'fetch-and-save-quotes-of-the-day': {
+        'task': 'second_brain.fetch_and_save_quotes_of_the_day',
+        'schedule': crontab(minute=0, hour=0),
+    }
+}

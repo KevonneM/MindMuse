@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Event, Task, TaskHistory, Passion, PassionActivity, Quote
+from .models import Event, Task, TaskHistory, Passion, PassionActivity, Quote, QuoteOfTheDay
 
 # Register your models here.
 
@@ -9,3 +9,4 @@ admin.site.register(TaskHistory)
 admin.site.register(Passion)
 admin.site.register(PassionActivity)
 admin.site.register(Quote)
+admin.site.register(QuoteOfTheDay)

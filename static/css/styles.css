@@ -176,7 +176,7 @@ ul li {
   margin-bottom: 10px;
 }
 
-/* quote carousel styling */
+/* saved quote styling */
 .quote-star {
   font-size: 2em;
   color: gray;
@@ -202,15 +202,68 @@ ul li {
   color: #dc3545
 }
 
-/* carousel css */
+.quote-content-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 90px;
+  overflow: auto;
+}
+
+.quote-content-wrapper .quote-content {
+  text-align: center;
+}
+
+/* qotd styling */
+.qotd-save-icon {
+  color: gray;
+  cursor: pointer;
+  font-size: 24px;
+}
+
+.qotd-save-icon:hover {
+  color: #007bff;
+}
+
+.qotd-content-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80px;
+  overflow: auto;
+}
+
+.qotd-content-wrapper .qotd-quote-content {
+  text-align: center;
+}
+
+.qotd-quote-content, .qotd-icon-container {
+  width: 100%;
+}
+
+.qotd-quote-content {
+  display: flex;
+  justify-content: center;
+  height: 75px;
+  overflow-y: auto;
+}
+
+.qotd-icon-container {
+  display: flex;
+  justify-content: center;
+}
+
+/* Both carousel css */
 .carousel-item {
   opacity: 0;
   transition: opacity 1s ease ease-out;
+  display: none;
 }
 
 .carousel-item.active {
   opacity: 1;
-  transition: opacity 1s ease-out
+  transition: opacity 1s ease-out;
+  display: block;
 }
 
 .action-container {
@@ -220,4 +273,53 @@ ul li {
 
 .action-container i {
   cursor: pointer;
+}
+
+.carousel-control-prev .control-background, 
+.carousel-control-next .control-background {
+    background: rgba(255,255,255,0);
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 50%;
+}
+
+.carousel-control-prev .control-background {
+    left: 0;
+}
+
+.carousel-control-next .control-background {
+    right: 0;
+}
+
+.carousel-control-prev:hover .control-background, 
+.carousel-control-next:hover .control-background {
+    background: rgba(0,0,0,0.2);
+    transition: background 0.3s ease-in-out;
+}
+
+
+
+#Saved-prev .carousel-control-prev-icon,
+#Saved-next .carousel-control-next-icon {
+    background: rgba(255,255,255,0);
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 50%;
+    height: 100%;
+}
+
+#Saved-prev .carousel-control-prev-icon {
+  left: 0;
+}
+
+#Saved-next .carousel-control-next-icon {
+  right: 0;
+}
+
+#Saved-prev:hover .carousel-control-prev-icon,
+#Saved-next:hover .carousel-control-next-icon {
+    background: rgba(0,0,0,0.2);
+    transition: background 0.3s ease-in-out;
 }

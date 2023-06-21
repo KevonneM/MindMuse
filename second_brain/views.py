@@ -8,7 +8,7 @@ from datetime import datetime, timedelta, date
 from calendar import month_name
 from django.db.models.functions import TruncDay
 from django.db.models import Count
-from .models import Event, Task, TaskHistory, Passion, PassionActivity, Quote
+from .models import Event, Task, TaskHistory, Passion, PassionActivity, Quote, QuoteOfTheDay
 from .forms import TaskForm, PassionForm, PassionActivityForm, QuoteForm
 import json
 import requests
@@ -669,3 +669,46 @@ def quote_edit(request, pk):
 
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         return render(request, 'quotes/_quote_edit_form.html', {'form': form, 'quote': quote})
+
+@login_required
+def get_quotes_of_the_day(request):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        user = request.user
+        user_tz = pytz.timezone(user.get_timezone())
+        now_in_user_tz = timezone.now().astimezone(user_tz)
+        quotes_of_the_day = QuoteOfTheDay.objects.filter(created_at__date=now_in_user_tz.date()).values('id','quote', 'author')
+        
+        return JsonResponse({'quotes': list(quotes_of_the_day)}, safe=False)
+    else:
+        return JsonResponse({"error": "Invalid request"}, status=400)
+
+@login_required
+def qotd_save(request, quote_id):
+    qotd_instance = get_object_or_404(QuoteOfTheDay, id=quote_id)
+
+    if request.method == 'POST':
+        existing_quote = Quote.objects.filter(user=request.user, author=qotd_instance.author, quote=qotd_instance.quote).first()
+
+        if existing_quote:
+            data = {
+                'success': False,
+                'message': f"Quote from '{qotd_instance.author}' is already saved."
+            }
+            return JsonResponse(data)
+
+        new_quote = Quote.objects.create(
+            user = request.user,
+            author = qotd_instance.author,
+            quote = qotd_instance.quote
+        )
+
+        data = {
+            'success': True,
+            'quoteId': new_quote.id,
+            'message': f"Quote from '{new_quote.author}' has been saved.",
+            'author': new_quote.author
+        }
+        return JsonResponse(data)
+
+    else:
+        return render(request, 'quotes/_qotd_save.html', {'quote': qotd_instance})
