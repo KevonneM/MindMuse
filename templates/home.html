@@ -408,7 +408,7 @@
                 <div class="col-12 col-lg-6 mt-3" style="width: 100%;">
                     <ul class="nav nav-tabs" id="quoteTabs" role="tablist">
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="quoteOfDay-tab" data-bs-toggle="tab" data-bs-target="#quoteOfDay" type="button" role="tab" aria-controls="quoteOfDay" aria-selected="true">Quote of the Day</button>
+                            <button class="nav-link active" id="quoteOfDay-tab" data-bs-toggle="tab" data-bs-target="#quoteOfDay" type="button" role="tab" aria-controls="quoteOfDay" aria-selected="true">Quotes of the Day</button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="savedQuotes-tab" data-bs-toggle="tab" data-bs-target="#savedQuotes" type="button" role="tab" aria-controls="savedQuotes" aria-selected="false">Saved Quotes</button>
@@ -416,24 +416,28 @@
                     </ul>
                     <div class="tab-content" id="quoteTabsContent">
                         <div class="tab-pane fade show active" id="quoteOfDay" role="tabpanel" aria-labelledby="quoteOfDay-tab">
-                            <div class="carousel slide" id="quoteOfDayCarousel" data-bs-ride="carousel">
-                                <div class="carousel-inner">
+                            <div class="carousel slide" id="quoteOfDayCarouselSlideQOTD" data-bs-ride="carousel" data-bs-interval="5000">
+                                <div class="carousel-inner" id="qotd-carousel-inner">
                                     <div class="carousel-item active">
-                                        <div class="quote-card">
-                                            <p class="quote">"{{quote_of_the_day.q}}" - {{quote_of_the_day.a}}</p>
+                                        <div class="qotd-quote-card">
+                                            <div class="qotd-quote-content" style="display: none;">
+                                                <p class="quote">"{quote.quote}" - {quote.author}</p>
+                                            </div>
+                                            <div class="qotd-icon-container">
+                                                <i class="fas fa-save qotd-save-icon" title="Save quote"></i>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                <button class="carousel-control-prev" type="button" data-bs-target="#quoteOfDayCarousel" data-bs-slide="prev">
-                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <button class="carousel-control-prev" type="button" data-bs-target="#quoteOfDayCarouselSlideQOTD" data-bs-slide="prev">
+                                    <div class="control-background"></div>
                                     <span class="visually-hidden">Previous</span>
                                 </button>
-                                <button class="carousel-control-next" type="button" data-bs-target="#quoteOfDayCarousel" data-bs-slide="next">
-                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <button class="carousel-control-next" type="button" data-bs-target="#quoteOfDayCarouselSlideQOTD" data-bs-slide="next">
+                                    <div class="control-background"></div>
                                     <span class="visually-hidden">Next</span>
                                 </button>
                             </div>
-                            <button class="btn btn-primary" onclick="getNewQuote()">Get New Quote</button>
                         </div>
                         <div class="tab-pane fade" id="savedQuotes" role="tabpanel" aria-labelledby="savedQuotes-tab">
                             <div class="carousel slide" id="savedQuotesCarousel" data-bs-ride="carousel">
@@ -441,7 +445,11 @@
                                     {% for quote in user_quotes %}
                                     <div id="quote-{{ quote.id }}" data-id="{{ quote.id }}" class="carousel-item{% if forloop.first %} active{% endif %}">
                                         <div class="quote-card">
-                                            <p class="quote">"${quote.quote}" - ${quote.author}</p>
+                                            <div class="quote-content-wrapper">
+                                                <div class="quote-content">
+                                                    <p class="quote">"${quote.quote}" - ${quote.author}</p>
+                                                </div>
+                                            </div>
                                             <div class="action-container">
                                                 <i class="quote-edit fas fa-pencil-alt" data-quote-id="${quote.id}" data-bs-toggle="tooltip" title="Edit quote"></i>
                                                 <i class="quote-star fas fa-star" data-quote-id="${quote.id}" data-bs-toggle="tooltip" title="Star quote"></i>
@@ -451,11 +459,11 @@
                                     </div>
                                     {% endfor %}
                                 </div>
-                                <button class="carousel-control-prev" type="button">
+                                <button id="Saved-prev" class="carousel-control-prev" type="button">
                                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                                     <span class="visually-hidden">Previous</span>
                                 </button>
-                                <button class="carousel-control-next" type="button">
+                                <button id="Saved-next" class="carousel-control-next" type="button">
                                     <span class="carousel-control-next-icon" aria-hidden="true"></span>
                                     <span class="visually-hidden">Next</span>
                                 </button>
@@ -485,6 +493,27 @@
                         <div class="modal-dialog">
                             <div class="modal-content" id="quoteEditModalContent">
                             <!-- content loaded by JS -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade" id="quoteSaveModal" tabindex="-1" aria-labelledby="quoteModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content" id="quoteSaveModalContent">
+                                <!-- content loaded by JS -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade" id="quoteSavedModal" tabindex="-1" aria-labelledby="quoteModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content" id="quoteSavedModalContent">
+                                <!-- content loaded by JS -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade" id="quoteExistsModal" tabindex="-1" aria-labelledby="quoteExistsModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content" id="quoteExistsModalContent">
+                                <!-- content loaded by JS -->
                             </div>
                         </div>
                     </div>
@@ -724,6 +753,59 @@
         myModal.show();
     }
 
+    async function loadQOTDSaveModal(quoteId) {
+        let response = await fetch(`/qotd_save/${quoteId}/`, {headers: {'X-Requested-With': 'XMLHttpRequest'}});
+        let data = await response.text();
+        document.getElementById('quoteSaveModalContent').innerHTML = data;
+
+        var myModal = new bootstrap.Modal(document.getElementById('quoteSaveModal'));
+        myModal.show();
+
+        let form = document.getElementById('quoteSaveForm');
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            saveQuote(quoteId);
+        });
+    }
+
+    async function loadQuoteExistsModal(quoteId, message) {
+        let quoteExistsModalContent = document.getElementById('quoteExistsModalContent');
+        quoteExistsModalContent.innerHTML = `
+            <div class="modal-header">
+                <h5 class="modal-title" id="quoteExistsModalLabel">Quote Already Exists</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                ${message}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        `;
+
+        var myModal = new bootstrap.Modal(document.getElementById('quoteExistsModal'));
+        myModal.show();
+    }
+
+    function loadQuoteSavedModal(quoteId, author) {
+        let quoteSavedModalContent = document.getElementById('quoteSavedModalContent');
+        quoteSavedModalContent.innerHTML = `
+            <div class="modal-header">
+                <h5 class="modal-title" id="quoteSavedModalLabel">Quote Saved</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Quote by '${author}' has been saved successfully.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        `;
+
+        var myModal = new bootstrap.Modal(document.getElementById('quoteSavedModal'));
+        myModal.show();
+    }
+    
 </script>
 
 {% endblock content %}

@@ -39,7 +39,11 @@ function displayQuote(index, shouldPause) {
     newCarouselItem.style.opacity = 0;
     newCarouselItem.innerHTML = `
         <div class="quote-card">
-            <p class="quote">"${quote.quote}" - ${quote.author}</p>
+            <div class="quote-content-wrapper">
+                <div class="quote-content">
+                    <p class="quote">"${quote.quote}" - ${quote.author}</p>
+                </div>
+            </div>
             <div class="action-container">
                 <i class="quote-edit fas fa-pencil-alt" data-quote-id="${quote.id}" data-bs-toggle="tooltip" title="Edit quote"></i>
                 <i class="quote-star fas fa-star" data-quote-id="${quote.id}" data-bs-toggle="tooltip" title="Star quote"></i>
@@ -73,7 +77,6 @@ function displayQuote(index, shouldPause) {
         newCarouselItem.classList.add('active');  // Add the 'active' class
 
         newCarouselItem.querySelectorAll(".quote-star, .quote-delete, .quote-edit").forEach((icon) => {
-            console.log("Adding click event listener to icon:", icon);
             icon.addEventListener("click", function(e) {
                 console.log("Icon clicked:", e.target);
                 if (e.target.classList.contains('quote-star')) {
@@ -156,6 +159,150 @@ function startInactivityTimer() {
     }
 }
 
+function nextQuote() {
+    quoteIndex = (quoteIndex + 1) % quotes.length;
+    displayQuote(quoteIndex, false);
+}
+
+function prevQuote() {
+    quoteIndex = (quoteIndex - 1 + quotes.length) % quotes.length;
+    displayQuote(quoteIndex, false);
+}
+
+// Quotes of the day js
+var qotd = [];
+var qotdIndex = 0;
+var timerQOTD = null;
+
+async function getQOTD() {
+    try {
+        let response = await fetch('/get_quotes_of_the_day/', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        let data = await response.json();
+
+        if (!data.quotes) {
+            throw new Error('Data does not contain quotes');
+        }
+
+        qotd = data.quotes;
+        displayQOTD(0);
+        startCarouselQOTD();
+    } catch (error) {
+        console.error('There has been a problem with your fetch operation:', error);
+    }
+}
+
+function displayQOTD(index) {
+    let quote = qotd[index];
+
+    let newCarouselItem = document.createElement('div');
+    newCarouselItem.className = 'carousel-item';
+    newCarouselItem.style.opacity = 0;
+    newCarouselItem.innerHTML = `
+        <div class="qotd-quote-card">
+            <div class="qotd-content-wrapper">
+                <div class="qotd-quote-content">
+                    <p class="quote">"${quote.quote}" - ${quote.author}</p>
+                </div>
+            </div>
+            <div class="qotd-icon-container">
+                <i class="fas fa-save qotd-save-icon" title="Save quote" data-bs-toggle="tooltip" data-bs-placement="top"></i>
+            </div>
+        </div>`;
+
+    newCarouselItem.querySelector('.qotd-save-icon').addEventListener('click', () => loadQOTDSaveModal(quote.id));
+
+    let carouselInner = document.getElementById('qotd-carousel-inner');
+    carouselInner.appendChild(newCarouselItem);
+
+    let oldCarouselItems = Array.from(carouselInner.getElementsByClassName('carousel-item')).filter(item => item !== newCarouselItem);
+    if (oldCarouselItems.length > 0) {
+        oldCarouselItems.forEach(item => {
+            item.style.opacity = 0;
+            setTimeout(() => {
+                if (carouselInner.contains(item)) {
+                    carouselInner.removeChild(item);
+                } else {
+                    console.warn("Attempted to remove an element that is not a child of the carouselInner");
+                }
+            }, 1000);
+        });
+    }
+
+    setTimeout(() => {
+        newCarouselItem.style.opacity = 1;
+        newCarouselItem.classList.add('active');
+    }, oldCarouselItems.length > 0 ? 700 : 0);
+
+    document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(function (tooltipTriggerEl) {
+        new bootstrap.Tooltip(tooltipTriggerEl)
+    });
+
+}
+
+async function saveQuote(quoteId) {
+    let response = await fetch(`/qotd_save/${quoteId}/`, {
+        method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')  // CSRF protection
+        },
+        body: JSON.stringify({quoteId: quoteId})
+    });
+
+    if (!response.ok) {
+        console.error(`Network response was not ok: ${response.status} ${response.statusText}`);
+        return;
+    }
+
+    let data = await response.json();
+    let myModalEl = document.getElementById('quoteSaveModal');
+    let bsModal = bootstrap.Modal.getInstance(myModalEl);
+    bsModal.hide();
+
+    if (data.success) {
+        loadQuoteSavedModal(quoteId, data.author);
+    } else {
+        loadQuoteExistsModal(quoteId, data.message);
+    }
+}
+
+function changeQOTD(index) {
+    qotdIndex = index;
+    displayQOTD(qotdIndex);
+}
+
+function startCarouselQOTD() {
+    if (timerQOTD) {
+        clearInterval(timerQOTD);
+    }
+
+    timerQOTD = setInterval(function () {
+        changeQOTD((qotdIndex + 1) % qotd.length);
+    }, 10000);
+}
+
+function nextQOTD() {
+    changeQOTD((qotdIndex + 1) % qotd.length);
+    startCarouselQOTD();
+}
+
+function prevQOTD() {
+    changeQOTD((qotdIndex - 1 + qotd.length) % qotd.length);
+    startCarouselQOTD();
+}
+
 window.onload = function () {
     getQuotes();
     
@@ -167,14 +314,21 @@ window.onload = function () {
         e.preventDefault();
         nextQuote();
     });
+
+    getQOTD();
+
+    document.querySelector('#quoteOfDayCarouselSlideQOTD .carousel-control-prev').addEventListener('click', function (e) {
+        e.preventDefault();
+        prevQOTD();
+    });
+    document.querySelector('#quoteOfDayCarouselSlideQOTD .carousel-control-next').addEventListener('click', function (e) {
+        e.preventDefault();
+        nextQOTD();
+    });
+
+    updateTimerQOTD = setInterval(function() {
+        clearInterval(timerQOTD);
+        getQOTD();
+    }, 3600000);
+
 };
-
-function nextQuote() {
-    quoteIndex = (quoteIndex + 1) % quotes.length;
-    displayQuote(quoteIndex, false);
-}
-
-function prevQuote() {
-    quoteIndex = (quoteIndex - 1 + quotes.length) % quotes.length;
-    displayQuote(quoteIndex, false);
-}

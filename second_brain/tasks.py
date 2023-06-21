@@ -1,8 +1,9 @@
 from datetime import date
 from django.utils import timezone
 from celery import shared_task
-from .models import Task, TaskHistory
+from .models import Task, TaskHistory, QuoteOfTheDay
 import pytz
+import requests
 
 @shared_task
 def refresh_tasks():
@@ -28,3 +29,28 @@ def refresh_tasks():
             task.save()
         else:
             print(f"Not resetting task {task.id}")
+
+@shared_task
+def fetch_and_save_quotes_of_the_day():
+    QuoteOfTheDay.objects.filter(created_at__date__lt=timezone.now().date()).delete()
+
+    try:
+        response = requests.get('https://zenquotes.io/api/quotes/')
+        response.raise_for_status()
+    except requests.RequestException as e:
+        print(f"Request to fetch quote of the day failed: {e}")
+        return
+
+    data = response.json()
+
+    if not data:
+        print("No data received for quote of the day.")
+        return
+
+    for quote in data:
+        quote_of_The_day = QuoteOfTheDay.objects.create(
+            quote=quote['q'],
+            author=quote['a'],
+            created_at=timezone.now()
+        )
+        quote_of_The_day.save()
