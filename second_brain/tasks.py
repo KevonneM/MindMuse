@@ -32,7 +32,12 @@ def refresh_tasks():
 
 @shared_task
 def fetch_and_save_quotes_of_the_day():
-    QuoteOfTheDay.objects.filter(created_at__date__lt=timezone.now().date()).delete()
+    """
+    three_day_ago var enables users in different timezones that may be behind server timezone to always have quotes to view and accounts for the edge case where some user's local timezones
+    could be almost a full day behind the server's timezone.
+    """
+    three_days_ago = timezone.now() - timedelta(days=3)
+    QuoteOfTheDay.objects.filter(created_at__date__lt=three_days_ago).delete()
 
     try:
         response = requests.get('https://zenquotes.io/api/quotes/')
