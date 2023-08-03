@@ -699,6 +699,35 @@
         let response = await fetch("/passions/create/", {headers: {'X-Requested-With': 'XMLHttpRequest'}});
         let data = await response.text();
         document.getElementById('passionCreateModalContent').innerHTML = data;
+
+        var addCategoryButton = document.getElementById('add-category-button');
+        addCategoryButton.addEventListener('click', async function() {
+            let newCategoryName = document.getElementById('new-category-name').value;
+            if (newCategoryName) {
+                let response = await fetch("/passions/category/add/", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify({'name': newCategoryName})
+                });
+                let result = await response.json();
+                if (result.status === 'ok') {
+                    
+                    let categorySelect = document.getElementById('id_category');
+                    let newOption = new Option(newCategoryName, result.id, false, false);
+                    categorySelect.append(newOption);
+                    
+                    document.getElementById('new-category-name').value = '';
+                } else {
+                    
+                    console.error(result.error);
+                }
+            }
+        });
+
         var myModal = new bootstrap.Modal(document.getElementById('passionCreateModal'));
         myModal.show();
     }
@@ -715,6 +744,33 @@
         let response = await fetch(`/passions/${passionId}/update/`, {headers: {'X-Requested-With': 'XMLHttpRequest'}});
         let data = await response.text();
         document.getElementById('passionUpdateModalContent').innerHTML = data;
+
+        var addCategoryButton = document.getElementById('update-add-category-button');
+        addCategoryButton.addEventListener('click', async function() {
+            let newCategoryName = document.getElementById('update-new-category-name').value;
+            if (newCategoryName) {
+                let response = await fetch("/passions/category/add/", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify({'name': newCategoryName})
+                });
+                let result = await response.json();
+                if (result.status === 'ok') {
+                    let categorySelect = document.getElementById('update-id_category');
+                    let newOption = new Option(newCategoryName, result.id, false, false);
+                    categorySelect.append(newOption);
+                    
+                    document.getElementById('update-new-category-name').value = '';
+                } else {
+                    console.error(result.error);
+                }
+            }
+        });
+
         var myModal = new bootstrap.Modal(document.getElementById('passionUpdateModal'));
         myModal.show();
     }

@@ -97,14 +97,20 @@ class TaskHistory(models.Model):
     def __str__(self):
         return self.title
 
-class Passion(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    name = models.CharField(max_length=100)
-    description = models.TextField()
+class PassionCategory(models.Model):
+    name = models.CharField(max_length=100, unique=True)
 
     def __str__(self):
         return self.name
 
+class Passion(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    description = models.TextField()
+    category = models.ForeignKey(PassionCategory, on_delete=models.SET_NULL, null=True)
+
+    def __str__(self):
+        return self.name
 
 class PassionActivity(models.Model):
     passion = models.ForeignKey(Passion, on_delete=models.CASCADE)

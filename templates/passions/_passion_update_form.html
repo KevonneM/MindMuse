@@ -2,7 +2,22 @@
     <form method="POST" action="{% url 'second_brain:passion_update' passion.pk %}">
         {% csrf_token %}
         <div class="form-group">
-            {{ form.as_p }}
+            <p>
+                {{ form.name.label_tag }}
+                {{ form.name }}
+            </p>
+            <p>
+                {{ form.description.label_tag }}
+                {{ form.description }}
+            </p>
+            <div>
+                {{ form.category.label_tag }}
+                <div class="d-inline-flex align-items-center">
+                    {{ form.category }}
+                    <input type="text" id="new-category-name" placeholder="New Category" class="ml-2"/>
+                    <button type="button" class="btn btn-secondary ml-2" id="update-add-category-button">Add Category</button>
+                </div>
+            </div>
         </div>
         <div class="modal-footer">
             <button type="submit" class="btn btn-primary">Save</button>

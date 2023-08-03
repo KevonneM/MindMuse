@@ -323,3 +323,12 @@ ul li {
     background: rgba(0,0,0,0.2);
     transition: background 0.3s ease-in-out;
 }
+
+/* insights css */
+
+/* events css */
+
+.disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
