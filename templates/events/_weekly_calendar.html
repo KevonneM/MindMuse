@@ -6,8 +6,8 @@
 </div>
 <div class="modal-body">
     <div class="d-flex justify-content-between mb-4">
-        <a href="{% url 'second_brain:weekly_calendar_change_week' prev_week_start|date:"Y-m-d" %}" class="btn btn-primary">&laquo; Previous Week</a>
-        <a href="{% url 'second_brain:weekly_calendar_change_week' next_week_start|date:"Y-m-d" %}" class="btn btn-primary">Next Week &raquo;</a>
+        <a href="{% url 'second_brain:weekly_calendar_change_week' prev_week_start|date:"Y-m-d" %}" class="btn btn-primary change-week">&laquo; Previous Week</a>
+        <a href="{% url 'second_brain:weekly_calendar_change_week' next_week_start|date:"Y-m-d" %}" class="btn btn-primary change-week">Next Week &raquo;</a>
     </div>
     <div class="calendar weekly-calendar" style="overflow-x: auto;">
         <div class="row" style="width: max-content;">

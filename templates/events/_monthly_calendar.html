@@ -3,9 +3,9 @@
 	  <div class="row">
 			<div class="col-md-12">
 				<div class="d-flex justify-content-between mb-2">
-					<a href="{% url 'second_brain:monthly_calendar_change_month' prev_year prev_month %}" class="btn btn-primary">&lt; Previous</a>
+					<a href="{% url 'second_brain:monthly_calendar_change_month' prev_year prev_month %}" class="btn btn-primary change-month">&lt; Previous</a>
 					<h2>{{ current_month_name }} {{ current_year }}</h2>
-					<a href="{% url 'second_brain:monthly_calendar_change_month' next_year next_month %}" class="btn btn-primary">Next &gt;</a>
+					<a href="{% url 'second_brain:monthly_calendar_change_month' next_year next_month %}" class="btn btn-primary change-month">Next &gt;</a>
 				</div>
 				<table class="table table-bordered calendar-table">
 					<thead>
@@ -27,7 +27,7 @@
 										{% if day_data.event_count != None %}
 											<span>{{ day_data.date.day }}</span>
 											{% if day_data.event_count > 0 %}
-												<a href="{% url 'second_brain:daily_view_specific' day_data.date.year day_data.date.month day_data.date.day %}" class="badge btn btn-primary">{{ day_data.event_count }} Events</a>
+												<button onclick="loadDailyModal('{{ day_data.date.year }}', '{{ day_data.date.month }}', '{{ day_data.date.day }}');" class="badge btn btn-primary">{{ day_data.event_count }} Events</button>
 											{% endif %}
 										{% endif %}
 									</td>
