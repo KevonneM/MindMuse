@@ -540,8 +540,20 @@
 
 <script>
     // Scheduling modal js
-    async function loadDailyModal() {
-        let response = await fetch("{% url 'second_brain:daily_view' %}", {headers: {'X-Requested-With': 'XMLHttpRequest'}});
+    async function loadDailyModal(year = null, month = null, day = null) {
+        if (year === null || month === null || day === null) {
+            let today = new Date();
+            year = today.getFullYear();
+            month = today.getMonth() + 1;
+            day = today.getDate();
+        }
+
+        var monthlyModal = bootstrap.Modal.getInstance(document.getElementById('monthlyModal'));
+        if (monthlyModal !== null) {
+            monthlyModal.hide();
+        }
+
+        let response = await fetch(`/daily-view/${year}/${month}/${day}/`, {headers: {'X-Requested-With': 'XMLHttpRequest'}});
         let data = await response.text();
         document.getElementById('dailyModalContent').innerHTML = data;
         var myModal = new bootstrap.Modal(document.getElementById('dailyModal'));
@@ -556,13 +568,56 @@
         myModal.show();
     }
 
-    async function loadMonthlyModal() {
-        let response = await fetch("{% url 'second_brain:monthly_calendar' %}", {headers: {'X-Requested-With': 'XMLHttpRequest'}});
+    async function loadMonthlyModal(year = null, month = null) {
+        if (year === null || month === null) {
+            let today = new Date();
+            year = today.getFullYear();
+            month = today.getMonth() + 1;
+        }
+
+        let response = await fetch(`/monthly-calendar/${year}/${month}/`, {headers: {'X-Requested-With': 'XMLHttpRequest'}});
         let data = await response.text();
         document.getElementById('monthlyModalContent').innerHTML = data;
         var myModal = new bootstrap.Modal(document.getElementById('monthlyModal'));
         myModal.show();
     }
+
+    document.addEventListener('DOMContentLoaded', (event) => {
+        
+        let monthlyModal = new bootstrap.Modal(document.getElementById('monthlyModal'));
+
+        // Delegating the click event of 'Previous' and 'Next' buttons to the modal
+        document.querySelector('#monthlyModal').addEventListener('click', async (event) => {
+            if (event.target.matches('.change-month')) {
+                event.preventDefault();
+
+                let url = event.target.href;
+                let response = await fetch(url, {headers: {'X-Requested-With': 'XMLHttpRequest'}});
+                let data = await response.text();
+
+                document.getElementById('monthlyModalContent').innerHTML = data;
+            }
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', (event) => {
+        
+        let weeklyModal = new bootstrap.Modal(document.getElementById('weeklyModal'));
+
+        // Delegating the click event of 'Previous Week' and 'Next Week' buttons to the modal
+        document.querySelector('#weeklyModal').addEventListener('click', async (event) => {
+            if (event.target.matches('.change-week')) {
+                console.log("Button clicked.");
+                event.preventDefault();
+
+                let url = event.target.href;
+                let response = await fetch(url, {headers: {'X-Requested-With': 'XMLHttpRequest'}});
+                let data = await response.text();
+
+                document.getElementById('weeklyModalContent').innerHTML = data;
+            }
+        });
+    });
 
     async function loadEventCreateModal() {
         let response = await fetch("/create-event/", {headers: {'X-Requested-With': 'XMLHttpRequest'}});
