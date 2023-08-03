@@ -2,13 +2,14 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponse, HttpResponseBadRequest
 from datetime import datetime, timedelta, date
 from calendar import month_name
 from django.db.models.functions import TruncDay
 from django.db.models import Count
-from .models import Event, Task, TaskHistory, Passion, PassionActivity, Quote, QuoteOfTheDay
+from .models import Event, Task, TaskHistory, Passion, PassionActivity, PassionCategory, Quote, QuoteOfTheDay
 from .forms import TaskForm, PassionForm, PassionActivityForm, QuoteForm
 import json
 import requests
@@ -585,6 +586,20 @@ def update_passion_progress(request, pk):
 
     return JsonResponse({'activities_exist': activities_exist})
 
+@require_POST
+def add_passion_category(request):
+    data = json.loads(request.body)
+    category_name = data.get('name')
+    new_category = None
+
+    if category_name:
+        new_category, created = PassionCategory.objects.get_or_create(name=category_name)
+
+    if new_category:
+        return JsonResponse({'status': 'ok', 'id': new_category.id, 'name': new_category.name})
+
+    return JsonResponse({'status': 'error', 'error': 'Invalid data.'})
+    
 # Code for quotes
 @login_required
 def quote_create(request):

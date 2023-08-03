@@ -31,6 +31,7 @@ urlpatterns = [
     path('passions/record_activity/', views.record_passion_activity, name='record_passion_activity'),
     path('passions/delete_activity/', views.delete_passion_activity, name='delete_passion_activity'),
     path('passions/update_passion_progress/<int:pk>/', views.update_passion_progress, name='update_passion_progress'),
+    path('passions/category/add/', views.add_passion_category, name='add_passion_category'),
     # Quote URLS
     path('quotes/create/', views.quote_create, name='quote_create'),
     path('quotes/<int:pk>/star/', views.quote_star, name='quote_star'),

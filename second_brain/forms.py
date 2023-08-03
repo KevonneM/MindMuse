@@ -28,8 +28,15 @@ class TaskForm(forms.ModelForm):
 class PassionForm(forms.ModelForm):
     class Meta:
         model = Passion
-        fields = ['name', 'description']
+        fields = ['name', 'category', 'description']
 
+    new_category_name = forms.CharField(required=False)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['new_category_name'].widget.attrs.update({
+            'placeholder': 'New category name'
+        })
 
 class PassionActivityForm(forms.ModelForm):
     class Meta:

@@ -304,31 +304,33 @@ function prevQOTD() {
 }
 
 window.onload = function () {
-    getQuotes();
+    if (document.getElementById('savedQuotesCarousel')) {
     
-    document.querySelector('#savedQuotesCarousel .carousel-control-prev').addEventListener('click', function (e) {
-        e.preventDefault();
-        prevQuote();
-    });
-    document.querySelector('#savedQuotesCarousel .carousel-control-next').addEventListener('click', function (e) {
-        e.preventDefault();
-        nextQuote();
-    });
+        getQuotes();
+    
+        document.querySelector('#savedQuotesCarousel .carousel-control-prev').addEventListener('click', function (e) {
+            e.preventDefault();
+            prevQuote();
+        });
+        document.querySelector('#savedQuotesCarousel .carousel-control-next').addEventListener('click', function (e) {
+            e.preventDefault();
+            nextQuote();
+        });
 
-    getQOTD();
-
-    document.querySelector('#quoteOfDayCarouselSlideQOTD .carousel-control-prev').addEventListener('click', function (e) {
-        e.preventDefault();
-        prevQOTD();
-    });
-    document.querySelector('#quoteOfDayCarouselSlideQOTD .carousel-control-next').addEventListener('click', function (e) {
-        e.preventDefault();
-        nextQOTD();
-    });
-
-    updateTimerQOTD = setInterval(function() {
-        clearInterval(timerQOTD);
         getQOTD();
-    }, 3600000);
 
+        document.querySelector('#quoteOfDayCarouselSlideQOTD .carousel-control-prev').addEventListener('click', function (e) {
+            e.preventDefault();
+            prevQOTD();
+        });
+        document.querySelector('#quoteOfDayCarouselSlideQOTD .carousel-control-next').addEventListener('click', function (e) {
+            e.preventDefault();
+            nextQOTD();
+        });
+
+        updateTimerQOTD = setInterval(function() {
+            clearInterval(timerQOTD);
+            getQOTD();
+        }, 3600000);
+    }
 };
