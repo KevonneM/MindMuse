@@ -355,6 +355,15 @@ var dailyTasksChart = null;
 var weeklyTasksChart = null;
 var monthlyTasksChart = null;
 
+function computeAverageCompletionRate(data) {
+    
+    const validEntries = data.filter(entry => entry.total_tasks > 0);
+
+    const sumCompletionRate = validEntries.reduce((sum, entry) => sum + entry.completion_rate, 0);
+
+    return validEntries.length ? sumCompletionRate / validEntries.length : 0;
+}
+
 function parseLocalDate(dateStr) {
     const [year, month, day] = dateStr.split('-').map(Number);
     return new Date(year, month - 1, day);
@@ -369,6 +378,14 @@ function updateTaskCharts(year) {
             const dailyTaskData = data.daily_task_data;
             const weeklyTaskData = data.weekly_task_data;
             const monthlyTaskData = data.monthly_task_data;
+
+            const dailyAverageCompletionRate = computeAverageCompletionRate(dailyTaskData);
+            const weeklyAverageCompletionRate = computeAverageCompletionRate(weeklyTaskData);
+            const monthlyAverageCompletionRate = computeAverageCompletionRate(monthlyTaskData);
+
+            document.getElementById('daily-task-average').textContent = `${dailyAverageCompletionRate.toFixed(2)}%`;
+            document.getElementById('weekly-task-average').textContent = `${weeklyAverageCompletionRate.toFixed(2)}%`;
+            document.getElementById('monthly-task-average').textContent = `${monthlyAverageCompletionRate.toFixed(2)}%`;
 
             const dailyLabels = dailyTaskData.map(entry => entry.date);
             const weeklyLabels = weeklyTaskData.map(entry => {
