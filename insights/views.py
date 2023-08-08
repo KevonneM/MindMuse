@@ -81,10 +81,6 @@ def yearly_event_data(request, year):
             weekly_events = Event.objects.filter(user=user, start_time__gte=start_of_week_utc, start_time__lt=end_of_week_utc).count()
             weekly_event_data.append([weekly_events, start_of_week.date(), end_of_week.date()])
 
-            print(week)
-            print(f"Start of week: {start_of_week}\nEnd of week: {end_of_week}")
-            print(f"Count of events {weekly_events}")
-
             start_of_week = end_of_week + timedelta(seconds=1)
 
         for month in range(1, end_of_year.month + 1):  
