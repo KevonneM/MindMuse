@@ -7,4 +7,5 @@ urlpatterns = [
     path('insights/', views.insights, name='insights'),
     path('yearly_event_data/<int:year>/', views.yearly_event_data, name='yearly_event_data'),
     path('yearly-task-completion-data/<int:year>/', views.yearly_task_completion_data, name='yearly_task_completion_data'),
+    path('yearly-passion-progress-data/<int:year>/', views.yearly_passion_progress_data, name='yearly_passion_progress_data'),
 ]

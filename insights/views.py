@@ -5,7 +5,7 @@ from dateutil.relativedelta import relativedelta
 import pytz
 from datetime import datetime, timedelta
 import calendar
-from second_brain.models import Event, TaskHistory
+from second_brain.models import Event, TaskHistory, PassionActivity
 
 # Create your views here.
 
@@ -205,6 +205,66 @@ def yearly_task_completion_data(request, year):
             'daily_task_data': daily_task_data,
             'weekly_task_data': weekly_task_data,
             'monthly_task_data': monthly_task_data
+        }
+
+        return JsonResponse(data)
+    else:
+        return JsonResponse({"error": "Not authenticated"}, status=401)
+
+def yearly_passion_progress_data(request, year):
+    user = request.user
+
+    if user.is_authenticated:
+        user_timezone = pytz.timezone(user.timezone)
+        utc = pytz.timezone('UTC')
+
+        start_of_year = user_timezone.localize(datetime(year, 1, 1, 0, 0, 0))
+        start_of_year_utc = start_of_year.astimezone(utc)
+
+        if year == datetime.now().year:
+            now = timezone.now().astimezone(user_timezone)
+            end_of_year = user_timezone.localize(datetime(now.year, now.month, now.day, 23, 59, 59))
+        else:
+            end_of_year = start_of_year + relativedelta(years=1) - timedelta(seconds=1)
+
+        end_of_year_utc = end_of_year.astimezone(utc)
+
+        passion_activities = PassionActivity.objects.filter(passion__user=user, date__gte=start_of_year.date(), date__lte=end_of_year.date())
+        weekly_passion_data = []
+
+        # Compute weekly passion activity data
+        for week in range((end_of_year - start_of_year).days // 7 + 1):
+            week_start_date = start_of_year + timedelta(weeks=week)
+            week_end_date = week_start_date + timedelta(days=6)
+
+            if week_end_date > end_of_year:
+                week_end_date = end_of_year
+
+            week_data = {
+                'date_range': f"{week_start_date.date()} - {week_end_date.date()}",
+                'passions': {},
+                'categories': {}
+            }
+
+            activities_for_week = passion_activities.filter(date__gte=week_start_date.date(), date__lte=week_end_date.date())
+            
+            for activity in activities_for_week:
+                passion_name = activity.passion.name
+                category_name = activity.passion.category.name if activity.passion.category else 'Uncategorized'
+
+                if passion_name not in week_data['passions']:
+                    week_data['passions'][passion_name] = timedelta()
+
+                if category_name not in week_data['categories']:
+                    week_data['categories'][category_name] = timedelta()
+
+                week_data['passions'][passion_name] += activity.duration
+                week_data['categories'][category_name] += activity.duration
+
+            weekly_passion_data.append(week_data)
+
+        data = {
+            'weekly_passion_data': weekly_passion_data
         }
 
         return JsonResponse(data)
