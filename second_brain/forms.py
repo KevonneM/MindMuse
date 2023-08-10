@@ -38,7 +38,14 @@ class PassionForm(forms.ModelForm):
             'placeholder': 'New category name'
         })
 
+hour_choices = [(i, f"{i} hours") for i in range(0, 25)]
+minute_choices = [(i, f"{i} minutes") for i in range(0, 61, 5)]
+
 class PassionActivityForm(forms.ModelForm):
+    date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}))
+    hour = forms.ChoiceField(choices=hour_choices, widget=forms.Select(attrs={'class': 'scrollable-dropdown'}))
+    minute = forms.ChoiceField(choices=minute_choices, widget=forms.Select(attrs={'class': 'scrollable-dropdown'}))
+
     class Meta:
         model = PassionActivity
         fields = ['date', 'duration']

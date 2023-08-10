@@ -12,7 +12,12 @@ var chevronLeftTasks = null;
 var chevronRightTasks = null;
 let yearTitleTasks = null;
 
-
+// year vars for passion functions
+var currentYearPassions = null;
+var accountCreationYearPassions = null;
+var chevronLeftPassions = null;
+var chevronRightPassions = null;
+let yearTitlePassions = null;
 
 function eventUpdateYear() {
     console.log("currentYear: ", currentYear);
@@ -31,7 +36,6 @@ function eventUpdateYear() {
     fetch(`/yearly_event_data/${currentYear}`)
     .then(response => response.json())
     .then(data => {
-        console.log("Received data: ", data);
 
         document.querySelector('#daily-average').textContent = Number(data.daily_average).toFixed(2);
         document.querySelector('#weekly-average').textContent = Number(data.weekly_average).toFixed(2);
@@ -542,4 +546,87 @@ function initTaskCompletionInsights(year, accountYear) {
     });
 
     updateChart();
+}
+
+// Passion Insight js
+
+// Helper function to convert the duration string to hours
+function durationToHours(duration) {
+    const match = duration.match(/P(?:(\d+)D)?T?(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+    const hours = match[2] ? parseInt(match[2]) : 0;
+    const minutes = match[3] ? parseInt(match[3]) : 0;
+    return hours + (minutes / 60);
+}
+
+// Helper function to create a dataset for Chart.js
+function createDataset(name, data, category, colorMapping) {
+    return {
+        label: name,
+        data: data,
+        borderColor: colorMapping[category] || "#BDBDBD",
+        backgroundColor: (colorMapping[category] || "#BDBDBD") + "33", // added transparency for aesthetics
+        borderWidth: 2,
+        fill: true
+    };
+}
+
+// Main function to initialize the chart
+function initPassionInsights(currentYear, accountCreationYear) {
+    const ctx = document.getElementById('passionChart').getContext('2d');
+
+    fetch(`/yearly-passion-progress-data/${currentYear}/`)
+        .then(response => response.json())
+        .then(data => {
+            const labels = data.weekly_passion_data.map(week => week.date_range);
+            const datasets = [];
+            const passionDataset = {};
+            const colorMapping = {
+                "Physical": "#FF5733",
+                "Creative": "#33FF57",
+                "Mental": "#5733FF",
+                "Uncategorized": "#BDBDBD"
+            };
+
+            for (const week of data.weekly_passion_data) {
+                for (const passionName in week.passions) {
+                    if (!passionDataset[passionName]) {
+                        passionDataset[passionName] = Array(data.weekly_passion_data.length).fill(0); // initialize all weeks to 0
+                    }
+                    passionDataset[passionName][data.weekly_passion_data.indexOf(week)] = durationToHours(week.passions[passionName]);
+                }
+            }            
+
+            for (const [passionName, passionData] of Object.entries(passionDataset)) {
+                // Use the direct mapping from the data to determine the category
+                let category = 'Uncategorized';
+                for (const week of data.weekly_passion_data) {
+                    if (passionName in week.passions) {
+                        for (const categoryName in week.categories) {
+                            if (durationToHours(week.categories[categoryName]) === durationToHours(week.passions[passionName])) {
+                                category = categoryName;
+                                break;
+                            }
+                        }
+                    }
+                }
+                datasets.push(createDataset(passionName, passionData, category, colorMapping));
+            }
+
+            const chartConfig = {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                }
+            };
+
+            const myChart = new Chart(ctx, chartConfig);
+        })
+        .catch(error => {
+            console.error("Error fetching passion data:", error);
+        });
 }
