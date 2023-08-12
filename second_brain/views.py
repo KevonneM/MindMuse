@@ -499,17 +499,31 @@ def passion_activity_create(request, passion_pk):
     if request.method == 'POST':
         form = PassionActivityForm(request.POST)
         if form.is_valid():
-            passion_activity = form.save(commit=False)
-            passion_activity.passion = passion
-            passion_activity.save()
-            return redirect('second_brain:home')
+
+            hour = int(form.cleaned_data.get("hour"))
+            minute = int(form.cleaned_data.get("minute"))
+            duration_value = timedelta(hours=hour, minutes=minute)
+            
+            passion_activity, created = PassionActivity.objects.update_or_create(
+                passion=passion, 
+                date=form.cleaned_data['date'],
+                defaults={'duration': duration_value}
+            )
+            
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({'success': True})
+            else:
+                return redirect('second_brain:home')
+        else:
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({'success': False, 'errors': form.errors})
     else:
         form = PassionActivityForm()
 
     context = {
         'form': form,
         'passion': passion
-        }
+    }
 
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         return render(request, 'passions/_passion_activity_form.html', context)

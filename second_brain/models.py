@@ -117,6 +117,9 @@ class PassionActivity(models.Model):
     date = models.DateField()
     duration = models.DurationField()
 
+    class Meta:
+        unique_together = ['passion', 'date']
+
     def __str__(self):
         return f'{self.passion.name} on {self.date}'
 
