@@ -18,6 +18,7 @@ var accountCreationYearPassions = null;
 var chevronLeftPassions = null;
 var chevronRightPassions = null;
 let yearTitlePassions = null;
+var passionChartInstance = null;
 
 function eventUpdateYear() {
     console.log("currentYear: ", currentYear);
@@ -570,13 +571,32 @@ function createDataset(name, data, category, colorMapping) {
     };
 }
 
-// Main function to initialize the chart
-function initPassionInsights(currentYear, accountCreationYear) {
+// Main functions to initialize the chart
+function updatePassionInsightsChart(currentYear) {
+    const canvas = document.getElementById('passionChart');
     const ctx = document.getElementById('passionChart').getContext('2d');
+
+    if (passionChartInstance) {
+        passionChartInstance.destroy();
+    }
 
     fetch(`/yearly-passion-progress-data/${currentYear}/`)
         .then(response => response.json())
         .then(data => {
+
+            if (!data.weekly_passion_data.some(week => Object.keys(week.passions).length > 0)) {
+                // Edge-case where there is no passion activity for the entire year.
+                ctx.clearRect(0, 0, ctx.canvas.clientWidth, ctx.canvas.clientHeight);
+
+                ctx.font = '20px Arial';
+                ctx.fillStyle = 'black';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+
+                ctx.fillText("No Data Available", canvas.width / 2, canvas.height / 2);
+                return;
+            }
+
             const labels = data.weekly_passion_data.map(week => week.date_range);
             const datasets = [];
             const passionDataset = {};
@@ -624,9 +644,56 @@ function initPassionInsights(currentYear, accountCreationYear) {
                 }
             };
 
-            const myChart = new Chart(ctx, chartConfig);
+            passionChartInstance = new Chart(ctx, chartConfig);
         })
         .catch(error => {
             console.error("Error fetching passion data:", error);
         });
+}
+
+function initPassionInsights(currentYear, accountCreationYear) {
+    currentYearPassions = currentYear;
+    accountCreationYearPassions = accountCreationYear;
+
+    console.log("initPassionInsights called with year: ", currentYear, ", accountCreationYear: ", accountCreationYear);
+
+    chevronLeftPassions = document.getElementById('prev-year-passions');
+    chevronRightPassions = document.getElementById('next-year-passions');
+    yearTitlePassions = document.querySelector('.card-title-passion');
+
+    yearTitlePassions.textContent = currentYearPassions;
+
+    const updateChart = () => {
+        if (document.getElementById('passion-tab').classList.contains('active')) {
+            updatePassionInsightsChart(currentYearPassions);
+        } else if (document.getElementById('category-tab').classList.contains('active')) {
+            initCategoryChart(currentYearPassions);
+        }
+    };
+
+    chevronLeftPassions.addEventListener('click', () => {
+        if (currentYearPassions > accountCreationYearPassions) {
+            currentYearPassions--;
+            yearTitlePassions.textContent = currentYearPassions;
+            updateChart();
+        }
+    });
+
+    chevronRightPassions.addEventListener('click', () => {
+        if (currentYearPassions < new Date().getFullYear()) {
+            currentYearPassions++;
+            yearTitlePassions.textContent = currentYearPassions;
+            updateChart();
+        }
+    });
+
+    document.getElementById('passion-tab').addEventListener('shown.bs.tab', () => {
+        setTimeout(updateChart, 1000);
+    });
+
+    document.getElementById('category-tab').addEventListener('shown.bs.tab', () => {
+        setTimeout(updateChart, 1000);
+    });
+
+    updateChart();
 }
