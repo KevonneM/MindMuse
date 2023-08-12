@@ -218,25 +218,25 @@
     });
 
     document.addEventListener('DOMContentLoaded', (event) => {
-    const passionCanvas = document.getElementById('passionChart');
+        const passionCanvas = document.getElementById('passionChart');
 
-    if (passionCanvas) {
-        console.log("DOM fully loaded and parsed, initializing passion insights");
-        initPassionInsights({{ current_year }}, {{ account_creation_year }});
+        if (passionCanvas) {
+            console.log("DOM fully loaded and parsed, initializing passion insights");
+            initPassionInsights({{ current_year }}, {{ account_creation_year }});
 
-        setTimeout(() => {
-            const passionCanvasAfterInit = document.getElementById('passionChart');
-                
-            if (passionCanvasAfterInit) {
-                console.log("Element #passionChart still exists after initPassionInsights");
-            } else {
-                console.error('Element #passionChart does not exist after initPassionInsights');
-            }
-        }, 2000);
-    } else {
-        console.error('Element #passionChart does not exist');
-    }
-});
+            setTimeout(() => {
+                const passionCanvasAfterInit = document.getElementById('passionChart');
+                    
+                if (passionCanvasAfterInit) {
+                    console.log("Element #passionChart still exists after initPassionInsights");
+                } else {
+                    console.error('Element #passionChart does not exist after initPassionInsights');
+                }
+            }, 2000);
+        } else {
+            console.error('Element #passionChart does not exist');
+        }
+    });
 
 </script>
 

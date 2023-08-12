@@ -5,6 +5,11 @@ function recordPassionActivity(checkboxElem, passionId, dateStr) {
     if (isChecked) {
         let hours = prompt("Enter the duration of your activity in hours (0-24)");
 
+        if (hours === null) {
+            checkboxElem.checked = false;
+            return;
+        }
+
         // Validation
         while (!/^[0-9]{1,2}$/.test(hours) || parseInt(hours) < 0 || parseInt(hours) > 24) {
             alert('Invalid hour input. Please enter a value between 0-24');
@@ -12,6 +17,11 @@ function recordPassionActivity(checkboxElem, passionId, dateStr) {
         }
 
         let minutes = prompt("Enter the duration of your activity in minutes (0-59, in increments of 5)");
+
+        if (minutes === null) {
+            checkboxElem.checked = false;
+            return;
+        }
 
         while (!/^[0-9]{1,2}$/.test(minutes) || parseInt(minutes) % 5 !== 0 || parseInt(minutes) < 0 || parseInt(minutes) > 59) {
             alert('Invalid minute input. Please enter a value between 0-59 in increments of 5');
