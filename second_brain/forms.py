@@ -1,5 +1,6 @@
 from django import forms
 from .models import Task, Passion, PassionActivity, Quote
+from  datetime import timedelta
 
 class TaskForm(forms.ModelForm):
     title = forms.CharField(max_length=20, widget=forms.TextInput(attrs={'placeholder': 'Enter task title'}))
@@ -48,7 +49,17 @@ class PassionActivityForm(forms.ModelForm):
 
     class Meta:
         model = PassionActivity
-        fields = ['date', 'duration']
+        fields = ['date', 'hour', 'minute']
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        hour = int(cleaned_data.get("hour"))
+        minute = int(cleaned_data.get("minute"))
+
+        cleaned_data["duration"] = timedelta(hours=hour, minutes=minute)
+
+        return cleaned_data
 
 class QuoteForm(forms.ModelForm):
     class Meta:

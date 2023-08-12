@@ -1,4 +1,5 @@
 <div class="modal-body">
+    <div id="passionActivityFeedback" class="text-success"></div>
     <form method="POST" action="{% url 'second_brain:passion_activity_create' passion.pk %}">
         {% csrf_token %}
         <div class="form-group">

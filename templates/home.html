@@ -793,6 +793,44 @@
         document.getElementById('passionActivityCreateModalContent').innerHTML = data;
         var myModal = new bootstrap.Modal(document.getElementById('passionActivityCreateModal'));
         myModal.show();
+
+        setupFormEventListener(passionId, myModal);
+    }
+
+    // Ajaxify the form sumbission as as httpresponse was returning None as page was refreshing
+    function setupFormEventListener(passionId, modalInstance) {
+        const form = document.querySelector('#passionActivityCreateModal form');
+        const feedbackElement = document.getElementById('passionActivityFeedback');
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            let formData = new FormData(form);
+            let response = await fetch(`/passions/${passionId}/activity/create/`, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': getCookie('csrftoken'),
+                },
+                body: formData
+            });
+
+            let data = await response.json();
+
+            if (data.success) {
+                feedbackElement.textContent = "Activity recorded successfully!";
+                feedbackElement.classList.remove("text-danger");
+                feedbackElement.classList.add("text-success");
+
+                setTimeout(function() {
+                    var myModal = new bootstrap.Modal(document.getElementById('passionActivityCreateModal'));
+                    modalInstance.hide();
+                }, 2000);
+            } else {
+                feedbackElement.textContent = "Failed to record passion activity. Errors: " + JSON.stringify(data.errors);
+                feedbackElement.classList.remove("text-success");
+                feedbackElement.classList.add("text-danger");
+            }
+        });
     }
 
     async function loadPassionUpdateModal(passionId) {
