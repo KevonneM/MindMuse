@@ -251,14 +251,18 @@ def yearly_passion_progress_data(request, year):
             for activity in activities_for_week:
                 passion_name = activity.passion.name
                 category_name = activity.passion.category.name if activity.passion.category else 'Uncategorized'
+                passion_color = activity.passion.color
 
                 if passion_name not in week_data['passions']:
-                    week_data['passions'][passion_name] = timedelta()
+                    week_data['passions'][passion_name] = {
+                        'duration': timedelta(),
+                        'color': passion_color
+                    }
 
                 if category_name not in week_data['categories']:
                     week_data['categories'][category_name] = timedelta()
 
-                week_data['passions'][passion_name] += activity.duration
+                week_data['passions'][passion_name]['duration'] += activity.duration
                 week_data['categories'][category_name] += activity.duration
 
             weekly_passion_data.append(week_data)

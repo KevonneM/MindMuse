@@ -553,19 +553,31 @@ function initTaskCompletionInsights(year, accountYear) {
 
 // Helper function to convert the duration string to hours
 function durationToHours(duration) {
-    const match = duration.match(/P(?:(\d+)D)?T?(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
-    const hours = match[2] ? parseInt(match[2]) : 0;
-    const minutes = match[3] ? parseInt(match[3]) : 0;
-    return hours + (minutes / 60);
+    if (typeof duration === "string") {
+        const match = duration.match(/P(?:(\d+)D)?T?(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+        const hours = match[2] ? parseInt(match[2]) : 0;
+        const minutes = match[3] ? parseInt(match[3]) : 0;
+        return hours + (minutes / 60);
+    } else if (typeof duration === "number") {
+        return duration;
+    } else {
+        console.error("Unexpected duration type:", typeof duration, duration);
+        return 0;
+    }
+}
+
+function hexToRgba(hex, alpha = 1) {
+    const [r, g, b] = hex.match(/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i).slice(1).map(n => parseInt(n, 16));
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
 // Helper function to create a dataset for Chart.js
-function createDataset(name, data, category, colorMapping) {
+function createDataset(name, data, color) {
     return {
         label: name,
         data: data,
-        borderColor: colorMapping[category] || "#BDBDBD",
-        backgroundColor: (colorMapping[category] || "#BDBDBD") + "33", // added transparency for aesthetics
+        borderColor: hexToRgba(color, 1),
+        backgroundColor: hexToRgba(color, 0.2),
         borderWidth: 2,
         fill: true
     };
@@ -600,36 +612,22 @@ function updatePassionInsightsChart(currentYear) {
             const labels = data.weekly_passion_data.map(week => week.date_range);
             const datasets = [];
             const passionDataset = {};
-            const colorMapping = {
-                "Physical": "#FF5733",
-                "Creative": "#33FF57",
-                "Mental": "#5733FF",
-                "Uncategorized": "#BDBDBD"
-            };
+            const defaultColor = "#808080";
 
             for (const week of data.weekly_passion_data) {
                 for (const passionName in week.passions) {
                     if (!passionDataset[passionName]) {
-                        passionDataset[passionName] = Array(data.weekly_passion_data.length).fill(0); // initialize all weeks to 0
+                        passionDataset[passionName] = {
+                            'data': Array(data.weekly_passion_data.length).fill(0), // initialize all weeks to 0
+                            'color': week.passions[passionName].color || defaultColor
+                        };
                     }
-                    passionDataset[passionName][data.weekly_passion_data.indexOf(week)] = durationToHours(week.passions[passionName]);
+                    passionDataset[passionName].data[data.weekly_passion_data.indexOf(week)] = durationToHours(week.passions[passionName].duration);
                 }
-            }            
+            }           
 
             for (const [passionName, passionData] of Object.entries(passionDataset)) {
-                // Use the direct mapping from the data to determine the category
-                let category = 'Uncategorized';
-                for (const week of data.weekly_passion_data) {
-                    if (passionName in week.passions) {
-                        for (const categoryName in week.categories) {
-                            if (durationToHours(week.categories[categoryName]) === durationToHours(week.passions[passionName])) {
-                                category = categoryName;
-                                break;
-                            }
-                        }
-                    }
-                }
-                datasets.push(createDataset(passionName, passionData, category, colorMapping));
+                datasets.push(createDataset(passionName, passionData.data, passionData.color));
             }
 
             const chartConfig = {
