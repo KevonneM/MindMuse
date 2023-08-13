@@ -755,6 +755,15 @@
         let data = await response.text();
         document.getElementById('passionCreateModalContent').innerHTML = data;
 
+        var colorInput = document.querySelector('#passionCreateModal .jscolor');
+        if (colorInput) {
+            if (!colorInput.jscolor) {
+                var myPicker = new JSColor(colorInput);
+            } else {
+                colorInput.jscolor.show();
+            }
+        }
+
         var addCategoryButton = document.getElementById('add-category-button');
         addCategoryButton.addEventListener('click', async function() {
             let newCategoryName = document.getElementById('new-category-name').value;
@@ -837,6 +846,15 @@
         let response = await fetch(`/passions/${passionId}/update/`, {headers: {'X-Requested-With': 'XMLHttpRequest'}});
         let data = await response.text();
         document.getElementById('passionUpdateModalContent').innerHTML = data;
+
+        var colorInput = document.querySelector('#passionUpdateModal .jscolor');
+        if (colorInput) {
+            if (!colorInput.jscolor) {
+                var myPicker = new JSColor(colorInput);
+            } else {
+                colorInput.jscolor.show();
+            }
+        }
 
         var addCategoryButton = document.getElementById('update-add-category-button');
         addCategoryButton.addEventListener('click', async function() {

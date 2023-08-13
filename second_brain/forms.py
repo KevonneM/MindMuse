@@ -29,7 +29,7 @@ class TaskForm(forms.ModelForm):
 class PassionForm(forms.ModelForm):
     class Meta:
         model = Passion
-        fields = ['name', 'category', 'description']
+        fields = ['name', 'category', 'description', 'color']
 
     new_category_name = forms.CharField(required=False)
 

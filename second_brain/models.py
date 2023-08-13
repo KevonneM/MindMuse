@@ -108,6 +108,7 @@ class Passion(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField()
     category = models.ForeignKey(PassionCategory, on_delete=models.SET_NULL, null=True)
+    color = models.CharField(max_length=7, default='#808080')
 
     def __str__(self):
         return self.name
