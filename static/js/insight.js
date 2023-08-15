@@ -4,6 +4,7 @@ var accountCreationYear = null;
 var chevronLeft = null;
 var chevronRight = null;
 let yearTitle = null;
+var myEventChart;
 
 // year vars for task functions
 var currentYearTasks = null;
@@ -20,16 +21,16 @@ var chevronRightPassions = null;
 let yearTitlePassions = null;
 var passionChartInstance = null;
 
-function eventUpdateYear() {
-    console.log("currentYear: ", currentYear);
-    console.log("accountCreationYear: ", accountCreationYear);
-    var dailyTabActive = document.getElementById('daily-tab').classList.contains('active');
-    if (!dailyTabActive) {
-        return;
-    }
-    
+function updateEventsChart() {
+    const isDailyTabActive = document.getElementById('daily-events-tab').classList.contains('active');
+    const isWeeklyTabActive = document.getElementById('weekly-events-tab').classList.contains('active');
+    const isMonthlyTabActive = document.getElementById('monthly-events-tab').classList.contains('active');
+
+    let ctx;
+    let maxEventValue;
+    let maxEventIndex;
+
     yearTitle.textContent = currentYear;
-    console.log("Fetching data for year: ", currentYear);
 
     chevronLeft.classList.toggle("disabled", currentYear <= accountCreationYear);
     chevronRight.classList.toggle("disabled", currentYear >= new Date().getFullYear());
@@ -37,268 +38,196 @@ function eventUpdateYear() {
     fetch(`/yearly_event_data/${currentYear}`)
     .then(response => response.json())
     .then(data => {
-
         document.querySelector('#daily-average').textContent = Number(data.daily_average).toFixed(2);
         document.querySelector('#weekly-average').textContent = Number(data.weekly_average).toFixed(2);
         document.querySelector('#monthly-average').textContent = Number(data.monthly_average).toFixed(2);
 
-        const ctx = document.getElementById('dailyEventsChart').getContext('2d');
-
-        if (window.myChart) {
-            window.myChart.destroy();
+        if (myEventChart) {
+            myEventChart.destroy();
         }
 
-        let maxEventValue = Math.max(...data.daily_event_data);
-        let maxEventIndex = data.daily_event_data.indexOf(maxEventValue);
+        if (isDailyTabActive) {
+            ctx = document.getElementById('dailyEventsChart').getContext('2d');
 
-        var date = new Date(currentYear, 0);
-        date.setDate(maxEventIndex + 1);
-        var dateString = date.toLocaleDateString();
+            maxEventValue = Math.max(...data.daily_event_data);
+            maxEventIndex = data.daily_event_data.indexOf(maxEventValue);
 
-        document.querySelector('#busiest-day').textContent = `Busiest Day: ${dateString} : Events: ${maxEventValue}`;
+            var date = new Date(currentYear, 0);
+            date.setDate(maxEventIndex + 1);
+            var dateString = date.toLocaleDateString();
 
-        let pointBackgroundColorsZero = [];
-        let pointBackgroundColorsNonZero = [];
+            document.querySelector('#busiest-day').textContent = `Busiest Day: ${dateString} : Events: ${maxEventValue}`;
 
-        let dataZero = [];
-        let dataNonZero = [];
+            let pointBackgroundColorsZero = [];
+            let pointBackgroundColorsNonZero = [];
+            let dataZero = [];
+            let dataNonZero = [];
 
-        data.daily_event_data.forEach((value, index) => {
-            let pointData = {x: index+1, y: value};
+            data.daily_event_data.forEach((value, index) => {
+                let pointData = { x: index + 1, y: value };
 
-            if (value === 0) {
-                dataZero.push(pointData);
-                pointBackgroundColorsZero.push(index === maxEventIndex ? 'rgba(255, 0, 0, 0.5)' : 'rgba(0, 123, 255, 0.5)');
-            } else {
-                dataNonZero.push(pointData);
-                pointBackgroundColorsNonZero.push(index === maxEventIndex ? 'rgba(255, 0, 0, 0.5)' : 'rgba(0, 123, 255, 0.5)');
-            }
-        });
+                if (value === 0) {
+                    dataZero.push(pointData);
+                    pointBackgroundColorsZero.push(index === maxEventIndex ? 'rgba(255, 0, 0, 0.5)' : 'rgba(0, 123, 255, 0.5)');
+                } else {
+                    dataNonZero.push(pointData);
+                    pointBackgroundColorsNonZero.push(index === maxEventIndex ? 'rgba(255, 0, 0, 0.5)' : 'rgba(0, 123, 255, 0.5)');
+                }
+            });
 
-        window.myChart = new Chart(ctx, {
-            type: 'scatter',
-            data: {
-                datasets: [{
-                    label: 'Days with zero events',
-                    data: dataZero,
-                    pointBackgroundColor: pointBackgroundColorsZero,
-                    pointRadius: 5,
-                }, {
-                    label: 'Days with non-zero events',
-                    data: dataNonZero,
-                    pointBackgroundColor: pointBackgroundColorsNonZero,
-                    pointRadius: 5,
-                }],
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                var date = new Date(currentYear, 0);
-                                date.setDate(context.parsed.x);
-                                var dateString = date.toLocaleDateString();
+            myEventChart = new Chart(ctx, {
+                type: 'scatter',
+                data: {
+                    datasets: [{
+                        label: 'Days with zero events',
+                        data: dataZero,
+                        pointBackgroundColor: pointBackgroundColorsZero,
+                        pointRadius: 5,
+                    }, {
+                        label: 'Days with non-zero events',
+                        data: dataNonZero,
+                        pointBackgroundColor: pointBackgroundColorsNonZero,
+                        pointRadius: 5,
+                    }],
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    var date = new Date(currentYear, 0);
+                                    date.setDate(context.parsed.x);
+                                    var dateString = date.toLocaleDateString();
 
-                                var events = context.parsed.y;
+                                    var events = context.parsed.y;
 
-                                return dateString + ': ' + 'Events: ' + events;
+                                    return dateString + ': ' + 'Events: ' + events;
+                                }
+                            }
+                        },
+                        legend: {
+                            display: true,
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            title: {
+                                display: true,
+                                text: 'Day of the year'
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of events'
+                            }
+                        }
+                    }
+                }
+            });
+
+        } else if (isWeeklyTabActive) {
+            ctx = document.getElementById('weeklyEventsChart').getContext('2d');
+
+            let weeklyEventCounts = data.weekly_event_data.map(weekData => weekData[0]);
+            maxEventValue = Math.max(...weeklyEventCounts);
+            maxEventIndex = weeklyEventCounts.indexOf(maxEventValue);
+
+            document.querySelector('#busiest-week').textContent = `Busiest Week: ${maxEventIndex+1} : Events: ${maxEventValue}`;
+
+            let pointBackgroundColors = weeklyEventCounts.map((value, index) =>
+                index === maxEventIndex ? 'rgba(255, 0, 0, 0.5)' : 'rgba(0, 123, 255, 0.5)'
+            );
+
+            myEventChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: weeklyEventCounts.map((_, index) => `Week ${index+1}`),
+                    datasets: [{
+                        label: 'Number of events',
+                        data: weeklyEventCounts,
+                        backgroundColor: pointBackgroundColors,
+                    }],
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of events'
                             }
                         }
                     },
-                    legend: {
-                        display: true,
-                    }
-                },
-                scales: {
-                    x: {
-                        type: 'linear',
-                        title: {
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                title: function(tooltipItem) {
+                                    var weekData = data.weekly_event_data[tooltipItem[0].dataIndex];
+                                    var startDate = weekData[1];
+                                    var endDate = weekData[2];
+                                    return `${startDate} - ${endDate}`;
+                                },
+                                label: function(tooltipItem) {
+                                    var events = tooltipItem.raw;
+                                    return 'Events: ' + events;
+                                }
+                            }
+                        },
+                        legend: {
                             display: true,
-                            text: 'Day of the year'
-                        }
-                    },
-                    y: {
-                        beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: 'Number of events'
                         }
                     }
                 }
-            }
-        });
-    });
-}
+            });
 
-// Global variable to hold the Chart.js instance for the weekly chart.
-var myWeeklyChart = null;
+        } else if (isMonthlyTabActive) {
+            ctx = document.getElementById('monthlyEventsChart').getContext('2d');
 
-function eventUpdateWeek() {
-    console.log("currentYear: ", currentYear);
-    console.log("accountCreationYear: ", accountCreationYear);
-    var weeklyTabActive = document.getElementById('weekly-tab').classList.contains('active');
-    if (!weeklyTabActive) {
-        return;
-    }
+            maxEventValue = Math.max(...data.monthly_event_data);
+            maxEventIndex = data.monthly_event_data.indexOf(maxEventValue);
 
-    yearTitle.textContent = currentYear;
-    console.log("Fetching data for week: ", currentYear);
+            var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var monthString = monthNames[maxEventIndex];
 
-    chevronLeft.classList.toggle("disabled", currentYear <= accountCreationYear);
-    chevronRight.classList.toggle("disabled", currentYear >= new Date().getFullYear());
+            document.querySelector('#busiest-month').textContent = `Busiest Month: ${monthString} : Events: ${maxEventValue}`;
 
-    fetch(`/yearly_event_data/${currentYear}`)
-    .then(response => response.json())
-    .then(data => {
-        console.log("Received data: ", data);
+            let pointBackgroundColors = new Array(12).fill('rgba(0, 123, 255, 0.5)');
+            pointBackgroundColors[maxEventIndex] = 'rgba(255, 0, 0, 0.5)';
 
-        document.querySelector('#daily-average').textContent = Number(data.daily_average).toFixed(2);
-        document.querySelector('#weekly-average').textContent = Number(data.weekly_average).toFixed(2);
-        document.querySelector('#monthly-average').textContent = Number(data.monthly_average).toFixed(2);
-
-        var ctx = document.getElementById('weeklyEventsChart').getContext('2d');
-
-        if (myWeeklyChart) {
-            myWeeklyChart.destroy();
-        }
-
-        let weeklyEventCounts = data.weekly_event_data.map(weekData => weekData[0]);
-        let maxEventValue = Math.max(...weeklyEventCounts);
-        let maxEventIndex = weeklyEventCounts.indexOf(maxEventValue);
-
-        document.querySelector('#busiest-week').textContent = `Busiest Week: ${maxEventIndex+1} : Events: ${maxEventValue}`;
-
-        let pointBackgroundColors = weeklyEventCounts.map((value, index) =>
-            index === maxEventIndex ? 'rgba(255, 0, 0, 0.5)' : 'rgba(0, 123, 255, 0.5)'
-        );
-
-        myWeeklyChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: weeklyEventCounts.map((value, index) => `Week ${index+1}`),
-                datasets: [{
-                    label: 'Number of events',
-                    data: weeklyEventCounts,
-                    backgroundColor: pointBackgroundColors,
-                }],
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: 'Number of events'
-                        }
-                    }
+            myEventChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: monthNames,
+                    datasets: [{
+                        label: 'Number of events',
+                        data: data.monthly_event_data,
+                        backgroundColor: pointBackgroundColors,
+                    }],
                 },
-                plugins: {
-                    tooltip: {
-                        callbacks: {
-                            title: function(tooltipItem) {
-                                var weekData = data.weekly_event_data[tooltipItem[0].dataIndex];
-                                var startDate = weekData[1];
-                                var endDate = weekData[2];
-                                return `${startDate} - ${endDate}`;
-                            },
-                            label: function(tooltipItem) {
-                                var events = tooltipItem.raw;
-                                return 'Events: ' + events;
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of events'
                             }
                         }
                     },
-                    legend: {
-                        display: true,
-                    }
-                }
-            }
-        });
-    });
-}
-
-// Global variable to hold the Chart.js instance for the monthly chart.
-var myMonthlyChart = null;
-
-function eventUpdateMonth() {
-    console.log("currentYear: ", currentYear);
-    console.log("accountCreationYear: ", accountCreationYear);
-    var monthlyTabActive = document.getElementById('monthly-tab').classList.contains('active');
-    if (!monthlyTabActive) {
-        return;
-    }
-
-    yearTitle.textContent = currentYear;
-    console.log("Fetching data for month: ", currentYear);
-
-    chevronLeft.classList.toggle("disabled", currentYear <= accountCreationYear);
-    chevronRight.classList.toggle("disabled", currentYear >= new Date().getFullYear());
-
-    fetch(`/yearly_event_data/${currentYear}`)
-    .then(response => response.json())
-    .then(data => {
-        console.log("Received data: ", data);
-
-        document.querySelector('#daily-average').textContent = Number(data.daily_average).toFixed(2);
-        document.querySelector('#weekly-average').textContent = Number(data.weekly_average).toFixed(2);
-        document.querySelector('#monthly-average').textContent = Number(data.monthly_average).toFixed(2);
-
-        var ctx = document.getElementById('monthlyEventsChart').getContext('2d');
-
-        if (window.myMonthlyChart) {
-            window.myMonthlyChart.destroy();
-        }
-
-        let maxEventValue = Math.max(...data.monthly_event_data);
-        let maxEventIndex = data.monthly_event_data.indexOf(maxEventValue);
-
-        var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
-        var monthString = monthNames[maxEventIndex];
-
-        document.querySelector('#busiest-month').textContent = `Busiest Month: ${monthString} : Events: ${maxEventValue}`;
-
-        let dataZero = [];
-        let dataNonZero = [];
-
-        data.monthly_event_data.forEach((val, idx) => {
-            if (val === 0) dataZero.push(idx+1);
-            else dataNonZero.push(idx+1);
-        });
-
-        let dataNonZeroValues = dataNonZero.map(idx => data.monthly_event_data[idx-1]);
-
-        let pointBackgroundColors = new Array(12).fill('rgba(0, 123, 255, 0.5)');
-        pointBackgroundColors[maxEventIndex] = 'rgba(255, 0, 0, 0.5)';
-
-        window.myMonthlyChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: monthNames,
-                datasets: [{
-                    label: 'Number of events',
-                    data: data.monthly_event_data,
-                    backgroundColor: pointBackgroundColors,
-                }],
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        title: {
+                    plugins: {
+                        legend: {
                             display: true,
-                            text: 'Number of events'
                         }
                     }
-                },
-                plugins: {
-                    legend: {
-                        display: true,
-                    }
                 }
-            }
-        });
+            });
+        }
     });
 }
 
@@ -315,44 +244,30 @@ function initEventInsights(year, accountYear) {
     chevronLeft.addEventListener("click", function() {
         if (currentYear > accountCreationYear) {
             currentYear--;
-            if (document.getElementById('daily-tab').classList.contains('active')) {
-                eventUpdateYear();
-            } else if (document.getElementById('weekly-tab').classList.contains('active')) {
-                eventUpdateWeek();
-            } else if (document.getElementById('monthly-tab').classList.contains('active')) {
-                eventUpdateMonth();
-            }
+            updateEventsChart();
         }
     });
 
     chevronRight.addEventListener("click", function() {
         if (currentYear < new Date().getFullYear()) {
             currentYear++;
-            if (document.getElementById('daily-tab').classList.contains('active')) {
-                eventUpdateYear();
-            } else if (document.getElementById('weekly-tab').classList.contains('active')) {
-                eventUpdateWeek();
-            } else if (document.getElementById('monthly-tab').classList.contains('active')) {
-                eventUpdateMonth();
-            }
+            updateEventsChart();
         }
     });
 
-    document.getElementById('daily-tab').addEventListener('shown.bs.tab', function() {
-        setTimeout(eventUpdateYear, 1000);
+    document.getElementById('daily-events-tab').addEventListener('shown.bs.tab', function() {
+        setTimeout(updateEventsChart, 1000);
     });
 
-    document.getElementById('weekly-tab').addEventListener('shown.bs.tab', function() {
-        setTimeout(eventUpdateWeek, 1000);
+    document.getElementById('weekly-events-tab').addEventListener('shown.bs.tab', function() {
+        setTimeout(updateEventsChart, 1000);
     });
 
-    document.getElementById('monthly-tab').addEventListener('shown.bs.tab', function() {
-        setTimeout(eventUpdateMonth, 1000);
+    document.getElementById('monthly-events-tab').addEventListener('shown.bs.tab', function() {
+        setTimeout(updateEventsChart, 1000);
     });
     
-    eventUpdateYear();
-    eventUpdateWeek();
-    eventUpdateMonth();
+    updateEventsChart();
 }
 
 // Task Insight js
@@ -510,11 +425,11 @@ function initTaskCompletionInsights(year, accountYear) {
     yearTitleTasks.textContent = currentYearTasks;
 
     const updateChart = () => {
-        if (document.getElementById('daily-tab').classList.contains('active')) {
+        if (document.getElementById('daily-task-tab').classList.contains('active')) {
             updateTaskCharts(currentYearTasks, 'daily');
-        } else if (document.getElementById('weekly-tab').classList.contains('active')) {
+        } else if (document.getElementById('weekly-task-tab').classList.contains('active')) {
             updateTaskCharts(currentYearTasks, 'weekly');
-        } else if (document.getElementById('monthly-tab').classList.contains('active')) {
+        } else if (document.getElementById('monthly-task-tab').classList.contains('active')) {
             updateTaskCharts(currentYearTasks, 'monthly');
         }
     };
@@ -535,15 +450,15 @@ function initTaskCompletionInsights(year, accountYear) {
         }
     });
 
-    document.getElementById('daily-tab').addEventListener('shown.bs.tab', () => {
+    document.getElementById('daily-task-tab').addEventListener('shown.bs.tab', () => {
         setTimeout(updateChart, 1000);
     });
 
-    document.getElementById('weekly-tab').addEventListener('shown.bs.tab', () => {
+    document.getElementById('weekly-task-tab').addEventListener('shown.bs.tab', () => {
         setTimeout(updateChart, 1000);
     });
 
-    document.getElementById('monthly-tab').addEventListener('shown.bs.tab', () => {
+    document.getElementById('monthly-task-tab').addEventListener('shown.bs.tab', () => {
         setTimeout(updateChart, 1000);
     });
 
