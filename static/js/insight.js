@@ -580,11 +580,14 @@ function updatePassionInsightsChart(currentYear) {
                 },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: true,
+                    maintainAspectRatio: false,
                     scales: {
                         y: {
                             beginAtZero: true,
-                            max: 24
+                            max: 24,
+                            ticks: {
+                                stepSize: 1
+                            }
                         }
                     },
                     plugins: {
