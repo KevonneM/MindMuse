@@ -119,6 +119,7 @@ function eventUpdateYear() {
                         }
                     },
                     y: {
+                        beginAtZero: true,
                         title: {
                             display: true,
                             text: 'Number of events'
@@ -453,8 +454,6 @@ function updateTaskCharts(year) {
                                     title: function(context) {
                                         const dateStr = context[0].label;
                                         
-                                        const monthNames = ["January", "February", "March", "April", "May", "June",
-                                                            "July", "August", "September", "October", "November", "December"];
                                         switch (chartType) {
                                             case 'daily': {
                                                 return dateStr;
@@ -571,7 +570,7 @@ function formatWeekRange(weekRange) {
 }
 
 
-// Helper function to convert the duration string to hours
+// Helper function to convert the duration string to hours for plotting.
 function durationToHours(duration) {
     if (typeof duration === "string") {
         const match = duration.match(/P(?:(\d+)D)?T?(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
@@ -584,6 +583,14 @@ function durationToHours(duration) {
         console.error("Unexpected duration type:", typeof duration, duration);
         return 0;
     }
+}
+
+// Helper function to convert the hours to duration for displaying appropriate values to users.
+function hoursToDuration(hours) {
+    const totalMinutes = hours * 60;
+    const hrs = Math.floor(totalMinutes / 60);
+    const mins = Math.round(totalMinutes % 60);
+    return `${hrs} hours ${mins} minutes`;
 }
 
 function hexToRgba(hex, alpha = 1) {
@@ -659,8 +666,26 @@ function updatePassionInsightsChart(currentYear) {
                 options: {
                     responsive: true,
                     maintainAspectRatio: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 24
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const passionName = context.dataset.label;
+                                    const value = context.parsed.y;
+                                    const formattedDuration = hoursToDuration(value);
+                                    return `${passionName}: ${formattedDuration}`;
+                                }
+                            }
+                        }
+                    }
                 }
-            };
+            };            
 
             passionChartInstance = new Chart(ctx, chartConfig);
         })
