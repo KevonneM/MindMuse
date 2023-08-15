@@ -108,13 +108,13 @@
                     </div>
                     <ul class="nav nav-tabs card-header-tabs mt-3">
                         <li class="nav-item">
-                            <a class="nav-link active" id="daily-tab" data-bs-toggle="tab" href="#daily-content">Daily</a>
+                            <a class="nav-link active" id="daily-events-tab" data-bs-toggle="tab" href="#daily-content">Daily</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" id="weekly-tab" data-bs-toggle="tab" href="#weekly-content">Weekly</a>
+                            <a class="nav-link" id="weekly-events-tab" data-bs-toggle="tab" href="#weekly-content">Weekly</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" id="monthly-tab" data-bs-toggle="tab" href="#monthly-content">Monthly</a>
+                            <a class="nav-link" id="monthly-events-tab" data-bs-toggle="tab" href="#monthly-content">Monthly</a>
                         </li>
                     </ul>
                 </div>
@@ -144,99 +144,54 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', (event) => {
-        const dailyCanvas = document.getElementById('dailyEventsChart');
-        const weeklyCanvas = document.getElementById('weeklyEventsChart');
-        const monthlyCanvas = document.getElementById('monthlyEventsChart');
+    const checkAndInit = (canvasIds, initFuncName, logName) => {
+        let allCanvasExist = true;
+        const canvasesAfterInit = {};
 
-        if (dailyCanvas || weeklyCanvas || monthlyCanvas) {
-            console.log("DOM fully loaded and parsed, initializing event insights");
-            initEventInsights({{ current_year }}, {{ account_creation_year }});
+        canvasIds.forEach(id => {
+            const canvas = document.getElementById(id);
+            if (!canvas) {
+                allCanvasExist = false;
+                console.error(`Element #${id} does not exist`);
+            }
 
-            setTimeout(() => {
-                const dailyCanvasAfterInit = document.getElementById('dailyEventsChart');
-                const weeklyCanvasAfterInit = document.getElementById('weeklyEventsChart');
-                const monthlyCanvasAfterInit = document.getElementById('monthlyEventsChart');
-                    
-                if (dailyCanvasAfterInit) {
-                    console.log("Element #dailyEventsChart still exists after initEventInsights");
-                } else {
-                    console.error('Element #dailyEventsChart does not exist after initEventInsights');
-                }
+            canvasesAfterInit[id] = canvas;
+        });
 
-                if (weeklyCanvasAfterInit) {
-                    console.log("Element #weeklyEventsChart still exists after initEventInsights");
-                } else {
-                    console.error('Element #weeklyEventsChart does not exist after initEventInsights');
-                }
-
-                if (monthlyCanvasAfterInit) {
-                    console.log("Element #monthlyEventsChart still exists after initEventInsights");
-                } else {
-                    console.error('Element #monthlyEventsChart does not exist after initEventInsights');
-                }
-            }, 2000);
-        } else {
-            console.error('Element #dailyEventsChart, #weeklyEventsChart or #monthlyEventsChart does not exist');
-        }
-    });
-
-    document.addEventListener('DOMContentLoaded', (event) => {
-        const dailyCanvas = document.getElementById('dailyTasksChart');
-        const weeklyCanvas = document.getElementById('weeklyTasksChart');
-        const monthlyCanvas = document.getElementById('monthlyTasksChart');
-
-        if (dailyCanvas || weeklyCanvas || monthlyCanvas) {
-            console.log("DOM fully loaded and parsed, initializing task completion insights");
-            initTaskCompletionInsights({{ current_year }}, {{ account_creation_year }});
+        if (allCanvasExist) {
+            console.log(`DOM fully loaded and parsed, initializing ${logName}`);
+            initFuncName({{ current_year }}, {{ account_creation_year }});
 
             setTimeout(() => {
-                const dailyCanvasAfterInit = document.getElementById('dailyTasksChart');
-                const weeklyCanvasAfterInit = document.getElementById('weeklyTasksChart');
-                const monthlyCanvasAfterInit = document.getElementById('monthlyTasksChart');
-                    
-                if (dailyCanvasAfterInit) {
-                    console.log("Element #dailyTasksChart still exists after initTaskCompletionInsights");
-                } else {
-                    console.error('Element #dailyTasksChart does not exist after initTaskCompletionInsights');
-                }
-
-                if (weeklyCanvasAfterInit) {
-                    console.log("Element #weeklyTasksChart still exists after initTaskCompletionInsights");
-                } else {
-                    console.error('Element #weeklyTasksChart does not exist after initTaskCompletionInsights');
-                }
-
-                if (monthlyCanvasAfterInit) {
-                    console.log("Element #monthlyTasksChart still exists after initTaskCompletionInsights");
-                } else {
-                    console.error('Element #monthlyTasksChart does not exist after initTaskCompletionInsights');
-                }
+                canvasIds.forEach(id => {
+                    if (canvasesAfterInit[id]) {
+                        console.log(`Element #${id} still exists after ${logName}`);
+                    } else {
+                        console.error(`Element #${id} does not exist after ${logName}`);
+                    }
+                });
             }, 2000);
-        } else {
-            console.error('Element #dailyTasksChart, #weeklyTasksChart or #monthlyTasksChart does not exist');
         }
-    });
+    }
 
-    document.addEventListener('DOMContentLoaded', (event) => {
-        const passionCanvas = document.getElementById('passionChart');
+    checkAndInit(
+        ['dailyEventsChart', 'weeklyEventsChart', 'monthlyEventsChart'], 
+        initEventInsights, 
+        "event insights"
+    );
 
-        if (passionCanvas) {
-            console.log("DOM fully loaded and parsed, initializing passion insights");
-            initPassionInsights({{ current_year }}, {{ account_creation_year }});
+    checkAndInit(
+        ['dailyTasksChart', 'weeklyTasksChart', 'monthlyTasksChart'], 
+        initTaskCompletionInsights, 
+        "task completion insights"
+    );
 
-            setTimeout(() => {
-                const passionCanvasAfterInit = document.getElementById('passionChart');
-                    
-                if (passionCanvasAfterInit) {
-                    console.log("Element #passionChart still exists after initPassionInsights");
-                } else {
-                    console.error('Element #passionChart does not exist after initPassionInsights');
-                }
-            }, 2000);
-        } else {
-            console.error('Element #passionChart does not exist');
-        }
-    });
+    checkAndInit(
+        ['passionChart'], 
+        initPassionInsights, 
+        "passion insights"
+    );
+});
 
 </script>
 
