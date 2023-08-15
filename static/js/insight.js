@@ -392,7 +392,12 @@ function updateTaskCharts(year) {
             document.getElementById('weekly-task-average').textContent = `${weeklyAverageCompletionRate.toFixed(2)}%`;
             document.getElementById('monthly-task-average').textContent = `${monthlyAverageCompletionRate.toFixed(2)}%`;
 
-            const dailyLabels = dailyTaskData.map(entry => entry.date);
+            const dailyLabels = dailyTaskData.map(entry => {
+                const dateObj = parseLocalDate(entry.date);
+                const month = monthNames[dateObj.getMonth()];
+                const day = dateObj.getDate();
+                return `${month} ${day}`;
+            });
             const weeklyLabels = weeklyTaskData.map(entry => {
                 const dateParts = entry.date.split(" - ");
                 const startObj = parseLocalDate(dateParts[0]);
@@ -452,10 +457,7 @@ function updateTaskCharts(year) {
                                                             "July", "August", "September", "October", "November", "December"];
                                         switch (chartType) {
                                             case 'daily': {
-                                                const dateObj = parseLocalDate(dateStr);
-                                                const month = monthNames[dateObj.getMonth()];
-                                                const day = dateObj.getDate();
-                                                return `${month} ${day}`;
+                                                return dateStr;
                                             }
                                             case 'weekly': {
                                                 return dateStr;
@@ -551,6 +553,24 @@ function initTaskCompletionInsights(year, accountYear) {
 
 // Passion Insight js
 
+// seperate helper function to formate date range for passion chart.
+function formatWeekRange(weekRange) {
+    const monthNames = ["January", "February", "March", "April", "May", "June",
+                        "July", "August", "September", "October", "November", "December"];
+                        
+    const [startDateStr, endDateStr] = weekRange.split(" - ");
+    const startObj = parseLocalDate(startDateStr);
+    const endObj = parseLocalDate(endDateStr);
+    
+    const startMonth = monthNames[startObj.getMonth()];
+    const startDay = startObj.getDate();
+    const endMonth = monthNames[endObj.getMonth()];
+    const endDay = endObj.getDate();
+    
+    return `${startMonth} ${startDay} - ${endMonth} ${endDay}`;
+}
+
+
 // Helper function to convert the duration string to hours
 function durationToHours(duration) {
     if (typeof duration === "string") {
@@ -609,7 +629,7 @@ function updatePassionInsightsChart(currentYear) {
                 return;
             }
 
-            const labels = data.weekly_passion_data.map(week => week.date_range);
+            const labels = data.weekly_passion_data.map(week => formatWeekRange(week.date_range));
             const datasets = [];
             const passionDataset = {};
             const defaultColor = "#808080";
