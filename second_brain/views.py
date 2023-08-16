@@ -499,6 +499,10 @@ def passion_activity_create(request, passion_pk):
     if request.method == 'POST':
         form = PassionActivityForm(request.POST)
         if form.is_valid():
+            activity_date = form.cleaned_data['date']
+
+            if activity_date > date.today():
+                return JsonResponse({'success': False, 'message': 'Cannot record activity for future dates.'})
 
             hour = int(form.cleaned_data.get("hour"))
             minute = int(form.cleaned_data.get("minute"))

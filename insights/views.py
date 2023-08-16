@@ -20,6 +20,7 @@ def insights(request):
         account_creation_year = user.date_joined.year
 
         context = {
+            'url_name': 'insights:insights',
             'current_year': current_year,
             'account_creation_year': account_creation_year,
         }

@@ -457,6 +457,10 @@
                                             </div>
                                         </div>
                                     </div>
+                                    {% empty %}
+                                    <div class="quote-empty-message d-flex justify-content-center align-items-center mt-4">
+                                        <p>No Quotes Saved</p>
+                                    </div>
                                     {% endfor %}
                                 </div>
                                 <button id="Saved-prev" class="carousel-control-prev" type="button">
@@ -835,7 +839,17 @@
                     modalInstance.hide();
                 }, 2000);
             } else {
-                feedbackElement.textContent = "Failed to record passion activity. Errors: " + JSON.stringify(data.errors);
+                let errorMessage = "Failed to record passion activity.";
+                
+                if (data.message) {
+                    errorMessage += " Error: " + data.message;
+                }
+                
+                if (data.errors) {
+                    errorMessage += " Errors: " + JSON.stringify(data.errors);
+                }
+                
+                feedbackElement.textContent = errorMessage;
                 feedbackElement.classList.remove("text-success");
                 feedbackElement.classList.add("text-danger");
             }
