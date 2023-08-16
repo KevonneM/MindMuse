@@ -1,6 +1,17 @@
 function recordPassionActivity(checkboxElem, passionId, dateStr) {
     const isChecked = checkboxElem.checked;
 
+    const date = new Date(dateStr);
+    const currentDate = new Date();
+
+    currentDate.setHours(0, 0, 0, 0);
+
+    if (date > currentDate) {
+        alert('You cannot record activity for future dates.');
+        checkboxElem.checked = false;
+        return;
+    }
+
     // Only record activity if the checkbox is checked
     if (isChecked) {
         let hours = prompt("Enter the duration of your activity in hours (0-24)");
