@@ -537,39 +537,39 @@ function updatePassionInsightsChart(currentYear) {
     fetch(`/yearly-passion-progress-data/${currentYear}/`)
         .then(response => response.json())
         .then(data => {
+            let labels, datasets;
 
             if (!data.weekly_passion_data.some(week => Object.keys(week.passions).length > 0)) {
                 // Edge-case where there is no passion activity for the entire year.
-                ctx.clearRect(0, 0, ctx.canvas.clientWidth, ctx.canvas.clientHeight);
+                labels = Array(52).fill("").map((_, i) => `Week ${i + 1}`);
+                datasets = [{
+                    label: "No Passion Data",
+                    data: Array(52).fill(0),
+                    backgroundColor: '#808080',
+                    borderColor: '#808080',
+                    fill: false,
+                }];
+            } else {
+                labels = data.weekly_passion_data.map(week => formatWeekRange(week.date_range));
+                const passionDataset = {};
+                const defaultColor = "#808080";
 
-                ctx.font = '20px Arial';
-                ctx.fillStyle = 'black';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-
-                ctx.fillText("No Data Available", canvas.width / 2, canvas.height / 2);
-                return;
-            }
-
-            const labels = data.weekly_passion_data.map(week => formatWeekRange(week.date_range));
-            const datasets = [];
-            const passionDataset = {};
-            const defaultColor = "#808080";
-
-            for (const week of data.weekly_passion_data) {
-                for (const passionName in week.passions) {
-                    if (!passionDataset[passionName]) {
-                        passionDataset[passionName] = {
-                            'data': Array(data.weekly_passion_data.length).fill(0), // initialize all weeks to 0
-                            'color': week.passions[passionName].color || defaultColor
-                        };
+                for (const week of data.weekly_passion_data) {
+                    for (const passionName in week.passions) {
+                        if (!passionDataset[passionName]) {
+                            passionDataset[passionName] = {
+                                'data': Array(data.weekly_passion_data.length).fill(0), // initialize all weeks to 0
+                                'color': week.passions[passionName].color || defaultColor
+                            };
+                        }
+                        passionDataset[passionName].data[data.weekly_passion_data.indexOf(week)] = durationToHours(week.passions[passionName].duration);
                     }
-                    passionDataset[passionName].data[data.weekly_passion_data.indexOf(week)] = durationToHours(week.passions[passionName].duration);
                 }
-            }           
 
-            for (const [passionName, passionData] of Object.entries(passionDataset)) {
-                datasets.push(createDataset(passionName, passionData.data, passionData.color));
+                datasets = [];
+                for (const [passionName, passionData] of Object.entries(passionDataset)) {
+                    datasets.push(createDataset(passionName, passionData.data, passionData.color));
+                }
             }
 
             const chartConfig = {
@@ -603,7 +603,7 @@ function updatePassionInsightsChart(currentYear) {
                         }
                     }
                 }
-            };            
+            };
 
             passionChartInstance = new Chart(ctx, chartConfig);
         })

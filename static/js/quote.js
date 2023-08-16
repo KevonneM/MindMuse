@@ -34,6 +34,16 @@ async function getQuotes() {
 function displayQuote(index, shouldPause) {
     let quote = quotes[index];
 
+    if (!quote) {
+        console.error("No saved quotes for current user");
+        return;
+    }
+
+    let noQuotesMessage = document.getElementById('noQuotesMessage');
+    if (noQuotesMessage) {
+        noQuotesMessage.remove();
+    }
+
     let newCarouselItem = document.createElement('div');
     newCarouselItem.className = 'carousel-item';
     newCarouselItem.style.opacity = 0;
@@ -307,6 +317,10 @@ window.onload = function () {
     if (document.getElementById('savedQuotesCarousel')) {
     
         getQuotes();
+
+        document.getElementById("savedQuotes-tab").addEventListener("click", async function() {
+            await getQuotes();
+        });
     
         document.querySelector('#savedQuotesCarousel .carousel-control-prev').addEventListener('click', function (e) {
             e.preventDefault();
