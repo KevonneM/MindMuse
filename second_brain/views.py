@@ -85,6 +85,8 @@ def home(request):
         # Quotes for hub
         user_quotes = Quote.objects.filter(user=request.user)
 
+        account_creation_year = user.date_joined.year
+
         context = {
             'events': visible_events,
             'daily_tasks': daily_tasks,
@@ -95,6 +97,7 @@ def home(request):
             'current_weekday': current_weekday,
             'passion_count': passion_count,
             'user_quotes': user_quotes,
+            'account_creation_year': account_creation_year,
         }
     else:
         context = {
@@ -495,11 +498,15 @@ def passion_delete(request, pk):
 @login_required
 def passion_activity_create(request, passion_pk):
     passion = get_object_or_404(Passion, pk=passion_pk, user=request.user)
+    user_joined_year = request.user.date_joined.year
     
     if request.method == 'POST':
         form = PassionActivityForm(request.POST)
         if form.is_valid():
             activity_date = form.cleaned_data['date']
+
+            if activity_date.year < user_joined_year:
+                return JsonResponse({'success': False, 'message': 'Cannot record activity for years before your account was created.'})
 
             if activity_date > date.today():
                 return JsonResponse({'success': False, 'message': 'Cannot record activity for future dates.'})

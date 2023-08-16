@@ -1,4 +1,4 @@
-function recordPassionActivity(checkboxElem, passionId, dateStr) {
+function recordPassionActivity(checkboxElem, passionId, dateStr, accountCreationYear) {
     const isChecked = checkboxElem.checked;
 
     const date = new Date(dateStr);
@@ -6,7 +6,11 @@ function recordPassionActivity(checkboxElem, passionId, dateStr) {
 
     currentDate.setHours(0, 0, 0, 0);
 
-    if (date > currentDate) {
+    if (date.getFullYear() < accountCreationYear) {
+        alert('You cannot record activity for years before your account was created.');
+        checkboxElem.checked = false;
+        return;
+    } else if (date > currentDate) {
         alert('You cannot record activity for future dates.');
         checkboxElem.checked = false;
         return;

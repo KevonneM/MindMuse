@@ -280,7 +280,7 @@
                                                 Options
                                             </button>
                                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                                <li><a class="dropdown-item" href="#" onclick="loadPassionActivityCreateModal({{passion_detail.passion.pk}}); return false;">Add Session</a></li>
+                                                <a class="dropdown-item" href="#" onclick="loadPassionActivityCreateModal({{passion_detail.passion.pk}}, this); return false;" data-account-creation-year="{{ account_creation_year }}">Add Session</a>
                                                 <li><a class="dropdown-item" href="#" onclick="loadPassionUpdateModal({{passion_detail.passion.pk}}); return false;">Edit Passion</a></li>
                                                 <li><a class="dropdown-item" href="#" onclick="loadPassionDeleteModal({{passion_detail.passion.pk}}); return false;">Delete Passion</a></li>
                                             </ul>
@@ -424,7 +424,7 @@
                                                 <p class="quote">"{quote.quote}" - {quote.author}</p>
                                             </div>
                                             <div class="qotd-icon-container">
-                                                <i class="fas fa-save qotd-save-icon" title="Save quote"></i>
+                                                <i class="fas fa-save qotd-save-icon" title="Save quote" data-quote-id="{quote.id}"></i>
                                             </div>
                                         </div>
                                     </div>
@@ -458,7 +458,7 @@
                                         </div>
                                     </div>
                                     {% empty %}
-                                    <div class="quote-empty-message d-flex justify-content-center align-items-center mt-4">
+                                    <div id="noQuotesMessage" class="quote-empty-message d-flex justify-content-center align-items-center mt-4">
                                         <p>No Quotes Saved</p>
                                     </div>
                                     {% endfor %}
@@ -800,7 +800,8 @@
         myModal.show();
     }
 
-    async function loadPassionActivityCreateModal(passionId) {
+    async function loadPassionActivityCreateModal(passionId, buttonElem) {
+        const accountCreationYear = parseInt(buttonElem.getAttribute('data-account-creation-year'));
         let response = await fetch(`/passions/${passionId}/activity/create/`, {headers: {'X-Requested-With': 'XMLHttpRequest'}});
         let data = await response.text();
         document.getElementById('passionActivityCreateModalContent').innerHTML = data;
