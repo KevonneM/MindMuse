@@ -20,6 +20,7 @@ var chevronLeftPassions = null;
 var chevronRightPassions = null;
 let yearTitlePassions = null;
 var passionChartInstance = null;
+var categoryChartInstance = null;
 
 function updateEventsChart() {
     const isDailyTabActive = document.getElementById('daily-events-tab').classList.contains('active');
@@ -513,6 +514,15 @@ function hexToRgba(hex, alpha = 1) {
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
+function darkenRgbaColor(rgba, amountToDarken) {
+    const rgbaValues = rgba.match(/rgba\((\d+),\s*(\d+),\s*(\d+),\s*([\d.]+)\)/);
+    const r = Math.max(parseInt(rgbaValues[1]) - amountToDarken, 0);
+    const g = Math.max(parseInt(rgbaValues[2]) - amountToDarken, 0);
+    const b = Math.max(parseInt(rgbaValues[3]) - amountToDarken, 0);
+    const a = parseFloat(rgbaValues[4]);
+    return `rgba(${r}, ${g}, ${b}, ${a})`;
+}
+
 // Helper function to create a dataset for Chart.js
 function createDataset(name, data, color) {
     return {
@@ -527,7 +537,6 @@ function createDataset(name, data, color) {
 
 // Main functions to initialize the chart
 function updatePassionInsightsChart(currentYear) {
-    const canvas = document.getElementById('passionChart');
     const ctx = document.getElementById('passionChart').getContext('2d');
 
     if (passionChartInstance) {
@@ -609,6 +618,85 @@ function updatePassionInsightsChart(currentYear) {
         })
         .catch(error => {
             console.error("Error fetching passion data:", error);
+        });
+}
+
+function initCategoryChart(currentYear) {
+    const ctx = document.getElementById('categoriesChart').getContext('2d');
+
+    if (categoryChartInstance) {
+        categoryChartInstance.destroy();
+    }
+
+    const baseCategoryColors = {
+        'Physical': '#FF6384',
+        'Mental': '#36A2EB',
+        'Spiritual': '#FFCE56'
+    };
+
+    const getDynamicHexColor = (i) => `#${(i * 10 % 255).toString(16).padStart(2, '0')}${((i + 1) * 10 % 255).toString(16).padStart(2, '0')}${((i + 2) * 20 % 255).toString(16).padStart(2, '0')}`;
+
+    fetch(`/yearly-passion-progress-data/${currentYear}/`)
+        .then(response => response.json())
+        .then(data => {
+            const aggregatedCategoryData = {};
+
+            for (const week of data.weekly_passion_data) {
+                for (const categoryName in week.categories) {
+                    if (!aggregatedCategoryData[categoryName]) {
+                        aggregatedCategoryData[categoryName] = 0;
+                    }
+                    aggregatedCategoryData[categoryName] += durationToHours(week.categories[categoryName]);
+                }
+            }
+            
+            const labels = Object.keys(aggregatedCategoryData);
+            const translucentAlpha = 0.5;
+            const colors = labels.map((label, i) => hexToRgba(baseCategoryColors[label] || getDynamicHexColor(i), translucentAlpha));
+            const borderColors = colors.map(color => darkenRgbaColor(color, 80));
+            const datasets = [{
+                label: 'Hours Spent',
+                data: Object.values(aggregatedCategoryData).map(durationToHours),
+                backgroundColor: colors,
+                borderColor: borderColors,
+                borderWidth: 2
+            }];
+
+            const chartConfig = {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const value = context.parsed.y;
+                                    const formattedDuration = hoursToDuration(value);
+                                    return `${formattedDuration}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+
+            categoryChartInstance = new Chart(ctx, chartConfig);
+        })
+        .catch(error => {
+            console.error("Error fetching category data:", error);
         });
 }
 
