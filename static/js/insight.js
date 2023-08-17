@@ -506,7 +506,7 @@ function hoursToDuration(hours) {
     const totalMinutes = hours * 60;
     const hrs = Math.floor(totalMinutes / 60);
     const mins = Math.round(totalMinutes % 60);
-    return `${hrs} hours ${mins} minutes`;
+    return `${hrs} hrs ${mins} mins`;
 }
 
 function hexToRgba(hex, alpha = 1) {
@@ -629,12 +629,12 @@ function initCategoryChart(currentYear) {
     }
 
     const baseCategoryColors = {
-        'Physical': '#FF6384',
-        'Mental': '#36A2EB',
-        'Spiritual': '#FFCE56'
+        'Physical': '#614280',
+        'Mental': '#614280',
+        'Spiritual': '#614280'
     };
 
-    const getDynamicHexColor = (i) => `#${(i * 10 % 255).toString(16).padStart(2, '0')}${((i + 1) * 10 % 255).toString(16).padStart(2, '0')}${((i + 2) * 20 % 255).toString(16).padStart(2, '0')}`;
+    const getDynamicHexColor = (i) => `#${(i * 15 % 255).toString(16).padStart(2, '0')}${((i + 5) * 20 % 255).toString(16).padStart(2, '0')}${((i + 3) * 25 % 255).toString(16).padStart(2, '0')}`;
 
     fetch(`/yearly-passion-progress-data/${currentYear}/`)
         .then(response => response.json())
@@ -644,19 +644,36 @@ function initCategoryChart(currentYear) {
             for (const week of data.weekly_passion_data) {
                 for (const categoryName in week.categories) {
                     if (!aggregatedCategoryData[categoryName]) {
-                        aggregatedCategoryData[categoryName] = 0;
+                        aggregatedCategoryData[categoryName] = {
+                            totalDuration: 0,
+                            passions: {}
+                        };
                     }
-                    aggregatedCategoryData[categoryName] += durationToHours(week.categories[categoryName]);
+                    
+                    aggregatedCategoryData[categoryName].totalDuration += durationToHours(week.categories[categoryName]);
+            
+                    for (const passionName in week.passions) {
+                        // Only consider this passion if it belongs to the current category
+                        if (week.passions[passionName].category === categoryName) {
+                            if (!aggregatedCategoryData[categoryName].passions[passionName]) {
+                                aggregatedCategoryData[categoryName].passions[passionName] = {
+                                    duration: 0,
+                                    category: categoryName
+                                };
+                            }
+                            aggregatedCategoryData[categoryName].passions[passionName].duration += durationToHours(week.passions[passionName].duration);
+                        }
+                    }
                 }
-            }
+            }            
             
             const labels = Object.keys(aggregatedCategoryData);
             const translucentAlpha = 0.5;
             const colors = labels.map((label, i) => hexToRgba(baseCategoryColors[label] || getDynamicHexColor(i), translucentAlpha));
             const borderColors = colors.map(color => darkenRgbaColor(color, 80));
             const datasets = [{
-                label: 'Hours Spent',
-                data: Object.values(aggregatedCategoryData).map(durationToHours),
+                label: labels,
+                data: Object.values(aggregatedCategoryData).map(category => durationToHours(category.totalDuration)),
                 backgroundColor: colors,
                 borderColor: borderColors,
                 borderWidth: 2
@@ -672,6 +689,10 @@ function initCategoryChart(currentYear) {
                     responsive: true,
                     maintainAspectRatio: false,
                     scales: {
+                        x: {
+                            barPercentage: 0.7,
+                            categoryPercentage: 0.9
+                        },
                         y: {
                             beginAtZero: true,
                             ticks: {
@@ -680,15 +701,64 @@ function initCategoryChart(currentYear) {
                         }
                     },
                     plugins: {
+                        legend: {
+                            labels: {
+                                generateLabels: function(chart) {
+                                    const data = chart.data;
+                                    if (data.labels.length && data.datasets.length) {
+                                        return data.labels.map((label, i) => {
+                                            const meta = chart.getDatasetMeta(0);
+                                            const ds = data.datasets[0];
+                                            const arc = meta.data[i];
+                                            const custom = arc && arc.custom || {};
+                                            const fill = custom.backgroundColor ? custom.backgroundColor : ds.backgroundColor[i];
+                                            const stroke = custom.borderColor ? custom.borderColor : ds.borderColor[i];
+                                            const bw = custom.borderWidth ? custom.borderWidth : ds.borderWidth[i];
+                        
+                                            return {
+                                                text: label,
+                                                fillStyle: fill,
+                                                strokeStyle: stroke,
+                                                lineWidth: bw,
+                                                index: i
+                                            };
+                                        });
+                                    } else {
+                                        return [];
+                                    }
+                                }
+                            }
+                        },
                         tooltip: {
                             callbacks: {
                                 label: function(context) {
-                                    const value = context.parsed.y;
-                                    const formattedDuration = hoursToDuration(value);
-                                    return `${formattedDuration}`;
+                                    const category = context.label;
+                                    const totalDuration = aggregatedCategoryData[category].totalDuration;
+                                    const formattedDuration = hoursToDuration(totalDuration);
+                            
+                                    const passions = aggregatedCategoryData[category].passions;
+                                    let passionsArray = [];
+                            
+                                    for (const passion in passions) {
+                                        const passionDuration = passions[passion].duration;
+                                        
+                                        if (typeof passionDuration !== 'number' || isNaN(passionDuration)) {
+                                            console.error(`Invalid duration for passion ${passion}:`, passionDuration);
+                                            continue;
+                                        }
+                            
+                                        if (totalDuration > 0) {
+                                            const percent = (passionDuration / totalDuration) * 100;
+                                            passionsArray.push(`${passion}: ${hoursToDuration(passionDuration)} (${percent.toFixed(2)}%)`);
+                                        } else {
+                                            passionsArray.push(`${passion}: ${hoursToDuration(passionDuration)} (0%)`);
+                                        }
+                                    }
+                            
+                                    return [`${category}: ${formattedDuration}`].concat(passionsArray);
                                 }
-                            }
-                        }
+                            }                            
+                        }                                               
                     }
                 }
             };

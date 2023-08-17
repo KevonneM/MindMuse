@@ -257,7 +257,8 @@ def yearly_passion_progress_data(request, year):
                 if passion_name not in week_data['passions']:
                     week_data['passions'][passion_name] = {
                         'duration': timedelta(),
-                        'color': passion_color
+                        'color': passion_color,
+                        'category': category_name
                     }
 
                 if category_name not in week_data['categories']:
