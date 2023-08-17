@@ -25,7 +25,11 @@ def home(request):
 
     if user.is_authenticated:
 
-        user_timezone = pytz.timezone(user.timezone)
+        if user.timezone:
+            user_timezone = pytz.timezone(user.timezone)
+        else:
+            user_timezone = pytz.timezone('UTC')
+        
         now = timezone.now().astimezone(user_timezone)
         today = now.date()
 
@@ -98,6 +102,7 @@ def home(request):
             'passion_count': passion_count,
             'user_quotes': user_quotes,
             'account_creation_year': account_creation_year,
+            'is_authenticated': user.is_authenticated,
         }
     else:
         context = {
