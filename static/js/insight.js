@@ -711,7 +711,6 @@ function initCategoryChart(currentYear) {
                                             const ds = data.datasets[0];
                                             const arc = meta.data[i];
                                             const custom = arc && arc.custom || {};
-                                            const arcOpts = chart.options.elements.arc;
                                             const fill = custom.backgroundColor ? custom.backgroundColor : ds.backgroundColor[i];
                                             const stroke = custom.borderColor ? custom.borderColor : ds.borderColor[i];
                                             const bw = custom.borderWidth ? custom.borderWidth : ds.borderWidth[i];
