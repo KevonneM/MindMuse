@@ -52,7 +52,7 @@ function detectTimezoneAndSet() {
   })
   .then(response => {
     if (response.ok) {
-      window.location.reload();
+      console.log("Detected user's timezone: ", timezone)
     } else {
       console.error('Failed to set timezone');
     }

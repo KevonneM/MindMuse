@@ -543,6 +543,17 @@
 {% endif %}
 
 <script>
+
+    window.isUserAuthenticated = {{ is_authenticated|yesno:"true,false" }};
+
+    window.onload = function() {
+        if (window.isUserAuthenticated) {
+            detectTimezoneAndSet();
+        } else {
+            console.log("User is not authenticated");
+        }
+    };
+
     // Scheduling modal js
     async function loadDailyModal(year = null, month = null, day = null) {
         if (year === null || month === null || day === null) {
