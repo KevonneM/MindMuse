@@ -1,3 +1,5 @@
+console.log("quotes.js is loaded");
+
 var starredQuoteIndex = -1;
 var quoteIndex = 0;
 var quotes = [];
@@ -5,6 +7,7 @@ var timer = null;
 var inactivityTimer = null;
 
 async function getQuotes() {
+    console.log('Get quote function is running')
     let response = await fetch('/quotes/get_starred/', {
         method: 'GET',
         headers: {
@@ -313,9 +316,9 @@ function prevQOTD() {
     startCarouselQOTD();
 }
 
-window.onload = function () {
+window.addEventListener('load', function() {
     if (document.getElementById('savedQuotesCarousel')) {
-    
+        console.log("Inside the conditional");
         getQuotes();
 
         document.getElementById("savedQuotes-tab").addEventListener("click", async function() {
@@ -347,4 +350,4 @@ window.onload = function () {
             getQOTD();
         }, 3600000);
     }
-};
+});

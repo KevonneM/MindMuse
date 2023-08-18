@@ -12,10 +12,13 @@
     <script src="{% static 'js/hub.js' %}"></script>
     <script src="{% static 'js/task.js' %}"></script>
     <script src="{% static 'js/passion.js' %}"></script>
-    <script src="{% static 'js/quote.js' %}"></script>
+    {% if url_name == 'second_brain:home' %}
+      <script src="{% static 'js/quote.js' %}"></script>
+    {% endif %}
     <script src="{% static 'js/insight.js' %}"></script>
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-
+    {% if url_name != 'insights:insights' %}
+      <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    {% endif %}
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
      <script src="https://cdnjs.cloudflare.com/ajax/libs/jscolor/2.5.1/jscolor.min.js"></script> 
 
