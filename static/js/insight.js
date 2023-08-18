@@ -294,6 +294,12 @@ function parseLocalDate(dateStr) {
 function updateTaskCharts(year) {
     const monthNames = ["January", "February", "March", "April", "May", "June",
                         "July", "August", "September", "October", "November", "December"];
+
+    yearTitleTasks.textContent = currentYearTasks;
+
+    chevronLeftTasks.classList.toggle("disabled", currentYearTasks <= accountCreationYearTasks);
+    chevronRightTasks.classList.toggle("disabled", currentYearTasks >= new Date().getFullYear());
+
     fetch(`/yearly-task-completion-data/${year}`)
         .then(response => response.json())
         .then(data => {
@@ -542,6 +548,11 @@ function updatePassionInsightsChart(currentYear) {
     if (passionChartInstance) {
         passionChartInstance.destroy();
     }
+
+    yearTitlePassions.textContent = currentYear;
+
+    chevronLeftPassions.classList.toggle("disabled", currentYear <= accountCreationYearPassions);
+    chevronRightPassions.classList.toggle("disabled", currentYear >= new Date().getFullYear());
 
     fetch(`/yearly-passion-progress-data/${currentYear}/`)
         .then(response => response.json())
