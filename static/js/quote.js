@@ -313,9 +313,8 @@ function prevQOTD() {
     startCarouselQOTD();
 }
 
-window.onload = function () {
+window.addEventListener('load', function() {
     if (document.getElementById('savedQuotesCarousel')) {
-    
         getQuotes();
 
         document.getElementById("savedQuotes-tab").addEventListener("click", async function() {
@@ -347,4 +346,4 @@ window.onload = function () {
             getQOTD();
         }, 3600000);
     }
-};
+});
