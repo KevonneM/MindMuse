@@ -827,3 +827,97 @@ function initPassionInsights(currentYear, accountCreationYear) {
 
     updateChart();
 }
+
+// Insight Overview js
+
+// Helper function to to find current week for event overview.
+function getCurrentWeekIndex(weeklyData) {
+    const currentDate = new Date();
+    
+    const currentUTCDateOnly = new Date(Date.UTC(currentDate.getUTCFullYear(), currentDate.getUTCMonth(), currentDate.getUTCDate()));
+
+    for (let i = 0; i < weeklyData.length; i++) {
+        const startDateComponents = weeklyData[i][1].split('-');
+        const endDateComponents = weeklyData[i][2].split('-');
+
+        const weekStart = new Date(Date.UTC(parseInt(startDateComponents[0]), parseInt(startDateComponents[1]) - 1, parseInt(startDateComponents[2])));
+        const weekEnd = new Date(Date.UTC(parseInt(endDateComponents[0]), parseInt(endDateComponents[1]) - 1, parseInt(endDateComponents[2])));
+
+        if (currentUTCDateOnly >= weekStart && currentUTCDateOnly <= weekEnd) {
+            return i;
+        }
+    }
+
+    console.log("Week not found!");
+    return -1;  // Return -1 if not found
+}
+
+async function updateInsightOverview(year) {
+    const currentYear = new Date().getFullYear();
+    const currentMonthIndex = new Date().getMonth();
+    const prevMonthIndex = currentMonthIndex === 0 ? 11 : currentMonthIndex - 1;
+    try {
+        // Fetch and handle task data.
+        const taskResponse = await fetch(`/yearly-task-completion-data/${year}`);
+        if (taskResponse.status !== 200) {
+            throw new Error("Failed to fetch Task Overview data");
+        }
+        const taskData = await taskResponse.json();
+        
+        // Aquire and manipulate latest and previous task data.
+        const dailyLastData = taskData.daily_task_data[taskData.daily_task_data.length - 1];
+        const dailyPrevData = taskData.daily_task_data[taskData.daily_task_data.length - 2] || { completion_rate: 0 };
+
+        const weeklyLastData = taskData.weekly_task_data[taskData.weekly_task_data.length - 1];
+        const weeklyPrevData = taskData.weekly_task_data[taskData.weekly_task_data.length - 2] || { completion_rate: 0 };
+
+        const monthlyLastData = taskData.monthly_task_data.find(monthData => new Date(monthData.month + " 1 " + currentYear).getMonth() === currentMonthIndex);
+        const monthlyPrevData = taskData.monthly_task_data.find(monthData => new Date(monthData.month + " 1 " + currentYear).getMonth() === prevMonthIndex);
+
+        // Fetch and handle event data.
+        const eventResponse = await fetch(`/yearly_event_data/${year}`);
+        if (eventResponse.status !== 200) {
+            throw new Error("Failed to fetch Event Overview data");
+        }
+        const eventData = await eventResponse.json();
+
+        const currentWeekIndex = getCurrentWeekIndex(eventData.weekly_event_data);
+
+        const currentWeekEvents = eventData.weekly_event_data[currentWeekIndex][0];
+        const previousWeekEvents = eventData.weekly_event_data[currentWeekIndex - 1] ? eventData.weekly_event_data[currentWeekIndex - 1][0] : 0;
+        const eventDifference = currentWeekEvents - previousWeekEvents;
+        const eventChangePercent = previousWeekEvents === 0 ? 100 : (eventDifference / previousWeekEvents) * 100;
+
+        const slide = document.querySelector("#textCarousel #taskOverviewSlide");
+        slide.innerHTML = `
+            <h3>Task Overview</h3>
+            <div class="d-flex justify-content-between">
+                <div>
+                    <h4>Daily</h4>
+                    <p>Completion Rate: ${dailyLastData.completion_rate.toFixed(2)}%</p>
+                    <p>Change: ${(dailyLastData.completion_rate - dailyPrevData.completion_rate).toFixed(2)}%</p>
+                </div>
+                <div>
+                    <h4>Weekly</h4>
+                    <p>Completion Rate: ${weeklyLastData.completion_rate.toFixed(2)}%</p>
+                    <p>Change: ${(weeklyLastData.completion_rate - weeklyPrevData.completion_rate).toFixed(2)}%</p>
+                </div>
+                <div>
+                    <h4>Monthly</h4>
+                    <p>Completion Rate: ${monthlyLastData.completion_rate.toFixed(2)}%</p>
+                    <p>Change: ${(monthlyLastData.completion_rate - monthlyPrevData.completion_rate).toFixed(2)}%</p>
+                </div>
+            </div>
+        `;
+        const slide2 = document.querySelector("#textCarousel #eventOverviewSlide");
+        slide2.innerHTML = `
+            <h3>Event Overview</h3>
+            <p>Events attended this week: ${currentWeekEvents}</p>
+            <p>Events attended last week: ${previousWeekEvents}</p>
+            <p>${eventDifference} ${eventDifference > 0 ? 'More' : 'Less'} events attended than last week</p>
+            <p>${eventChangePercent.toFixed(2)}% ${eventChangePercent > 0 ? 'increase' : 'decrease'} from last week</p>
+        `;
+    } catch (error) {
+        console.error("Failed to update insight overview:", error);
+    }
+}

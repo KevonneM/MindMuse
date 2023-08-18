@@ -11,20 +11,20 @@
                     <button type="button" data-bs-target="#textCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
                     <button type="button" data-bs-target="#textCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
                 </div>
-                <div class="carousel-inner">
-                    <div class="carousel-item active">
+                <div class="carousel-inner" style="min-height: 300px;">
+                    <div class="carousel-item active" id="taskOverviewSlide">
                         <div class="d-flex justify-content-center align-items-center" style="height:300px;">
-                            <h3>Text for Slide 1</h3>
+                            <!-- js content -->
                         </div>
                     </div>
-                    <div class="carousel-item">
+                    <div class="carousel-item" id="eventOverviewSlide">
                         <div class="d-flex justify-content-center align-items-center" style="height:300px;">
-                            <h3>Text for Slide 2</h3>
+                            <!-- js content -->
                         </div>
                     </div>
-                    <div class="carousel-item">
+                    <div class="carousel-item" id="passionOverviewSlide">
                         <div class="d-flex justify-content-center align-items-center" style="height:300px;">
-                            <h3>Text for Slide 3</h3>
+                            <!-- js content -->
                         </div>
                     </div>
                 </div>
@@ -183,54 +183,55 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', (event) => {
-    const checkAndInit = (canvasIds, initFuncName, logName) => {
-        let allCanvasExist = true;
-        const canvasesAfterInit = {};
+        const checkAndInit = (canvasIds, initFuncName, logName) => {
+            let allCanvasExist = true;
+            const canvasesAfterInit = {};
 
-        canvasIds.forEach(id => {
-            const canvas = document.getElementById(id);
-            if (!canvas) {
-                allCanvasExist = false;
-                console.error(`Element #${id} does not exist`);
+            canvasIds.forEach(id => {
+                const canvas = document.getElementById(id);
+                if (!canvas) {
+                    allCanvasExist = false;
+                    console.error(`Element #${id} does not exist`);
+                }
+
+                canvasesAfterInit[id] = canvas;
+            });
+
+            if (allCanvasExist) {
+                console.log(`DOM fully loaded and parsed, initializing ${logName}`);
+                initFuncName({{ current_year }}, {{ account_creation_year }});
+
+                setTimeout(() => {
+                    canvasIds.forEach(id => {
+                        if (canvasesAfterInit[id]) {
+                            console.log(`Element #${id} still exists after ${logName}`);
+                        } else {
+                            console.error(`Element #${id} does not exist after ${logName}`);
+                        }
+                    });
+                }, 2000);
             }
-
-            canvasesAfterInit[id] = canvas;
-        });
-
-        if (allCanvasExist) {
-            console.log(`DOM fully loaded and parsed, initializing ${logName}`);
-            initFuncName({{ current_year }}, {{ account_creation_year }});
-
-            setTimeout(() => {
-                canvasIds.forEach(id => {
-                    if (canvasesAfterInit[id]) {
-                        console.log(`Element #${id} still exists after ${logName}`);
-                    } else {
-                        console.error(`Element #${id} does not exist after ${logName}`);
-                    }
-                });
-            }, 2000);
         }
-    }
 
-    checkAndInit(
-        ['dailyEventsChart', 'weeklyEventsChart', 'monthlyEventsChart'], 
-        initEventInsights, 
-        "event insights"
-    );
+        checkAndInit(
+            ['dailyEventsChart', 'weeklyEventsChart', 'monthlyEventsChart'], 
+            initEventInsights, 
+            "event insights"
+        );
 
-    checkAndInit(
-        ['dailyTasksChart', 'weeklyTasksChart', 'monthlyTasksChart'], 
-        initTaskCompletionInsights, 
-        "task completion insights"
-    );
+        checkAndInit(
+            ['dailyTasksChart', 'weeklyTasksChart', 'monthlyTasksChart'], 
+            initTaskCompletionInsights, 
+            "task completion insights"
+        );
 
-    checkAndInit(
-        ['passionChart'], 
-        initPassionInsights, 
-        "passion insights"
-    );
-});
+        checkAndInit(
+            ['passionChart'], 
+            initPassionInsights, 
+            "passion insights"
+        );
+        updateInsightOverview(new Date().getFullYear());
+    });
 
 </script>
 
