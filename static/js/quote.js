@@ -315,7 +315,6 @@ function prevQOTD() {
 
 window.addEventListener('load', function() {
     if (document.getElementById('savedQuotesCarousel')) {
-        console.log("Inside the conditional");
         getQuotes();
 
         document.getElementById("savedQuotes-tab").addEventListener("click", async function() {
