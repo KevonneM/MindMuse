@@ -1,5 +1,3 @@
-console.log("quotes.js is loaded");
-
 var starredQuoteIndex = -1;
 var quoteIndex = 0;
 var quotes = [];
@@ -7,7 +5,6 @@ var timer = null;
 var inactivityTimer = null;
 
 async function getQuotes() {
-    console.log('Get quote function is running')
     let response = await fetch('/quotes/get_starred/', {
         method: 'GET',
         headers: {
