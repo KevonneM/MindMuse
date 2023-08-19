@@ -500,7 +500,9 @@ function durationToHours(duration) {
         const minutes = match[3] ? parseInt(match[3]) : 0;
         return hours + (minutes / 60);
     } else if (typeof duration === "number") {
-        return duration;
+        const hours = Math.floor(duration);
+        const minutes = Math.round((duration - hours) * 60);
+        return { hours, minutes };
     } else {
         console.error("Unexpected duration type:", typeof duration, duration);
         return 0;
@@ -831,28 +833,35 @@ function initPassionInsights(currentYear, accountCreationYear) {
 // Insight Overview js
 
 // Helper function to to find current week for event overview.
-function getCurrentWeekIndex(weeklyData) {
-    const currentDate = new Date();
-    
-    const currentUTCDateOnly = new Date(Date.UTC(currentDate.getUTCFullYear(), currentDate.getUTCMonth(), currentDate.getUTCDate()));
+function formatDateToYYYYMMDD(dateObj) {
+    const year = dateObj.getUTCFullYear();
+    const month = (dateObj.getUTCMonth() + 1).toString().padStart(2, '0');
+    const day = dateObj.getUTCDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
 
-    for (let i = 0; i < weeklyData.length; i++) {
-        const startDateComponents = weeklyData[i][1].split('-');
-        const endDateComponents = weeklyData[i][2].split('-');
+function findWeekByDate(targetDate, weeklyEventData) {
+    const targetDateString = formatDateToYYYYMMDD(targetDate);
 
-        const weekStart = new Date(Date.UTC(parseInt(startDateComponents[0]), parseInt(startDateComponents[1]) - 1, parseInt(startDateComponents[2])));
-        const weekEnd = new Date(Date.UTC(parseInt(endDateComponents[0]), parseInt(endDateComponents[1]) - 1, parseInt(endDateComponents[2])));
+    for (const week of weeklyEventData) {
+        let startDateString = week[1];
+        let endDateString = week[2];
 
-        if (currentUTCDateOnly >= weekStart && currentUTCDateOnly <= weekEnd) {
-            return i;
+        if (targetDateString >= startDateString && targetDateString <= endDateString) {
+            return week;
         }
     }
 
-    console.log("Week not found!");
-    return -1;  // Return -1 if not found
+    console.error("Week not found!");
+    return null;
+}
+
+function stripTimeFromDate(dateObj) {
+    return new Date(Date.UTC(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate()));
 }
 
 async function updateInsightOverview(year) {
+    currentDate = stripTimeFromDate(new Date());
     const currentYear = new Date().getFullYear();
     const currentMonthIndex = new Date().getMonth();
     const prevMonthIndex = currentMonthIndex === 0 ? 11 : currentMonthIndex - 1;
@@ -881,12 +890,88 @@ async function updateInsightOverview(year) {
         }
         const eventData = await eventResponse.json();
 
-        const currentWeekIndex = getCurrentWeekIndex(eventData.weekly_event_data);
+        let currentWeek = findWeekByDate(currentDate, eventData.weekly_event_data);
+        if (!currentWeek) {
+            console.error("Current week data not found in eventData.weekly_event_data");
+            return;
+        }
 
-        const currentWeekEvents = eventData.weekly_event_data[currentWeekIndex][0];
-        const previousWeekEvents = eventData.weekly_event_data[currentWeekIndex - 1] ? eventData.weekly_event_data[currentWeekIndex - 1][0] : 0;
+        let currentIndex = eventData.weekly_event_data.indexOf(currentWeek);
+        const currentWeekEvents = currentWeek[0];
+        const previousWeekEvents = currentIndex > 0 ? eventData.weekly_event_data[currentIndex - 1][0] : 0;
+
         const eventDifference = currentWeekEvents - previousWeekEvents;
-        const eventChangePercent = previousWeekEvents === 0 ? 100 : (eventDifference / previousWeekEvents) * 100;
+        const eventChangePercent = (previousWeekEvents === 0 && currentWeekEvents === 0) ? 0 :
+        (previousWeekEvents === 0 ? 100 : (eventDifference / previousWeekEvents) * 100);
+        let eventChangeTerm;
+        
+        if(eventChangePercent > 0) {
+            eventChangeTerm = "increase";
+        } else if(eventChangePercent < 0) {
+            eventChangeTerm = "decrease";
+        } else {
+            eventChangeTerm = "change"; // If it's 0% change
+        }
+
+        // Fetch and handle passion data.
+        const passionResponse = await fetch(`/yearly-passion-progress-data/${year}`);
+        if (passionResponse.status !== 200) {
+            throw new Error("Failed to fetch Passion Overview data");
+        }
+        const passionData = await passionResponse.json();
+
+        // Acquire and manipulate passion data for the current week and the previous week.
+        const currentWeekPassionData = passionData.weekly_passion_data[currentIndex];
+        const previousWeekPassionData = passionData.weekly_passion_data[currentIndex - 1] || { passions: {} };
+        
+        const getTotalDuration = (weekData) => {
+            let totalDuration = 0; 
+            for (const passionName in weekData.passions) {
+                totalDuration += weekData.passions[passionName].duration;
+            }
+            return totalDuration;
+        }
+        function passionDurationToHoursAndMinutes(duration) {
+            if (typeof duration === "string") {
+                const durations = duration.split('P').filter(Boolean); // Split the concatenated durations
+                let totalHours = 0;
+                for (const d of durations) {
+                    const match = d.match(/(?:(\d+)D)?T?(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+                    const hours = match[2] ? parseInt(match[2]) : 0;
+                    const minutes = match[3] ? parseInt(match[3]) : 0;
+                    totalHours += hours + (minutes / 60);
+                }
+                const roundedHours = Math.floor(totalHours);
+                const minutes = Math.round((totalHours - roundedHours) * 60);
+                return { hours: roundedHours, minutes: minutes };
+            } else if (typeof duration === "number") {
+                const hours = Math.floor(duration);
+                const minutes = Math.round((duration - hours) * 60);
+                return { hours, minutes };
+            } else {
+                console.error("Unexpected duration type:", typeof duration, duration);
+                return { hours: 0, minutes: 0 };
+            }
+        }
+        
+        
+        const currentWeekDuration = getTotalDuration(currentWeekPassionData);
+        const previousWeekDuration = getTotalDuration(previousWeekPassionData);
+        const currentWeekDurationObj = passionDurationToHoursAndMinutes(currentWeekDuration);
+        const previousWeekDurationObj = passionDurationToHoursAndMinutes(previousWeekDuration);
+        const currentWeekDurationFloat = currentWeekDurationObj.hours + (currentWeekDurationObj.minutes / 60);
+        const previousWeekDurationFloat = previousWeekDurationObj.hours + (previousWeekDurationObj.minutes / 60);
+        const passionDurationDifference = currentWeekDurationFloat - previousWeekDurationFloat;
+        const passionDurationDifferenceObj = passionDurationToHoursAndMinutes(passionDurationDifference);
+        const passionChangePercent = previousWeekDurationFloat === 0 ? 100 : (passionDurationDifference / previousWeekDurationFloat) * 100;
+
+        if(passionChangePercent > 0) {
+            passionChangeTerm = "increase";
+        } else if(passionChangePercent < 0) {
+            passionChangeTerm = "decrease";
+        } else {
+            passionChangeTerm = "change"; // If it's 0% change
+        }
 
         const slide = document.querySelector("#textCarousel #taskOverviewSlide");
         slide.innerHTML = `
@@ -915,7 +1000,14 @@ async function updateInsightOverview(year) {
             <p>Events attended this week: ${currentWeekEvents}</p>
             <p>Events attended last week: ${previousWeekEvents}</p>
             <p>${eventDifference} ${eventDifference > 0 ? 'More' : 'Less'} events attended than last week</p>
-            <p>${eventChangePercent.toFixed(2)}% ${eventChangePercent > 0 ? 'increase' : 'decrease'} from last week</p>
+            <p>${eventChangePercent.toFixed(2)}% ${eventChangeTerm} from last week</p>
+        `;
+        const slide3 = document.querySelector("#textCarousel #passionOverviewSlide");
+        slide3.innerHTML = `
+            <h3>Passion Overview</h3>
+            <p>Total time invested this week: ${currentWeekDurationObj.hours}h ${currentWeekDurationObj.minutes}m</p>
+            <p>${Math.abs(passionDurationDifferenceObj.hours)}h ${Math.abs(passionDurationDifferenceObj.minutes)}m ${passionDurationDifference > 0 ? 'more' : 'less'} than last week</p>
+            <p>${passionChangePercent.toFixed(2)}% ${passionChangeTerm} from last week</p>
         `;
     } catch (error) {
         console.error("Failed to update insight overview:", error);
