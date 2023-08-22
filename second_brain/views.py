@@ -73,6 +73,7 @@ def home(request):
         # Event information for hub
         events = Event.objects.filter(user=user, start_time__gte=week_start, start_time__lt=week_end).order_by('start_time')
         visible_events = []
+        all_events_invisible = True
         for event in events:
             event_start_time = event.start_time.replace(tzinfo=pytz.UTC)
             event_end_time = event.end_time.replace(tzinfo=pytz.UTC)
@@ -80,12 +81,18 @@ def home(request):
             # calculate the visibility of the event based on its start and end times
             day_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
             is_visible = now >= day_start and now < event_end_time + timedelta(minutes=5)
+
+            if is_visible:
+                all_events_invisible = False
             
             # add the event to the list with its visibility status
             visible_events.append({
                 'event': event,
                 'is_visible': is_visible,
             })
+        if all_events_invisible:
+            visible_events = []
+
         # Quotes for hub
         user_quotes = Quote.objects.filter(user=request.user)
 
@@ -173,6 +180,46 @@ def get_last_tracked_city(request):
         return JsonResponse({'error': 'Unauthorized'}, status=401)
 
 # Code for Events
+
+def get_event_status(request):
+    user = request.user
+    visible_events = []
+
+    if user.is_authenticated:
+        if user.timezone:
+            user_timezone = pytz.timezone(user.timezone)
+        else:
+            user_timezone = pytz.timezone('UTC')
+        
+        now = timezone.now().astimezone(user_timezone)
+        today = now.date()
+
+        # Making Sunday the first day of the week
+        week_start = today - timedelta(days=((today.weekday() + 1) % 7))
+        week_end = week_start + timedelta(days=7)
+
+        events = Event.objects.filter(user=user, start_time__gte=week_start, start_time__lt=week_end).order_by('start_time')
+
+        all_events_invisible = True
+        for event in events:
+            event_start_time = event.start_time.replace(tzinfo=pytz.UTC)
+            event_end_time = event.end_time.replace(tzinfo=pytz.UTC)
+
+            day_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+            is_visible = now >= day_start and now < event_end_time + timedelta(minutes=5)
+
+            if is_visible:
+                all_events_invisible = False
+            
+            visible_events.append({
+                'event': event,
+                'is_visible': is_visible,
+            })
+        
+        if all_events_invisible:
+            visible_events = []
+
+    return JsonResponse({'has_visible_events': not all_events_invisible})
 
 @login_required
 def daily_view(request, year=None, month=None, day=None):

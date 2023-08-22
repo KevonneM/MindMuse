@@ -174,6 +174,27 @@ document.addEventListener('DOMContentLoaded', init);
 
 // incoming weekly events js
 
+function updateEventStatus() {
+  
+  let endpoint = '/get_event_status/';
+
+  fetch(endpoint)
+  .then(response => response.json())
+  .then(data => {
+      if (data.has_visible_events) {
+          document.querySelector('.no-events-message').style.display = 'none';
+      } else {
+          document.querySelector('.no-events-message').style.display = 'block';
+      }
+  })
+  .catch(error => {
+      console.error('There was an error fetching event status:', error);
+  });
+}
+
+// Check event status every 5 minutes.
+setInterval(updateEventStatus, 30000);
+
 function updateCountdowns() {
   const countdowns = document.querySelectorAll('.countdown');
   const now = new Date();
