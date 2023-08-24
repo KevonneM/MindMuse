@@ -535,9 +535,25 @@
     <div style="text-align: center; margin-bottom: 150px;">
         <h1 class="MindMuse mb-4">MindMuse</h1>
         
-        <a href="{% url 'users:login' %}" class="btn btn-primary">Login</a>
-        <a href="{% url 'users:signup' %}" class="btn btn-primary">Sign Up</a>
+        <button id="loginBtn" class="btn btn-primary">Login</button>
+        <button id="signupBtn" class="btn btn-primary">Sign Up</button>
         
+    </div>
+</div>
+
+<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" id="loginModalContent">
+            <!-- content loaded by JS -->
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="signupModal" tabindex="-1" aria-labelledby="signupModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" id="signupModalContent">
+            <!-- content loaded by JS -->
+        </div>
     </div>
 </div>
 
@@ -548,12 +564,95 @@
     window.isUserAuthenticated = {{ is_authenticated|yesno:"true,false" }};
 
     window.addEventListener('load', function() {
+        console.log("Is user authenticated?", window.isUserAuthenticated);
         if (window.isUserAuthenticated) {
             detectTimezoneAndSet();
+            // Check event status every 5 minutes.
+            setInterval(updateEventStatus, 30000);
         } else {
             console.log("User is not authenticated");
+
+            async function loadSignupModal() {
+                let response = await fetch('/users/signup/', {headers: {'X-Requested-With': 'XMLHttpRequest'}});
+                let data = await response.text();
+                document.getElementById('signupModalContent').innerHTML = data;
+                var myModal = new bootstrap.Modal(document.getElementById('signupModal'));
+
+                // Form submission handler
+                document.getElementById('signupForm').addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    
+                    let form = document.getElementById('signupForm');
+                    let formData = new FormData(form);
+
+                    var csrf_token = getCookie('csrftoken');
+
+                    let signupResponse = await fetch('/users/signup/', {
+                        method: 'POST',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRFToken': csrf_token
+                        },
+                        body: formData
+                    });
+
+                    let signupData = await signupResponse.json();
+
+                    if (signupData.success === 'ok') {
+                        window.location.href = signupData.redirect_url;
+                    } else {
+                        alert(signupData.error);
+                    }
+                });
+
+                myModal.show();
+            }
+            document.getElementById('signupBtn').addEventListener('click', function() {
+                loadSignupModal();
+            });
+
+            async function loadLoginModal() {
+                let response = await fetch('/users/login/', {headers: {'X-Requested-With': 'XMLHttpRequest'}});
+                let data = await response.text();
+                document.getElementById('loginModalContent').innerHTML = data;
+                var myModal = new bootstrap.Modal(document.getElementById('loginModal'));
+
+                // Form submission handler
+                document.getElementById('loginForm').addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    
+                    let form = document.getElementById('loginForm');
+                    let formData = new FormData(form);
+
+                    var csrf_token = getCookie('csrftoken');
+                    console.log("Retrieved CSRF token: ", csrf_token);
+
+                    let loginResponse = await fetch('/users/login/', {
+                        method: 'POST',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRFToken': csrf_token
+                        },
+                        body: formData
+                    });
+
+                    let loginData = await loginResponse.json();
+
+                    if (loginData.status === 'ok') {
+                        window.location.href = loginData.redirect_url;
+                    } else {
+                        alert(loginData.message);
+                    }
+                });
+
+                myModal.show();
+            }
+            document.getElementById('loginBtn').addEventListener('click', function() {
+                loadLoginModal();
+            });
         }
     });
+
 
     // Scheduling modal js
     async function loadDailyModal(year = null, month = null, day = null) {
