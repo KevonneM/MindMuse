@@ -192,9 +192,6 @@ function updateEventStatus() {
   });
 }
 
-// Check event status every 5 minutes.
-setInterval(updateEventStatus, 30000);
-
 function updateCountdowns() {
   const countdowns = document.querySelectorAll('.countdown');
   const now = new Date();
