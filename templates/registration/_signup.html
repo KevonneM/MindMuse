@@ -1,12 +1,84 @@
-<div class="modal-body">
-    <h2>Sign Up</h2>
-    <form method="post" id="signupForm">
-        {% csrf_token %}
-        <div class="form-group">
-            {{ form.as_p }}
-        </div>
-        <div class="modal-footer">
-            <button type="submit" class="btn btn-primary">Sign Up</button>
-        </div>
-    </form>
+{% load widget_tweaks %}
+
+<div class="modal-body signup-modal">
+    <div class="signup-card">
+        <h2 class="text-center mb-4">Sign Up</h2>
+        <form method="post" id="signupForm">
+          {% csrf_token %}
+          <p>
+            <label for="id_username">{{ form.username.label }}</label>
+            {{ form.username|add_class:"form-input" }}
+          </p>
+          <p>
+            <label for="id_email">{{ form.email.label }}</label>
+            {{ form.email|add_class:"form-input" }}
+          </p>
+          <p>
+            <label for="id_first_name">{{ form.first_name.label }}</label>
+            {{ form.first_name|add_class:"form-input" }}
+          </p>
+          <p>
+            <label for="id_last_name">{{ form.last_name.label }}</label>
+            {{ form.last_name|add_class:"form-input" }}
+          </p>
+          <p>
+            <label for="id_date_of_birth">{{ form.date_of_birth.label }}</label>
+            {{ form.date_of_birth|add_class:"form-input" }}
+          </p>
+          <p>
+            <label for="id_password1">{{ form.password1.label }}</label>
+            {{ form.password1|add_class:"form-input" }}
+          </p>
+          <p>
+            <label for="id_password2">{{ form.password2.label }}</label>
+            {{ form.password2|add_class:"form-input" }}
+          </p>
+          <div class="modal-footer">
+            <input type="submit" class="btn btn-primary" value="Sign Up">
+          </div>
+        </form>
+    </div>
 </div>
+
+<style>
+
+    .signup-modal {
+        font-family: 'Roboto', sans-serif;
+    }
+
+    .signup-modal .modal-body {
+        background-color: #fff;
+        padding: 30px;
+        border-radius: 5px;
+    }
+
+    .signup-modal .form-input {
+        width: 100%;
+        height: 60px;
+        padding-left: 15px;
+        border-radius: 5px;
+        border: 1px solid #5944A6;
+        background-color: #D4DBF5;
+    }
+
+    .signup-modal input:focus {
+        border: 2px solid #5944A6;
+    }
+
+    .signup-modal .btn-primary {
+        background-color: #7638C2;
+        border-color: #7638C2;
+        width: 100%;
+        height: 40px;
+    }
+
+    .signup-modal .btn-primary:hover {
+        background-color: #492378;
+        border-color: #492378;
+    }
+
+    .signup-modal p {
+        margin-bottom: 15px;
+    }
+
+</style>

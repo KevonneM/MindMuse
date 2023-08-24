@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'second_brain',
     'insights',
     'users',
+    'widget_tweaks',
     'django_celery_beat',
     'django.contrib.admin',
     'django.contrib.auth',
