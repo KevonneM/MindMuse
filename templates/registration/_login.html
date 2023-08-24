@@ -1,12 +1,62 @@
-<div class="modal-body">
-    <h2>Login</h2>
-    <form method="post" id="loginForm">
-        {% csrf_token %}
-        <div class="form-group">
-            {{ form.as_p }}
-        </div>
-        <div class="modal-footer">
-            <button type="submit" class="btn btn-primary">Login</button>
-        </div>
-    </form>
+{% load widget_tweaks %}
+
+<div class="modal-body login-modal">
+    <div class="login-card">
+        <h2 class="text-center mb-4">Sign In</h2>
+        <form method="post" id="loginForm">
+            {% csrf_token %}
+            <p>
+                <label for="id_username">Username</label>
+                <input type="text" id="id_username" name="username" class="form-input" placeholder="Enter your username">
+            </p>
+            <p>
+                <label for="id_password">Password</label>
+                <input type="password" id="id_password" name="password" class="form-input" placeholder="Enter your password">
+            </p>
+            <div class="modal-footer">
+                <input type="submit" class="login-submit btn btn-primary" value="Login">
+            </div>
+        </form>
+    </div>
 </div>
+
+<style>
+
+    .main {
+        background-color: #9E91F2;
+        height: 100vh;
+    }
+
+    .login-card {
+        background-color: #fff;
+        padding: 30px;
+        font-family: 'Roboto', sans-serif;
+        border-radius: 5px;
+    }
+
+    .form-input {
+        width: 100%;
+        height: 60px;
+        padding-left: 15px;
+        border-radius: 5px;
+        border: 1px solid #5944A6;
+        background-color: #D4DBF5;
+    }
+
+    input:focus {
+        border: 2px solid #5944A6;
+    }
+
+    .login-modal .btn-primary {
+        background-color: #7638C2;
+        border-color: #7638C2;
+        width: 100%;
+        height: 40px;
+    }
+
+    .login-modal .btn-primary:hover {
+        background-color: #492378;
+        border-color: #492378;
+    }
+
+</style>

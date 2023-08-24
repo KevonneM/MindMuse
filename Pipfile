@@ -11,6 +11,7 @@ requests = "*"
 celery = {extras = ["redis"], version = "*"}
 django-celery-beat = "*"
 python-dateutil = "*"
+django-widget-tweaks = "*"
 
 [dev-packages]
 
