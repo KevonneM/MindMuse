@@ -1,24 +1,74 @@
-<div class="modal-body">
-  <form method="POST" action="{% url 'second_brain:update_task' task.pk %}">
-    {% csrf_token %}
-    <div class="mb-3">
-      {{ form.title.label_tag }} {{ form.title }}
-    </div>
-    <div class="mb-3">
-      {{ form.description.label_tag }} {{ form.description }}
-    </div>
-    <div class="mb-3">
-      {{ form.category.label_tag }} {{ form.category }}
-    </div>
-    <div class="mb-3">
-      {{ form.frequency.label_tag }} {{ form.frequency }}
-    </div>
-    <div class="mb-3">
-      {{ form.priority.label_tag }} {{ form.priority }}
-    </div>
-    <div class="modal-footer">
-      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-      <button type="submit" class="btn btn-primary">Save</button>
-    </div>
-  </form>
+{% load widget_tweaks %}
+
+<div class="modal-body task-modal">
+  <div class="task-card">
+    <h2 class="text-center mb-4">Update Task</h2>
+    <form method="POST" action="{% url 'second_brain:update_task' task.pk %}">
+      {% csrf_token %}
+      <p>
+        <label for="{{ form.title.id_for_label }}">{{ form.title.label }}</label>
+        {{ form.title|add_class:"small-form-input" }}
+      </p>
+      <p>
+        <label for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
+        {{ form.description|add_class:"small-form-input" }}
+      </p>
+      <p>
+        <label for="{{ form.category.id_for_label }}">{{ form.category.label }}</label>
+        {{ form.category|add_class:"small-form-input" }}
+      </p>
+      <p>
+        <label for="{{ form.frequency.id_for_label }}">{{ form.frequency.label }}</label>
+        {{ form.frequency|add_class:"small-form-input" }}
+      </p>
+      <p>
+        <label for="{{ form.priority.id_for_label }}">{{ form.priority.label }}</label>
+        {{ form.priority|add_class:"small-form-input" }}
+      </p>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">Save</button>
+      </div>
+    </form>
+  </div>
 </div>
+
+<style>
+  .update-task-modal {
+    font-family: 'Roboto', sans-serif;
+  }
+
+  .update-task-modal .modal-body {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 12px;
+  }
+
+  .update-task-modal .small-form-input {
+    width: 100%;
+    height: 40px;
+    padding-left: 15px;
+    border-radius: 5px;
+    border: 1px solid #5944A6;
+    background-color: #D4DBF5;
+  }
+
+  .update-task-modal input:focus {
+    border: 2px solid #5944A6;
+  }
+
+  .update-task-modal .btn-primary {
+    background-color: #7638C2;
+    border-color: #7638C2;
+    width: 100%;
+    height: 40px;
+  }
+
+  .update-task-modal .btn-primary:hover {
+    background-color: #492378;
+    border-color: #492378;
+  }
+
+  .update-task-modal .mb-3 {
+    margin-bottom: 15px;
+  }
+</style>
