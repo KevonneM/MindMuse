@@ -1,19 +1,76 @@
-<div class="modal-body">
-    <div id="passionActivityFeedback" class="text-success"></div>
+{% load widget_tweaks %}
+
+<div class="modal-body passion-modal">
+  <div class="passion-card">
+    <h2 class="text-center mb-4">Add Activity</h2>
     <form method="POST" action="{% url 'second_brain:passion_activity_create' passion.pk %}">
-        {% csrf_token %}
-        <div class="form-group">
-            <label for="{{ form.date.id_for_label }}">Date:</label>
-            {{ form.date }}
+      {% csrf_token %}
+      <p>
+        <label for="{{ form.date.id_for_label }}">Date:</label>
+        {{ form.date|add_class:"small-form-input" }}
+      </p>
+      <p>
+        <div class="flex-container" style="display: flex; align-items: flex-end; justify-content: space-around;">
+          <div style="text-align: center;">
+            <label for="{{ form.hour.id_for_label }}">Hour:</label><br>
+            {{ form.hour|add_class:"small-form-input me-2" }}
+          </div>
+          <div style="text-align: center;">
+            <label for="{{ form.minute.id_for_label }}">Minute:</label><br>
+            {{ form.minute|add_class:"small-form-input" }}
+          </div>
         </div>
-        <div class="form-group">
-            <label for="{{ form.hour.id_for_label }}">Hour:</label>
-            {{ form.hour }}
-            <label for="{{ form.minute.id_for_label }}">Minute:</label>
-            {{ form.minute }}
-        </div>
-        <div class="modal-footer">
-            <button type="submit" class="btn btn-primary">Save</button>
-        </div>
+      </p>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">Save</button>
+      </div>
     </form>
+  </div>
 </div>
+
+<style>
+
+  .passion-modal {
+    font-family: 'Roboto', sans-serif;
+  }
+
+  .passion-modal .modal-body {
+    background-color: #f7f7f7;
+    padding: 30px;
+    border-radius: 12px;
+  }
+
+  .passion-modal .small-form-input {
+    width: 100%;
+    height: 40px;
+    padding-left: 15px;
+    border-radius: 5px;
+    border: 1px solid #5944A6;
+    background-color: #D4DBF5;
+  }
+
+  .passion-modal input:focus {
+    border: 2px solid #5944A6;
+  }
+
+  .passion-modal .btn-primary {
+    background-color: #7638C2;
+    border-color: #7638C2;
+    width: 100%;
+    height: 40px;
+  }
+
+  .passion-modal .btn-primary:hover {
+    background-color: #492378;
+    border-color: #492378;
+  }
+
+  .passion-modal p {
+    margin-bottom: 15px;
+  }
+
+  .passion-modal .me-2 {
+    margin-right: 10px;
+  }
+
+</style>

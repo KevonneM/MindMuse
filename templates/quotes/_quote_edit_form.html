@@ -1,21 +1,74 @@
+{% load widget_tweaks %}
+
 <div class="modal-header">
-    <h5 class="modal-title" id="quoteModalLabel">Edit Quote</h5>
-    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+  <h5 class="modal-title quote-modal" id="quoteModalLabel">Edit Quote</h5>
+  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
-<div class="modal-body">
+
+<div class="modal-body quote-modal">
+  <div class="quote-card">
     <form id="quoteForm" method="post" action="{% url 'second_brain:quote_edit' quote.pk %}">
-        {% csrf_token %}
-        <div class="mb-3">
-            <label for="quote-text" class="form-label">Quote:</label>
-            <textarea class="form-control" id="quote-text" name="quote">{{ form.quote.value }}</textarea>
-        </div>
-        <div class="mb-3">
-            <label for="quote-author" class="form-label">Author:</label>
-            <input type="text" class="form-control" id="quote-author" name="author" value="{{ form.author.value }}">
-        </div>
+      {% csrf_token %}
+      <p>
+        <label for="quote-text">{{ form.quote.label }}:</label>
+        <textarea id="quote-text" name="quote" class="small-form-input">{{ form.quote.value }}</textarea>
+      </p>
+      <p>
+        <label for="quote-author">{{ form.author.label }}:</label>
+        <input type="text" id="quote-author" name="author" value="{{ form.author.value }}" class="small-form-input">
+      </p>
+      <div class="modal-footer">
+        <button type="submit" form="quoteForm" class="btn btn-primary">Update Quote</button>
+      </div>
     </form>
+  </div>
 </div>
-<div class="modal-footer">
-    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-    <button type="submit" form="quoteForm" class="btn btn-primary">Update Quote</button>
-</div>
+
+<style>
+
+    .quote-modal {
+        font-family: 'Roboto', sans-serif;
+    }
+
+    .quote-modal .modal-body {
+        background-color: #f7f7f7;
+        padding: 30px;
+        border-radius: 12px;
+    }
+
+    .quote-modal .small-form-input {
+        width: 100%;
+        height: 40px;
+        padding-left: 15px;
+        border-radius: 5px;
+        border: 1px solid #5944A6;
+        background-color: #D4DBF5;
+    }
+
+    .quote-modal textarea.small-form-input {
+        height: auto;
+        min-height: 80px;
+    }
+
+    .quote-modal input:focus,
+    .quote-modal textarea:focus {
+        border: 2px solid #5944A6;
+    }
+
+    .quote-modal .btn-primary {
+        background-color: #7638C2;
+        border-color: #7638C2;
+        width: 100%;
+        height: 40px;
+    }
+
+    .quote-modal .btn-primary:hover {
+        background-color: #492378;
+        border-color: #492378;
+    }
+
+    .quote-modal p {
+        margin-bottom: 15px;
+    }
+
+</style>
