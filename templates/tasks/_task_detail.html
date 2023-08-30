@@ -9,11 +9,26 @@
   {% endif %}
 </div>
 <div class="modal-footer">
-  <div class="form-check">
-    <input class="form-check-input" type="checkbox" id="modalTaskCheckbox{{ task.pk }}"
+  <div class="form-check modal-checkbox-container">
+    <input class="form-check-input task-checkbox modal-checkbox" type="checkbox" id="modalTaskCheckbox{{ task.pk }}"
     onclick="updateTaskStatus(this, {{ task.pk }}, true);" {% if task.status %}checked{% endif %}>
-    <label class="form-check-label" for="taskStatus">
+    <label class="form-check-label" for="modalTaskCheckbox{{ task.pk }}">
       Mark as complete
     </label>
   </div>
 </div>
+
+<style>
+
+.modal-checkbox + label:after {
+  left: 7% !important;
+}
+
+.modal-checkbox:checked + label:after {
+  left: 7% !important;
+  border: solid #000 !important;
+  border-width: 0 3px 3px 0 !important;
+  opacity: 1 !important;
+}
+
+</style>

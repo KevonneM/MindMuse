@@ -963,7 +963,15 @@ async function updateInsightOverview(year) {
         const previousWeekDurationFloat = previousWeekDurationObj.hours + (previousWeekDurationObj.minutes / 60);
         const passionDurationDifference = currentWeekDurationFloat - previousWeekDurationFloat;
         const passionDurationDifferenceObj = passionDurationToHoursAndMinutes(passionDurationDifference);
-        const passionChangePercent = previousWeekDurationFloat === 0 ? 100 : (passionDurationDifference / previousWeekDurationFloat) * 100;
+
+        let passionChangePercent;
+        if (previousWeekDurationFloat === 0 && currentWeekDurationFloat === 0) {
+            passionChangePercent = 0;
+        } else if (previousWeekDurationFloat === 0) {
+            passionChangePercent = 100;
+        } else {
+            passionChangePercent = (passionDurationDifference / previousWeekDurationFloat) * 100;
+        }
 
         if(passionChangePercent > 0) {
             passionChangeTerm = "increase";
