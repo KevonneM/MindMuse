@@ -1,13 +1,6 @@
 function updateTaskStatus(checkboxElem, taskId, isModalCheckbox) {
   const isChecked = checkboxElem.checked;
-  let taskMessage;
-
-  if (document.getElementById("taskCompleteMessage" + taskId)) {
-    taskMessage = document.getElementById("taskCompleteMessage" + taskId);
-  } else if (document.getElementById('task-done-message')) {
-    taskMessage = document.getElementById('task-done-message');
-  }
-  
+  const taskTitleElement = document.querySelector(`#taskCheckbox${taskId}`).nextElementSibling.nextElementSibling;
   
   fetch(`/tasks/${taskId}/`, {
       method: 'POST',
@@ -25,30 +18,24 @@ function updateTaskStatus(checkboxElem, taskId, isModalCheckbox) {
   })
   .then(data => {
     console.log("Response data: ", data);
-      if (data.success) {
-          console.log('Task status updated successfully');
-      if (isChecked) {
-        if (taskMessage.id === "task-done-message") {
-          taskMessage.style.display = 'block';
-        } else {
-          taskMessage.style.display = 'inline';
-        }
-        // Set a timeout to hide the message after 5 seconds
-        setTimeout(function() {
-          taskMessage.classList.add('fadeOut');
-          // Wait for the animation to finish and then hide the element
-          setTimeout(function() {
-              taskMessage.style.display = 'none';
-              taskMessage.classList.remove('fadeOut');
-          }, 2000);
-        }, 2000);
-      } else {
-        taskMessage.style.display = 'none';
-      }
-      syncCheckboxStatus(checkboxElem, taskId, isModalCheckbox);
-      } else {
-          console.error('Failed to update task status:', data.message);
-      }
+    if (data.success) {
+        console.log('Task status updated successfully');
+        applyStrikethroughOnInit();
+
+    if (isChecked) {
+      checkboxElem.checked = true;
+      taskTitleElement.classList.add('strikethrough');
+      taskTitleElement.classList.add('animate-strikethrough');
+      
+    } else {
+      checkboxElem.checked = false;
+      taskTitleElement.classList.remove('strikethrough');
+      taskTitleElement.classList.remove('animate-strikethrough');
+    }
+    syncCheckboxStatus(checkboxElem, taskId, isModalCheckbox);
+    } else {
+        console.error('Failed to update task status:', data.message);
+    }
   })
   .catch(error => {
       console.error('Failed to update task status', error);
@@ -67,3 +54,35 @@ function syncCheckboxStatus(checkboxElem, taskId, isModalCheckbox) {
       otherCheckbox.checked = checkboxElem.checked;
   }
 }
+
+function applyStrikethroughOnInit() {
+  const taskPanes = ['#daily', '#weekly', '#monthly'];
+
+  taskPanes.forEach(pane => {
+    const taskPaneElem = document.querySelector(pane);
+    if (taskPaneElem) {
+      const checkboxes = taskPaneElem.querySelectorAll('.task-checkbox');
+      checkboxes.forEach(checkbox => {
+        const isChecked = checkbox.checked;
+        const taskTitleElement = checkbox.nextElementSibling.nextElementSibling;
+        if (isChecked) {
+          taskTitleElement.classList.add('strikethrough');
+          taskTitleElement.classList.add('animate-strikethrough');
+        } else {
+          taskTitleElement.classList.remove('strikethrough');
+          taskTitleElement.classList.remove('animate-strikethrough');
+        }
+      });
+    }
+  });
+}
+
+document.addEventListener('show.bs.tab', function (event) {
+  if (['daily-tab', 'weekly-tab', 'monthly-tab'].includes(event.target.id)) {
+    setTimeout(() => {
+      applyStrikethroughOnInit();
+    }, 0);
+  }
+});
+
+window.addEventListener('load', applyStrikethroughOnInit);

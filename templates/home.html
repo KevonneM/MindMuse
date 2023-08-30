@@ -136,15 +136,14 @@
                         </ul>
                         <div class="tab-content" id="myTabContent">
                             <div class="tab-pane fade show active" id="daily" role="tabpanel" aria-labelledby="daily-tab">
-                            <ul>
+                            <ul id="dailyTaskList">
                             {% for task in daily_tasks %}
-                                <li>
+                                <li style="list-style: none;">
                                     <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <input type="checkbox" id="taskCheckbox{{task.pk}}" onclick="updateTaskStatus(this, {{task.pk}}, false)" {% if task.status %}checked{% endif %}>
+                                        <div class="task-container">
+                                            <input type="checkbox" id="taskCheckbox{{task.pk}}" class="task-checkbox" onclick="updateTaskStatus(this, {{task.pk}}, false)" {% if task.status %}checked{% endif %}>
                                             <label for="taskCheckbox{{task.pk}}"></label>
                                             <a class="task-title" onclick="loadTaskDetailsModal(event, {{ task.pk }}); event.preventDefault();">{{ task.title }}</a>
-                                            <span class="alert alert-success taskCompleteMessage" id="taskCompleteMessage{{task.pk}}" style="display: none;">Done!</span>
                                         </div>
                                         <div class="dropdown">
                                             <button class="btn btn-primary btn-sm me-2 dropdown-toggle" type="button" id="taskDropdown{{task.pk}}" data-bs-toggle="dropdown" aria-expanded="false">
@@ -167,13 +166,12 @@
                             <div class="tab-pane fade" id="weekly" role="tabpanel" aria-labelledby="weekly-tab">
                             <ul>
                             {% for task in weekly_tasks %}
-                                <li>
+                                <li style="list-style: none;">
                                     <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <input type="checkbox" id="taskCheckbox{{task.pk}}" onclick="updateTaskStatus(this, {{task.pk}}, false)" {% if task.status %}checked{% endif %}>
+                                        <div class="task-container">
+                                            <input type="checkbox" id="taskCheckbox{{task.pk}}" class="task-checkbox" onclick="updateTaskStatus(this, {{task.pk}}, false)" {% if task.status %}checked{% endif %}>
                                             <label for="taskCheckbox{{task.pk}}"></label>
                                             <a class="task-title" onclick="loadTaskDetailsModal(event, {{ task.pk }}); event.preventDefault();">{{ task.title }}</a>
-                                            <span class="alert alert-success taskCompleteMessage" id="taskCompleteMessage{{task.pk}}" style="display: none;">Done!</span>
                                         </div>
                                         <div class="dropdown">
                                             <button class="btn btn-primary btn-sm me-2 dropdown-toggle" type="button" id="taskDropdown{{task.pk}}" data-bs-toggle="dropdown" aria-expanded="false">
@@ -196,13 +194,12 @@
                             <div class="tab-pane fade" id="monthly" role="tabpanel" aria-labelledby="monthly-tab">
                             <ul>
                             {% for task in monthly_tasks %}
-                                <li>
+                                <li style="list-style: none;">
                                     <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <input type="checkbox" id="taskCheckbox{{task.pk}}" onclick="updateTaskStatus(this, {{task.pk}}, false)" {% if task.status %}checked{% endif %}>
+                                        <div class="task-container">
+                                            <input type="checkbox" id="taskCheckbox{{task.pk}}" class="task-checkbox" onclick="updateTaskStatus(this, {{task.pk}}, false)" {% if task.status %}checked{% endif %}>
                                             <label for="taskCheckbox{{task.pk}}"></label>
                                             <a class="task-title" onclick="loadTaskDetailsModal(event, {{ task.pk }}); event.preventDefault();">{{ task.title }}</a>
-                                            <span class="alert alert-success taskCompleteMessage" id="taskCompleteMessage{{task.pk}}" style="display: none;">Done!</span>
                                         </div>
                                         <div class="dropdown">
                                             <button class="btn btn-primary btn-sm me-2 dropdown-toggle" type="button" id="taskDropdown{{task.pk}}" data-bs-toggle="dropdown" aria-expanded="false">
@@ -293,9 +290,9 @@
                                             {% for index, date in passion_detail.dates %}
                                                 {% if index == i %}
                                                     <div class="weekday-box">
-                                                        <div class="weekday-label">{{ day|slice:":3" }}</div>
+                                                        <div class="weekday-label mx-auto">{{ day|slice:":3" }}</div>
                                                         <div class="form-check form-check-inline">
-                                                            <input class="form-check-input" type="checkbox"
+                                                            <input class="form-check-input mx-auto" type="checkbox"
                                                                 id="checkbox{{ i }}{{ passion_detail.passion.pk }}"
                                                                 value="{{ i }}"
                                                                 onclick="recordPassionActivity(this, {{ passion_detail.passion.pk }}, '{{ date|date:'Y-m-d' }}');"

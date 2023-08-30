@@ -1,6 +1,6 @@
 {% load widget_tweaks %}
 
-<div class="modal-body task-modal">
+<div class="modal-body update-task-modal">
   <div class="task-card">
     <h2 class="text-center mb-4">Update Task</h2>
     <form method="POST" action="{% url 'second_brain:update_task' task.pk %}">

@@ -104,20 +104,7 @@
   /* Add any other desired styles */
 }
 
-/* Fade out for task completion alert */
-@keyframes fadeOut {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-  }
-}
-
-.fadeOut {
-  animation-name: fadeOut;
-  animation-duration: 2s;
-}
+/* Task completion animation */
 
 ul li {
   position: relative;
@@ -125,19 +112,17 @@ ul li {
 }
 
 .d-flex {
-  position: relative;
+  display: flex;
+  
 }
 
-.taskCompleteMessage {
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 0.8em;
-  max-width: 50%;
-  padding: 5px;
-  margin-left: 30px;
-  z-index: 1;
+.task-container {
+  display: flex;
+  align-items: center;
+}
+
+.task-checkbox {
+  margin-right: 10px;
 }
 
 .task-title {
@@ -145,10 +130,96 @@ ul li {
   color: #333;
   position: relative;
   z-index: 0;
+  flex: 1;
+  min-width: 0;
+  word-wrap: break-word;
 }
 
 .task-title:hover {
   color: #007BFF;
+}
+
+.strikethrough {
+  position: relative;
+}
+
+.strikethrough::before {
+  content: "";
+  position: absolute;
+  top: 55%;
+  left: -5px;
+  right: -5px;
+  height: 2px;
+  background: black;
+  transform: translateY(-50%);
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.strikethrough.animate-strikethrough::before {
+  width: calc(100% + 10px);
+  opacity: 1;
+}
+
+/* Hide default checkbox */
+input[type="checkbox"].task-checkbox {
+  display: none;
+}
+
+/* Create a custom checkbox */
+input[type="checkbox"].task-checkbox + label {
+  position: relative;
+  padding-left: 35px;
+  cursor: pointer;
+  line-height: 25px;
+  vertical-align: middle;
+  display: inline-block;
+}
+
+/* Actual box */
+input[type="checkbox"].task-checkbox + label:before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 25px;
+  height: 25px;
+  border: 2px solid #000;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+input[type="checkbox"].task-checkbox + label:after {
+  content: "";
+  position: absolute;
+  left: 33%;
+  top: 50%;
+  transform: translateY(-50%) rotate(45deg) translateX(-50%);
+  width: 8px;
+  height: 15px;
+  border: solid transparent;
+  border-width: 0 3px 3px 0;
+  opacity: 0;
+  transition: opacity 0.3s ease, border-color 0.3s ease;
+}
+
+/* Check mark */
+input[type="checkbox"].task-checkbox:checked + label:after {
+  content: "";
+  position: absolute;
+  left: 33%;
+  top: 50%;
+  transform: translateY(-50%) rotate(45deg) translateX(-50%);
+  width: 8px;
+  height: 15px;
+  border: solid #000;
+  border-width: 0 3px 3px 0;
+  opacity: 1;
+}
+
+input[type="checkbox"].task-checkbox:checked + label:before {
+  background-color: #1ED760;
 }
 
 /* Passion card styling */
