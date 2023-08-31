@@ -81,8 +81,15 @@ function updateWeatherData(cityName) {
   console.log('Updating weather...');
   const weatherIconUrl = (iconCode) => `http://openweathermap.org/img/wn/${iconCode}.png`;
   const cityParam = cityName ? cityName : '';
+
   fetch(`/fetch_weather/${cityParam}`)
-    .then(response => response.json())
+    .then(response => {
+      if (response.status === 404) {
+        throw new Error('City not found');
+      }
+      return response.json();
+    })
+
     .then(data => {
       const cityNameElement = document.getElementById('city_name');
       const temperatureElement = document.getElementById('temperature');
@@ -107,7 +114,11 @@ function updateWeatherData(cityName) {
       setTimeout(updateWeatherData, 500000);
     })
     .catch(error => {
-      console.error('Error fetching weather data:', error);
+      if (error.message === 'City not found') {
+        alert('The city you entered could not be found. Please try again.');
+      } else {
+        console.error('Error fetching weather data:', error);
+      }
     });
 }
 
@@ -160,10 +171,22 @@ function init() {
   var refreshButton = document.getElementById('refreshButton');
   var submitCity = document.getElementById('submitCity');
   var useIP = document.getElementById('useIP');
+  var weatherCardFooter = document.querySelector('.weather-card-footer');
 
   if (refreshButton) refreshButton.addEventListener('click', getLastTrackedCity);
   if (submitCity) submitCity.addEventListener('click', fetchWeatherByCity);
   if (useIP) useIP.addEventListener('click', fetchCityByIP);
+
+  if (weatherCardFooter) {
+    weatherCardFooter.addEventListener('keydown', function(event) {
+      if (event.target.id === 'cityInput') {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          fetchWeatherByCity();
+        }
+      }
+    });
+  }
   
   if (document.getElementById('city_name')) {
     getLastTrackedCity();
