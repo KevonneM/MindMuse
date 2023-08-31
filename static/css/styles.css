@@ -1,3 +1,14 @@
+/* Overrides for Bootstrap 5 buttons */
+.btn-primary {
+  background-color: #7638C2 !important;
+  border-color: #7638C2 !important;
+}
+
+.btn-primary:hover {
+  background-color: #492378 !important;
+  border-color: #492378 !important;
+}
+
 .hidden {
   display: none;
 }
@@ -59,6 +70,52 @@
   .weekly-calendar .card:last-child {
       flex-grow: 1;
   }
+}
+
+/* Increase the width of the modal */
+.modal-dialog.weekly-calendar-dialog {
+  max-width: 90%;
+  width: 90%;
+}
+
+/* Improve visibility for the weekly calendar */
+.weekly-calendar .event {
+  border: 2px solid;
+  border-radius: 5px;
+  padding: 5px;
+  margin-bottom: 5px;
+}
+
+/* To make sure the cards stretch full height */
+.weekly-calendar .col {
+  min-height: 1px;
+  flex-grow: 1;
+  flex-basis: 0;
+  max-width: 100%;
+}
+
+/* To make sure the row stretches to the full width */
+.weekly-calendar .row {
+  flex-wrap: nowrap;
+}
+
+.weekly-calendar-dialog .modal-header,
+.weekly-calendar-dialog .modal-footer {
+    background-color: #f7f7f7;
+}
+.weekly-calendar-dialog .btn-primary {
+    background-color: #7638C2;
+    border-color: #7638C2;
+    width: 25%;
+    height: 40px;
+}
+.weekly-calendar-dialog .btn-primary:hover {
+    background-color: #492378;
+    border-color: #492378;
+}
+.weekly-calendar-dialog .btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
 }
 
 /* Monthly calendar css */

@@ -1,4 +1,4 @@
-<div class="modal-content">
+<div class="modal-content event-modal">
     <div class="modal-header">
         <h5 class="modal-title">Create Event</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -6,47 +6,94 @@
     <div class="modal-body">
         <form id="createEventForm" method="post">
             {% csrf_token %}
-            <div class="mb-3">
-                <label for="title" class="form-label">Title:</label>
-                <input type="text" name="title" id="title" class="form-control" required>
+            <div class="mb-3 event-form-group">
+                <label for="title" class="event-form-label">Title:</label>
+                <input type="text" name="title" id="title" class="event-form-input" required>
             </div>
-            <div class="mb-3">
-                <label for="start_date" class="form-label">Start Date:</label>
-                <input type="text" name="start_date" id="start_date" class="form-control" required>
+            <div class="mb-3 event-form-group">
+                <label for="start_date" class="event-form-label">Start Date:</label>
+                <input type="text" name="start_date" id="start_date" class="event-form-input" required>
             </div>
-            <div class="mb-3">
-                <label for="end_date" class="form-label">End Date:</label>
-                <input type="text" name="end_date" id="end_date" class="form-control" required>
+            <div class="mb-3 event-form-group">
+                <label for="end_date" class="event-form-label">End Date:</label>
+                <input type="text" name="end_date" id="end_date" class="event-form-input" required>
             </div>
-            <div class="mb-3">
-                <label for="start_time" class="form-label">Start Time:</label>
-                <input type="time" name="start_time" id="start_time" class="form-control" required>
+            <div class="mb-3 event-form-group">
+                <label for="start_time" class="event-form-label">Start Time:</label>
+                <input type="time" name="start_time" id="start_time" class="event-form-input" required>
             </div>
-            <div class="mb-3">
-                <label for="end_time" class="form-label">End Time:</label>
-                <input type="time" name="end_time" id="end_time" class="form-control" required>
+            <div class="mb-3 event-form-group">
+                <label for="end_time" class="event-form-label">End Time:</label>
+                <input type="time" name="end_time" id="end_time" class="event-form-input" required>
             </div>
         </form>
         <div class="modal-footer">
-            <button type="submit" class="btn btn-primary" form="createEventForm">Create Event</button>
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn event-btn-primary" form="createEventForm">Create Event</button>
         </div>
     </div>
 </div>
 
 <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="errorModalLabel">Overlapping Events</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <div class="modal-dialog modal-dialog-centered event-error-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="errorModalLabel">Overlapping Events</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body event-error-body" id="errorModalBody">
+                <h1>This Event overlaps with an existing event.</h1>
+            </div>
+            <div class="modal-footer">
+            </div>
         </div>
-        <div class="modal-body" id="errorModalBody">
-            <h1>This Event overlaps with an existing event.</h1>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        </div>
-      </div>
     </div>
-  </div>
+</div>
+
+<style>
+
+    .event-modal {
+        font-family: 'Roboto', sans-serif;
+    }
+
+    .event-modal .modal-body {
+        background-color: #f7f7f7;
+        padding: 30px;
+        border-radius: 12px;
+    }
+
+    .event-modal .event-form-input {
+        width: 100%;
+        height: 40px;
+        padding-left: 15px;
+        border-radius: 5px;
+        border: 1px solid #5944A6;
+        background-color: #D4DBF5;
+    }
+
+    .event-modal .event-form-input:focus {
+        border: 2px solid #5944A6;
+    }
+
+    .event-modal .event-btn-primary {
+        background-color: #7638C2;
+        border-color: #7638C2;
+        width: 100%;
+        height: 40px;
+        color: #f7f7f7;
+    }
+
+    .event-modal .event-btn-primary:hover {
+        background-color: #492378;
+        border-color: #492378;
+    }
+
+    /* Error Modal Styles */
+    .event-error-modal .modal-content {
+        background-color: #f7f7f7;
+    }
+
+    .event-error-modal .modal-body {
+        font-size: 18px;
+    }
+
+</style>

@@ -168,6 +168,10 @@ def fetch_weather(request, city=None):
 
             # Return the data as JSON
             return JsonResponse(context)
+
+        elif response.status_code == 404:
+            return JsonResponse({'error': 'City not found'}, status=404)
+
         else:
             return JsonResponse({'error': 'Failed to fetch weather data'}, status=500)
     else:
