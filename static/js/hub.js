@@ -228,16 +228,16 @@ function updateCountdowns() {
 
     // If the event hasn't started yet, countdown to start time
     if (remainingTime > 0) {
-      countdown.textContent = 'Starts in: ' + formatCountdown(remainingTime);
+      countdown.textContent = 'Starts: ' + formatCountdown(remainingTime);
     }
     // If the event has started but not ended, countdown to end time
     else if (now < eventEndTime) {
       const remainingEndTime = eventEndTime - now;
-      countdown.textContent = 'Ends in: ' + formatCountdown(remainingEndTime);
+      countdown.textContent = 'Ends: ' + formatCountdown(remainingEndTime);
     }
     // If the event has ended less than five minutes ago, countdown until removal
     else if (endTimePassed < fiveMinutesInMilliseconds) {
-      countdown.textContent = 'Removing in: ' + formatCountdown(fiveMinutesInMilliseconds - endTimePassed);
+      countdown.textContent = 'Removing: ' + formatCountdown(fiveMinutesInMilliseconds - endTimePassed);
     }
     // If the event has ended more than five minutes ago, remove it
     else {

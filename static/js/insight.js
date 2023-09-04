@@ -476,8 +476,8 @@ function initTaskCompletionInsights(year, accountYear) {
 
 // seperate helper function to formate date range for passion chart.
 function formatWeekRange(weekRange) {
-    const monthNames = ["January", "February", "March", "April", "May", "June",
-                        "July", "August", "September", "October", "November", "December"];
+    const monthNames = ["Jan", "Feb", "March", "April", "May", "June",
+                        "July", "Aug", "Sept", "Oct", "Nov", "Dec"];
                         
     const [startDateStr, endDateStr] = weekRange.split(" - ");
     const startObj = parseLocalDate(startDateStr);
@@ -678,7 +678,7 @@ function initCategoryChart(currentYear) {
                         }
                     }
                 }
-            }            
+            }          
             
             const labels = Object.keys(aggregatedCategoryData);
             const translucentAlpha = 0.5;
@@ -686,7 +686,7 @@ function initCategoryChart(currentYear) {
             const borderColors = colors.map(color => darkenRgbaColor(color, 80));
             const datasets = [{
                 label: labels,
-                data: Object.values(aggregatedCategoryData).map(category => durationToHours(category.totalDuration)),
+                data: Object.values(aggregatedCategoryData).map(category => category.totalDuration),
                 backgroundColor: colors,
                 borderColor: borderColors,
                 borderWidth: 2
@@ -983,39 +983,51 @@ async function updateInsightOverview(year) {
 
         const slide = document.querySelector("#textCarousel #taskOverviewSlide");
         slide.innerHTML = `
-            <h3>Task Overview</h3>
-            <div class="d-flex justify-content-between">
+            <div class="d-flex justify-content-center align-items-center" style="height: 275px;">
                 <div>
-                    <h4>Daily</h4>
-                    <p>Completion Rate: ${dailyLastData.completion_rate.toFixed(2)}%</p>
-                    <p>Change: ${(dailyLastData.completion_rate - dailyPrevData.completion_rate).toFixed(2)}%</p>
-                </div>
-                <div>
-                    <h4>Weekly</h4>
-                    <p>Completion Rate: ${weeklyLastData.completion_rate.toFixed(2)}%</p>
-                    <p>Change: ${(weeklyLastData.completion_rate - weeklyPrevData.completion_rate).toFixed(2)}%</p>
-                </div>
-                <div>
-                    <h4>Monthly</h4>
-                    <p>Completion Rate: ${monthlyLastData.completion_rate.toFixed(2)}%</p>
-                    <p>Change: ${(monthlyLastData.completion_rate - monthlyPrevData.completion_rate).toFixed(2)}%</p>
+                    <h3>Task Overview</h3>
+                    <div class="d-flex justify-content-between mt-4">
+                        <div class="me-2">
+                            <h4>Daily</h4>
+                            <p>Completion Rate: ${dailyLastData.completion_rate.toFixed(2)}%</p>
+                            <p>Change: ${(dailyLastData.completion_rate - dailyPrevData.completion_rate).toFixed(2)}%</p>
+                        </div>
+                        <div class="me-2">
+                            <h4>Weekly</h4>
+                            <p>Completion Rate: ${weeklyLastData.completion_rate.toFixed(2)}%</p>
+                            <p>Change: ${(weeklyLastData.completion_rate - weeklyPrevData.completion_rate).toFixed(2)}%</p>
+                        </div>
+                        <div>
+                            <h4>Monthly</h4>
+                            <p>Completion Rate: ${monthlyLastData.completion_rate.toFixed(2)}%</p>
+                            <p>Change: ${(monthlyLastData.completion_rate - monthlyPrevData.completion_rate).toFixed(2)}%</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         `;
         const slide2 = document.querySelector("#textCarousel #eventOverviewSlide");
         slide2.innerHTML = `
-            <h3>Event Overview</h3>
-            <p>Events attended this week: ${currentWeekEvents}</p>
-            <p>Events attended last week: ${previousWeekEvents}</p>
-            <p>${eventDifference} ${eventDifference > 0 ? 'More' : 'Less'} events attended than last week</p>
-            <p>${eventChangePercent.toFixed(2)}% ${eventChangeTerm} from last week</p>
+            <div class="d-flex justify-content-center align-items-center" style="height: 275px;">
+                <div>
+                    <h3 class="mb-4">Event Overview</h3>
+                    <p>Events attended this week: ${currentWeekEvents}</p>
+                    <p>Events attended last week: ${previousWeekEvents}</p>
+                    <p>${eventDifference} ${eventDifference > 0 ? 'More' : 'Less'} events attended than last week</p>
+                    <p>${eventChangePercent.toFixed(2)}% ${eventChangeTerm} from last week</p>
+                </div>
+            </div>
         `;
         const slide3 = document.querySelector("#textCarousel #passionOverviewSlide");
         slide3.innerHTML = `
-            <h3>Passion Overview</h3>
-            <p>Total time invested this week: ${currentWeekDurationObj.hours}h ${currentWeekDurationObj.minutes}m</p>
-            <p>${Math.abs(passionDurationDifferenceObj.hours)}h ${Math.abs(passionDurationDifferenceObj.minutes)}m ${passionDurationDifference > 0 ? 'more' : 'less'} than last week</p>
-            <p>${passionChangePercent.toFixed(2)}% ${passionChangeTerm} from last week</p>
+            <div class="d-flex justify-content-center align-items-center" style="height: 275px;">
+                <div>
+                    <h3 class="mb-4">Passion Overview</h3>
+                    <p>Total time invested this week: ${currentWeekDurationObj.hours}h ${currentWeekDurationObj.minutes}m</p>
+                    <p>${Math.abs(passionDurationDifferenceObj.hours)}h ${Math.abs(passionDurationDifferenceObj.minutes)}m ${passionDurationDifference > 0 ? 'more' : 'less'} than last week</p>
+                    <p>${passionChangePercent.toFixed(2)}% ${passionChangeTerm} from last week</p>
+                </div>
+            </div>
         `;
     } catch (error) {
         console.error("Failed to update insight overview:", error);

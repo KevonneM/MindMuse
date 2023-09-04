@@ -3,27 +3,28 @@
 {% block content %}
 
 <div class="container">
-    <div class="row">
-        <div class="col-lg-6">
-            <div id="textCarousel" class="carousel carousel-dark slide" data-bs-ride="carousel">
+
+    <div class="row mt-2">
+        <div class="col-lg-6 d-flex align-items-center" >
+            <div id="textCarousel" class="carousel carousel-dark slide w-100" data-bs-ride="carousel">
                 <div class="carousel-indicators" style="">
                     <button type="button" data-bs-target="#textCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
                     <button type="button" data-bs-target="#textCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
                     <button type="button" data-bs-target="#textCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
                 </div>
-                <div class="carousel-inner" style="min-height: 300px;">
+                <div class="carousel-inner" style="min-height: 275px;">
                     <div class="carousel-item active" id="taskOverviewSlide">
-                        <div class="d-flex justify-content-center align-items-center" style="height:300px;">
+                        <div class="d-flex justify-content-center align-items-center" style="height:275px;">
                             <!-- js content -->
                         </div>
                     </div>
                     <div class="carousel-item" id="eventOverviewSlide">
-                        <div class="d-flex justify-content-center align-items-center" style="height:300px;">
+                        <div class="d-flex justify-content-center align-items-center" style="height:275px;">
                             <!-- js content -->
                         </div>
                     </div>
                     <div class="carousel-item" id="passionOverviewSlide">
-                        <div class="d-flex justify-content-center align-items-center" style="height:300px;">
+                        <div class="d-flex justify-content-center align-items-center" style="height:275px;">
                             <!-- js content -->
                         </div>
                     </div>
@@ -37,12 +38,8 @@
                     <span class="visually-hidden">Next</span>
                 </button>
             </div>
-       </div>
-    </div>
-</div>     
+       </div>   
 
-<div class="container">
-    <div class="row">
         <div class="col-lg-6">
             <div class="card">
                 <div class="card-header">
@@ -68,21 +65,21 @@
                     <div class="tab-content">
                         <div class="tab-pane fade show active" id="passion-content" role="tabpanel" aria-labelledby="passion-tab">
                             <!-- Information related to individual passions -->
-                            <canvas id="passionChart" style="min-height: 350px;"></canvas>
+                            <canvas id="passionChart" style="min-height: 275px;"></canvas>
                         </div>
                         <div class="tab-pane fade" id="category-content" role="tabpanel" aria-labelledby="category-tab">
                             <!-- Information related to categories -->
-                            <canvas id="categoriesChart" style="min-height: 350px;"></canvas>
+                            <canvas id="categoriesChart" style="min-height: 275px;"></canvas>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<div class="container">
-    <div class="row">
+
+
+    <div class="row mt-2">
         <div class="col-lg-6">
             <div class="card">
                 <div class="card-header">
@@ -112,27 +109,23 @@
                         <div class="tab-pane fade show active" id="daily-task-content" role="tabpanel" aria-labelledby="daily-task-tab">
                             Average Daily tasks completed: <span id="daily-task-average"></span>
                             <p id="task-busiest-day"></p>
-                            <canvas id="dailyTasksChart"></canvas>
+                            <canvas id="dailyTasksChart" style="min-height: 275px;"></canvas>
                         </div>
                         <div class="tab-pane fade" id="weekly-task-content" role="tabpanel" aria-labelledby="weekly-task-tab">
                             Average Weekly tasks completed: <span id="weekly-task-average"></span>
                             <p id="task-busiest-week"></p>
-                            <canvas id="weeklyTasksChart"></canvas>
+                            <canvas id="weeklyTasksChart" style="min-height: 275px;"></canvas>
                         </div>
                         <div class="tab-pane fade" id="monthly-task-content" role="tabpanel" aria-labelledby="monthly-task-tab">
                             Average Monthly tasks completed: <span id="monthly-task-average"></span>
                             <p id="task-busiest-month"></p>
-                            <canvas id="monthlyTasksChart"></canvas>
+                            <canvas id="monthlyTasksChart" style="min-height: 275px;"></canvas>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
 
-<div class="container">
-    <div class="row">
         <div class="col-lg-6">
             <div class="card">
                 <div class="card-header">
@@ -162,17 +155,17 @@
                         <div class="tab-pane fade show active" id="daily-content" role="tabpanel" aria-labelledby="daily-tab">
                             Daily average: <span id="daily-average"></span>
                             <p id="busiest-day"></p>
-                            <canvas id="dailyEventsChart"></canvas>
+                            <canvas id="dailyEventsChart" style="min-height: 275px;"></canvas>
                         </div>
                         <div class="tab-pane fade" id="weekly-content" role="tabpanel" aria-labelledby="weekly-tab">
                             Weekly average events: <span id="weekly-average"></span>
                             <p id="busiest-week"></p>
-                            <canvas id="weeklyEventsChart"></canvas>
+                            <canvas id="weeklyEventsChart" style="min-height: 275px;"></canvas>
                         </div>
                         <div class="tab-pane fade" id="monthly-content" role="tabpanel" aria-labelledby="monthly-tab">
                             Monthly average events: <span id="monthly-average"></span>
                             <p id="busiest-month"></p>
-                            <canvas id="monthlyEventsChart"></canvas>
+                            <canvas id="monthlyEventsChart" style="min-height: 275px;"></canvas>
                         </div>
                     </div>
                 </div>

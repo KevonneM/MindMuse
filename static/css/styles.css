@@ -161,6 +161,16 @@
   /* Add any other desired styles */
 }
 
+.scrollable-list {
+  min-height: 210px;
+  max-height: 210px;
+  overflow-y: hidden;
+}
+
+.scrollable-list:hover {
+  overflow-y: auto;
+}
+
 /* Task completion animation */
 
 ul li {
@@ -171,6 +181,10 @@ ul li {
 .d-flex {
   display: flex;
   
+}
+
+.no-tasks-message {
+  color: gray;
 }
 
 .task-container {
