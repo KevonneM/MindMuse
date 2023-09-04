@@ -17,67 +17,72 @@
 
         <div class="col-lg-6 col-md-10 col-sm-12 order-2 order-lg-1">
             <div class="row">
-                <div class="col-md-6 col-sm-12">
+                <div class="col-lg-6 col-md-12 col-sm-12">
                     <div class="card-header text-center">
-                    <!-- Accordion div -->
-                    <div class="accordion mt-3" id="incomingEventsAccordion">
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="incomingEventsHeading">
-                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#incomingEventsCollapse" aria-expanded="true" aria-controls="incomingEventsCollapse">
-                                    Incoming Weekly Events
-                                </button>
-                            </h2>
-                            <div id="incomingEventsCollapse" class="accordion-collapse collapse show" aria-labelledby="incomingEventsHeading" data-bs-parent="#incomingEventsAccordion">
-                                <div class="accordion-body">
-                                    {% if events %}
-                                    <ul class="list-group">
-                                        {% for event in events %}
-                                            {% with event.event.start_time|timezone:request.user.timezone as start_time %}
-                                            {% with event.event.end_time|timezone:request.user.timezone as end_time %}
-                                            {% if event.is_visible %}
-                                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                    {{ event.event.title }}
-                                                    <span class="badge badge-pill custom-countdown countdown" data-event-start-time="{{ start_time|date:'U' }}" data-event-end-time="{{ end_time|date:'U' }}">Loading...</span>
-                                                </li>
-                                            {% endif %}
-                                            {% endwith %}
-                                            {% endwith %}
-                                        {% endfor %}
-                                    </ul>
-                                    <p class="no-events-message" style="display: none;">No events this week.</p>
-                                    {% else %}
-                                    <p>No events this week.</p>
-                                    {% endif %}
+                        <!-- Accordion div -->
+                        <div class="accordion mt-3" id="incomingEventsAccordion">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="incomingEventsHeading">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#incomingEventsCollapse" aria-expanded="true" aria-controls="incomingEventsCollapse">
+                                        Incoming Weekly Events
+                                    </button>
+                                </h2>
+                                <div id="incomingEventsCollapse" class="accordion-collapse collapse show" aria-labelledby="incomingEventsHeading" data-bs-parent="#incomingEventsAccordion">
+                                    <div class="accordion-body">
+                                        {% if events %}
+                                        <ul class="list-group scrollable-list">
+                                            {% for event in events %}
+                                                {% with event.event.start_time|timezone:request.user.timezone as start_time %}
+                                                {% with event.event.end_time|timezone:request.user.timezone as end_time %}
+                                                {% if event.is_visible %}
+                                                    <li class="list-group-item d-flex flex-column flex-lg-column flex-md-row justify-content-between align-items-center">
+                                                        {{ event.event.title }}
+
+                                                        <!-- This span will only display on medium screens -->
+                                                        <span class="badge badge-pill custom-countdown countdown d-none d-md-block d-lg-none" data-event-start-time="{{ start_time|date:'U' }}" data-event-end-time="{{ end_time|date:'U' }}">Loading...</span>
+                                                        
+                                                        <!-- This span will display on both smaller and larger screens -->
+                                                        <span class="badge badge-pill custom-countdown countdown d-md-none d-lg-block mt-2" data-event-start-time="{{ start_time|date:'U' }}" data-event-end-time="{{ end_time|date:'U' }}">Loading...</span>
+                                                    </li>
+                                                {% endif %}
+                                                {% endwith %}
+                                                {% endwith %}
+                                            {% endfor %}
+                                        </ul>
+                                        <p class="no-events-message" style="display: none;">No events this week.</p>
+                                        {% else %}
+                                        <p>No events this week.</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="scheduleHeading">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#scheduleCollapse" aria-expanded="false" aria-controls="scheduleCollapse">
+                                        Schedule
+                                    </button>
+                                </h2>
+                                <div id="scheduleCollapse" class="accordion-collapse collapse" aria-labelledby="scheduleHeading" data-bs-parent="#incomingEventsAccordion">
+                                    <div class="accordion-body">
+                                        <button type="button" class="btn btn-primary" onclick="loadDailyModal()">
+                                            Daily
+                                        </button>
+
+                                        <button type="button" class="btn btn-primary" onclick="loadWeeklyModal()">
+                                            Weekly
+                                        </button>
+
+                                        <button type="button" class="btn btn-primary" onclick="loadMonthlyModal()">
+                                            Monthly
+                                        </button>
+                                    </div>
+                                    <div class="accordion-body">
+                                        <a href="#" class="btn btn-primary" onclick="loadEventCreateModal(); return false;">Add Event</a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="scheduleHeading">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#scheduleCollapse" aria-expanded="false" aria-controls="scheduleCollapse">
-                                    Schedule
-                                </button>
-                            </h2>
-                            <div id="scheduleCollapse" class="accordion-collapse collapse" aria-labelledby="scheduleHeading" data-bs-parent="#incomingEventsAccordion">
-                                <div class="accordion-body">
-                                    <button type="button" class="btn btn-primary" onclick="loadDailyModal()">
-                                        Daily
-                                    </button>
-
-                                    <button type="button" class="btn btn-primary" onclick="loadWeeklyModal()">
-                                        Weekly
-                                    </button>
-
-                                    <button type="button" class="btn btn-primary" onclick="loadMonthlyModal()">
-                                        Monthly
-                                    </button>
-                                </div>
-                                <div class="accordion-body">
-                                    <a href="#" class="btn btn-primary" onclick="loadEventCreateModal(); return false;">Add Event</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                     </div>
                 </div>
 
@@ -114,13 +119,20 @@
                     </div>
                 </div>
 
-                <div class="col-md-6 col-sm-12">
+                <div class="col-lg-6 col-md-12 col-sm-12">
 
                     <div class="card mt-3">
                         <div class="card-header">
                             <div class="d-flex justify-content-between align-items-center">
                             <span>Tasks</span>
-                                <a href="#" class="btn btn-primary" onclick="loadCreateTaskModal('{% url 'second_brain:create_task' %}'); return false;">Add</a>
+                                <a href="#" class="btn btn-primary" onclick="loadCreateTaskModal('{% url 'second_brain:create_task' %}'); return false;">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <g fill="#ffffff" fill-rule="evenodd" clip-rule="evenodd">
+                                            <path d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12Zm10-8a8 8 0 1 0 0 16a8 8 0 0 0 0-16Z"></path>
+                                            <path d="M13 7a1 1 0 1 0-2 0v4H7a1 1 0 1 0 0 2h4v4a1 1 0 1 0 2 0v-4h4a1 1 0 1 0 0-2h-4V7Z"></path>
+                                        </g>
+                                    </svg>
+                                </a>
                             </div>
                         </div>
                         <ul class="nav nav-pills justify-content-center" id="myTab" role="tablist">
@@ -136,7 +148,7 @@
                         </ul>
                         <div class="tab-content" id="myTabContent">
                             <div class="tab-pane fade show active" id="daily" role="tabpanel" aria-labelledby="daily-tab">
-                            <ul id="dailyTaskList">
+                            <ul id="dailyTaskList" class="scrollable-list" {% if not daily_tasks %}style="height: 210px; display: flex; align-items: center; justify-content: center; margin: 0; padding: 0;"{% endif %}>
                             {% for task in daily_tasks %}
                                 <li style="list-style: none;">
                                     <div class="d-flex justify-content-between align-items-center">
@@ -147,24 +159,41 @@
                                         </div>
                                         <div class="dropdown">
                                             <button class="btn btn-primary btn-sm me-2 dropdown-toggle" type="button" id="taskDropdown{{task.pk}}" data-bs-toggle="dropdown" aria-expanded="false">
-                                                Options
+                                                <svg width="16" height="16" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    <path fill="#ffffff" d="M2 2h20v7H2V2Zm2 2v3h16V4H4Zm0 7v9h16v-9h2v11H2V11h2Zm2 1h12v2H6v-2Zm0 4h12v2H6v-2Z"/>
+                                                </svg>
                                             </button>
                                             <ul class="dropdown-menu" aria-labelledby="taskDropdown{{task.pk}}">
                                                 <li>
-                                                    <a class="dropdown-item" href="#" onclick="loadUpdateTaskModal({{ task.pk }}); return false;">Edit</a>
+                                                    <a class="dropdown-item" href="#" onclick="loadUpdateTaskModal({{ task.pk }}); return false;" style="display: inline-flex; align-items: center;">
+                                                        <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="margin-right: 5px;">
+                                                            <g fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                                                                <path d="M7 7H6a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-1"></path>
+                                                                <path d="M20.385 6.585a2.1 2.1 0 0 0-2.97-2.97L9 12v3h3l8.385-8.415zM16 5l3 3"></path>
+                                                            </g>
+                                                        </svg>
+                                                        Edit
+                                                    </a>
                                                 </li>
                                                 <li>
-                                                    <a class="dropdown-item" href="#" onclick="loadTaskDeleteModal({{task.pk}}); return false;">Delete</a>
+                                                    <a class="dropdown-item" href="#" onclick="loadTaskDeleteModal({{task.pk}}); return false;" style="display: inline-flex; align-items: center;">
+                                                        <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="margin-right: 5px;">
+                                                            <path fill="#000000" d="M7 4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2h4a1 1 0 1 1 0 2h-1.069l-.867 12.142A2 2 0 0 1 17.069 22H6.93a2 2 0 0 1-1.995-1.858L4.07 8H3a1 1 0 0 1 0-2h4V4zm2 2h6V4H9v2zM6.074 8l.857 12H17.07l.857-12H6.074zM10 10a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1zm4 0a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1z"></path>
+                                                        </svg>
+                                                        Delete
+                                                    </a>
                                                 </li>
                                             </ul>
                                         </div>
                                     </div>
                                 </li>
+                                {% empty %}
+                                    <li class="no-tasks-message" style="list-style: none;">No daily tasks</li>
                             {% endfor %}
                             </ul>
                             </div>
                             <div class="tab-pane fade" id="weekly" role="tabpanel" aria-labelledby="weekly-tab">
-                            <ul>
+                            <ul class="scrollable-list" {% if not weekly_tasks %}style="height: 210px; display: flex; align-items: center; justify-content: center; margin: 0; padding: 0;"{% endif %}>
                             {% for task in weekly_tasks %}
                                 <li style="list-style: none;">
                                     <div class="d-flex justify-content-between align-items-center">
@@ -175,24 +204,41 @@
                                         </div>
                                         <div class="dropdown">
                                             <button class="btn btn-primary btn-sm me-2 dropdown-toggle" type="button" id="taskDropdown{{task.pk}}" data-bs-toggle="dropdown" aria-expanded="false">
-                                                Options
+                                                <svg width="16" height="16" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    <path fill="#ffffff" d="M2 2h20v7H2V2Zm2 2v3h16V4H4Zm0 7v9h16v-9h2v11H2V11h2Zm2 1h12v2H6v-2Zm0 4h12v2H6v-2Z"/>
+                                                </svg>
                                             </button>
                                             <ul class="dropdown-menu" aria-labelledby="taskDropdown{{task.pk}}">
                                                 <li>
-                                                    <a class="dropdown-item" href="#" onclick="loadUpdateTaskModal({{ task.pk }}); return false;">Edit</a>
+                                                    <a class="dropdown-item" href="#" onclick="loadUpdateTaskModal({{ task.pk }}); return false;" style="display: inline-flex; align-items: center;">
+                                                        <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="margin-right: 5px;">
+                                                            <g fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                                                                <path d="M7 7H6a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-1"></path>
+                                                                <path d="M20.385 6.585a2.1 2.1 0 0 0-2.97-2.97L9 12v3h3l8.385-8.415zM16 5l3 3"></path>
+                                                            </g>
+                                                        </svg>
+                                                        Edit
+                                                    </a>
                                                 </li>
                                                 <li>
-                                                    <a class="dropdown-item" href="#" onclick="loadTaskDeleteModal({{task.pk}}); return false;">Delete</a>
+                                                    <a class="dropdown-item" href="#" onclick="loadTaskDeleteModal({{task.pk}}); return false;" style="display: inline-flex; align-items: center;">
+                                                        <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="margin-right: 5px;">
+                                                            <path fill="#000000" d="M7 4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2h4a1 1 0 1 1 0 2h-1.069l-.867 12.142A2 2 0 0 1 17.069 22H6.93a2 2 0 0 1-1.995-1.858L4.07 8H3a1 1 0 0 1 0-2h4V4zm2 2h6V4H9v2zM6.074 8l.857 12H17.07l.857-12H6.074zM10 10a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1zm4 0a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1z"></path>
+                                                        </svg>
+                                                        Delete
+                                                    </a>
                                                 </li>
                                             </ul>
                                         </div>
                                     </div>
                                 </li>
+                                {% empty %}
+                                    <li class="no-tasks-message " style="list-style: none;">No weekly tasks</li>
                             {% endfor %}
                             </ul>
                             </div>
                             <div class="tab-pane fade" id="monthly" role="tabpanel" aria-labelledby="monthly-tab">
-                            <ul>
+                            <ul class="scrollable-list" {% if not monthly_tasks %}style="height: 210px; display: flex; align-items: center; justify-content: center; margin: 0; padding: 0;"{% endif %}>
                             {% for task in monthly_tasks %}
                                 <li style="list-style: none;">
                                     <div class="d-flex justify-content-between align-items-center">
@@ -203,19 +249,36 @@
                                         </div>
                                         <div class="dropdown">
                                             <button class="btn btn-primary btn-sm me-2 dropdown-toggle" type="button" id="taskDropdown{{task.pk}}" data-bs-toggle="dropdown" aria-expanded="false">
-                                                Options
+                                                <svg width="16" height="16" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    <path fill="#ffffff" d="M2 2h20v7H2V2Zm2 2v3h16V4H4Zm0 7v9h16v-9h2v11H2V11h2Zm2 1h12v2H6v-2Zm0 4h12v2H6v-2Z"/>
+                                                </svg>
                                             </button>
                                             <ul class="dropdown-menu" aria-labelledby="taskDropdown{{task.pk}}">
                                                 <li>
-                                                    <a class="dropdown-item" href="#" onclick="loadUpdateTaskModal({{ task.pk }}); return false;">Edit</a>
+                                                    <a class="dropdown-item" href="#" onclick="loadUpdateTaskModal({{ task.pk }}); return false;" style="display: inline-flex; align-items: center;">
+                                                        <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="margin-right: 5px;">
+                                                            <g fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                                                                <path d="M7 7H6a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-1"></path>
+                                                                <path d="M20.385 6.585a2.1 2.1 0 0 0-2.97-2.97L9 12v3h3l8.385-8.415zM16 5l3 3"></path>
+                                                            </g>
+                                                        </svg>
+                                                        Edit
+                                                    </a>
                                                 </li>
                                                 <li>
-                                                    <a class="dropdown-item" href="#" onclick="loadTaskDeleteModal({{task.pk}}); return false;">Delete</a>
+                                                    <a class="dropdown-item" href="#" onclick="loadTaskDeleteModal({{task.pk}}); return false;" style="display: inline-flex; align-items: center;">
+                                                        <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="margin-right: 5px;">
+                                                            <path fill="#000000" d="M7 4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2h4a1 1 0 1 1 0 2h-1.069l-.867 12.142A2 2 0 0 1 17.069 22H6.93a2 2 0 0 1-1.995-1.858L4.07 8H3a1 1 0 0 1 0-2h4V4zm2 2h6V4H9v2zM6.074 8l.857 12H17.07l.857-12H6.074zM10 10a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1zm4 0a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1z"></path>
+                                                        </svg>
+                                                        Delete
+                                                    </a>
                                                 </li>
                                             </ul>
                                         </div>
                                     </div>
                                 </li>
+                                {% empty %}
+                                    <li class="no-tasks-message" style="list-style: none;">No monthly tasks</li>
                             {% endfor %}
                             </ul>
                             </div>
@@ -261,7 +324,15 @@
                             <div class="d-flex justify-content-between align-items-center">
                                 <span>Passions ({{ passion_count }})</span>
                                 <div>
-                                    <button type="button" class="btn btn-primary" onclick="loadPassionCreateModal()">Add Passion</button>
+                                    <button type="button" class="btn btn-primary" onclick="loadPassionCreateModal()" style="display: inline-flex; align-items: center;">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle; margin-right: 5px;">
+                                            <g fill="#ffffff" fill-rule="evenodd" clip-rule="evenodd">
+                                                <path d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12Zm10-8a8 8 0 1 0 0 16a8 8 0 0 0 0-16Z"></path>
+                                                <path d="M13 7a1 1 0 1 0-2 0v4H7a1 1 0 1 0 0 2h4v4a1 1 0 1 0 2 0v-4h4a1 1 0 1 0 0-2h-4V7Z"></path>
+                                            </g>
+                                        </svg>
+                                        <span style="vertical-align: middle;">Passion</span>
+                                    </button>
                                     <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#passionContent" aria-expanded="false" aria-controls="passionContent">
                                         <i class="fas fa-chevron-down"></i>
                                     </button>
@@ -278,9 +349,27 @@
                                                 Options
                                             </button>
                                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                                <a class="dropdown-item" href="#" onclick="loadPassionActivityCreateModal({{passion_detail.passion.pk}}, this); return false;" data-account-creation-year="{{ account_creation_year }}">Add Session</a>
-                                                <li><a class="dropdown-item" href="#" onclick="loadPassionUpdateModal({{passion_detail.passion.pk}}); return false;">Edit Passion</a></li>
-                                                <li><a class="dropdown-item" href="#" onclick="loadPassionDeleteModal({{passion_detail.passion.pk}}); return false;">Delete Passion</a></li>
+                                                <a class="dropdown-item" href="#" onclick="loadPassionActivityCreateModal({{passion_detail.passion.pk}}, this); return false;" data-account-creation-year="{{ account_creation_year }}">
+                                                    <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="margin-right: 5px;">
+                                                        <path fill="#000000" d="M18 7c-1.1 0-2 .9-2 2v6c0 1.1.9 2 2 2h2c1.1 0 2-.9 2-2v-4h-2v4h-2V9h4V7h-4M2 7v10h6v-2H4V7H2m9 0c-1.1 0-2 .9-2 2v6c0 1.1.9 2 2 2h2c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2h-2m0 2h2v6h-2V9Z"></path>
+                                                    </svg>
+                                                    Session
+                                                </a>
+                                                <li><a class="dropdown-item" href="#" onclick="loadPassionUpdateModal({{passion_detail.passion.pk}}); return false;">
+                                                    <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="margin-right: 5px;">
+                                                        <g fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                                                            <path d="M7 7H6a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-1"></path>
+                                                            <path d="M20.385 6.585a2.1 2.1 0 0 0-2.97-2.97L9 12v3h3l8.385-8.415zM16 5l3 3"></path>
+                                                        </g>
+                                                    </svg>
+                                                    Edit
+                                                </a></li>
+                                                <li><a class="dropdown-item" href="#" onclick="loadPassionDeleteModal({{passion_detail.passion.pk}}); return false;">
+                                                    <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="margin-right: 5px;">
+                                                        <path fill="#000000" d="M7 4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2h4a1 1 0 1 1 0 2h-1.069l-.867 12.142A2 2 0 0 1 17.069 22H6.93a2 2 0 0 1-1.995-1.858L4.07 8H3a1 1 0 0 1 0-2h4V4zm2 2h6V4H9v2zM6.074 8l.857 12H17.07l.857-12H6.074zM10 10a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1zm4 0a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1z"></path>
+                                                    </svg>
+                                                    Delete
+                                                </a></li>
                                             </ul>
                                         </div>
                                     </div>
