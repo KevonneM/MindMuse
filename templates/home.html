@@ -9,7 +9,7 @@
 
     <div class="row">
         <div class="col-12 d-flex align-items-center justify-content-center">
-            <h1 class="mt-2 greeting">Hello, {{ request.user.first_name }} {{ request.user.last_name }}</h1>
+            <h1 class="mt-2 greeting" style="font-family: 'Frank Ruhl Libre', serif; color: #FFFFFF;">Hello, {{ request.user.first_name }} {{ request.user.last_name }}</h1>
         </div>
     </div>
 
@@ -18,9 +18,9 @@
         <div class="col-lg-6 col-md-10 col-sm-12 order-2 order-lg-1">
             <div class="row">
                 <div class="col-lg-6 col-md-12 col-sm-12">
-                    <div class="card-header text-center">
+                    <div class="card-header text-center custom-accordion" style="background-color: #7C61B3 !important;">
                         <!-- Accordion div -->
-                        <div class="accordion mt-3" id="incomingEventsAccordion">
+                        <div class="accordion mt-2" id="incomingEventsAccordion">
                             <div class="accordion-item">
                                 <h2 class="accordion-header" id="incomingEventsHeading">
                                     <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#incomingEventsCollapse" aria-expanded="true" aria-controls="incomingEventsCollapse">
@@ -35,7 +35,7 @@
                                                 {% with event.event.start_time|timezone:request.user.timezone as start_time %}
                                                 {% with event.event.end_time|timezone:request.user.timezone as end_time %}
                                                 {% if event.is_visible %}
-                                                    <li class="list-group-item d-flex flex-column flex-lg-column flex-md-row justify-content-between align-items-center">
+                                                    <li class="list-group-item d-flex flex-column flex-lg-column flex-md-row justify-content-between align-items-center" style="background-color: #7C61B3; color: #FFFFFF;">
                                                         {{ event.event.title }}
 
                                                         <!-- This span will only display on medium screens -->
@@ -78,7 +78,12 @@
                                         </button>
                                     </div>
                                     <div class="accordion-body">
-                                        <a href="#" class="btn btn-primary" onclick="loadEventCreateModal(); return false;">Add Event</a>
+                                        <a href="#" class="btn btn-primary" onclick="loadEventCreateModal(); return false;" style="display: inline-flex; align-items: center;">
+                                            <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="margin-right: 5px;">
+                                                <path fill="#ffffff" d="M12 14a1 1 0 1 0-1-1a1 1 0 0 0 1 1Zm5 0a1 1 0 1 0-1-1a1 1 0 0 0 1 1Zm-5 4a1 1 0 1 0-1-1a1 1 0 0 0 1 1Zm5 0a1 1 0 1 0-1-1a1 1 0 0 0 1 1ZM7 14a1 1 0 1 0-1-1a1 1 0 0 0 1 1ZM19 4h-1V3a1 1 0 0 0-2 0v1H8V3a1 1 0 0 0-2 0v1H5a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3Zm1 15a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-9h16Zm0-11H4V7a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1ZM7 18a1 1 0 1 0-1-1a1 1 0 0 0 1 1Z"/>
+                                            </svg>
+                                            Add Event
+                                        </a>
                                     </div>
                                 </div>
                             </div>
@@ -121,17 +126,18 @@
 
                 <div class="col-lg-6 col-md-12 col-sm-12">
 
-                    <div class="card mt-3">
-                        <div class="card-header">
+                    <div class="card mt-2">
+                        <div class="card-header" style="background-color: #673AB7;">
                             <div class="d-flex justify-content-between align-items-center">
-                            <span>Tasks</span>
-                                <a href="#" class="btn btn-primary" onclick="loadCreateTaskModal('{% url 'second_brain:create_task' %}'); return false;">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <span style="color: #FFFFFF;">Tasks</span>
+                                <a href="#" class="btn btn-primary" onclick="loadCreateTaskModal('{% url 'second_brain:create_task' %}'); return false;" style="display: flex; align-items: center; justify-content: center;">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="margin-right: 5px;">
                                         <g fill="#ffffff" fill-rule="evenodd" clip-rule="evenodd">
                                             <path d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12Zm10-8a8 8 0 1 0 0 16a8 8 0 0 0 0-16Z"></path>
                                             <path d="M13 7a1 1 0 1 0-2 0v4H7a1 1 0 1 0 0 2h4v4a1 1 0 1 0 2 0v-4h4a1 1 0 1 0 0-2h-4V7Z"></path>
                                         </g>
                                     </svg>
+                                    Task
                                 </a>
                             </div>
                         </div>
@@ -167,7 +173,7 @@
                                                 <li>
                                                     <a class="dropdown-item" href="#" onclick="loadUpdateTaskModal({{ task.pk }}); return false;" style="display: inline-flex; align-items: center;">
                                                         <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="margin-right: 5px;">
-                                                            <g fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                                                            <g fill="none" stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
                                                                 <path d="M7 7H6a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-1"></path>
                                                                 <path d="M20.385 6.585a2.1 2.1 0 0 0-2.97-2.97L9 12v3h3l8.385-8.415zM16 5l3 3"></path>
                                                             </g>
@@ -178,7 +184,7 @@
                                                 <li>
                                                     <a class="dropdown-item" href="#" onclick="loadTaskDeleteModal({{task.pk}}); return false;" style="display: inline-flex; align-items: center;">
                                                         <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="margin-right: 5px;">
-                                                            <path fill="#000000" d="M7 4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2h4a1 1 0 1 1 0 2h-1.069l-.867 12.142A2 2 0 0 1 17.069 22H6.93a2 2 0 0 1-1.995-1.858L4.07 8H3a1 1 0 0 1 0-2h4V4zm2 2h6V4H9v2zM6.074 8l.857 12H17.07l.857-12H6.074zM10 10a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1zm4 0a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1z"></path>
+                                                            <path fill="#FFFFFF" d="M7 4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2h4a1 1 0 1 1 0 2h-1.069l-.867 12.142A2 2 0 0 1 17.069 22H6.93a2 2 0 0 1-1.995-1.858L4.07 8H3a1 1 0 0 1 0-2h4V4zm2 2h6V4H9v2zM6.074 8l.857 12H17.07l.857-12H6.074zM10 10a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1zm4 0a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1z"></path>
                                                         </svg>
                                                         Delete
                                                     </a>
@@ -212,7 +218,7 @@
                                                 <li>
                                                     <a class="dropdown-item" href="#" onclick="loadUpdateTaskModal({{ task.pk }}); return false;" style="display: inline-flex; align-items: center;">
                                                         <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="margin-right: 5px;">
-                                                            <g fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                                                            <g fill="none" stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
                                                                 <path d="M7 7H6a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-1"></path>
                                                                 <path d="M20.385 6.585a2.1 2.1 0 0 0-2.97-2.97L9 12v3h3l8.385-8.415zM16 5l3 3"></path>
                                                             </g>
@@ -223,7 +229,7 @@
                                                 <li>
                                                     <a class="dropdown-item" href="#" onclick="loadTaskDeleteModal({{task.pk}}); return false;" style="display: inline-flex; align-items: center;">
                                                         <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="margin-right: 5px;">
-                                                            <path fill="#000000" d="M7 4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2h4a1 1 0 1 1 0 2h-1.069l-.867 12.142A2 2 0 0 1 17.069 22H6.93a2 2 0 0 1-1.995-1.858L4.07 8H3a1 1 0 0 1 0-2h4V4zm2 2h6V4H9v2zM6.074 8l.857 12H17.07l.857-12H6.074zM10 10a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1zm4 0a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1z"></path>
+                                                            <path fill="#FFFFFF" d="M7 4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2h4a1 1 0 1 1 0 2h-1.069l-.867 12.142A2 2 0 0 1 17.069 22H6.93a2 2 0 0 1-1.995-1.858L4.07 8H3a1 1 0 0 1 0-2h4V4zm2 2h6V4H9v2zM6.074 8l.857 12H17.07l.857-12H6.074zM10 10a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1zm4 0a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1z"></path>
                                                         </svg>
                                                         Delete
                                                     </a>
@@ -257,7 +263,7 @@
                                                 <li>
                                                     <a class="dropdown-item" href="#" onclick="loadUpdateTaskModal({{ task.pk }}); return false;" style="display: inline-flex; align-items: center;">
                                                         <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="margin-right: 5px;">
-                                                            <g fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                                                            <g fill="none" stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
                                                                 <path d="M7 7H6a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-1"></path>
                                                                 <path d="M20.385 6.585a2.1 2.1 0 0 0-2.97-2.97L9 12v3h3l8.385-8.415zM16 5l3 3"></path>
                                                             </g>
@@ -268,7 +274,7 @@
                                                 <li>
                                                     <a class="dropdown-item" href="#" onclick="loadTaskDeleteModal({{task.pk}}); return false;" style="display: inline-flex; align-items: center;">
                                                         <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="margin-right: 5px;">
-                                                            <path fill="#000000" d="M7 4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2h4a1 1 0 1 1 0 2h-1.069l-.867 12.142A2 2 0 0 1 17.069 22H6.93a2 2 0 0 1-1.995-1.858L4.07 8H3a1 1 0 0 1 0-2h4V4zm2 2h6V4H9v2zM6.074 8l.857 12H17.07l.857-12H6.074zM10 10a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1zm4 0a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1z"></path>
+                                                            <path fill="#FFFFFF" d="M7 4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2h4a1 1 0 1 1 0 2h-1.069l-.867 12.142A2 2 0 0 1 17.069 22H6.93a2 2 0 0 1-1.995-1.858L4.07 8H3a1 1 0 0 1 0-2h4V4zm2 2h6V4H9v2zM6.074 8l.857 12H17.07l.857-12H6.074zM10 10a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1zm4 0a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1z"></path>
                                                         </svg>
                                                         Delete
                                                     </a>
@@ -322,7 +328,7 @@
                     <div class="card mt-3">
                         <div class="card-header">
                             <div class="d-flex justify-content-between align-items-center">
-                                <span>Passions ({{ passion_count }})</span>
+                                <span style="color: #D3D3D3;">Passions ({{ passion_count }})</span>
                                 <div>
                                     <button type="button" class="btn btn-primary" onclick="loadPassionCreateModal()" style="display: inline-flex; align-items: center;">
                                         <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle; margin-right: 5px;">
@@ -343,7 +349,7 @@
                             <div class="card-body">
                                 {% for passion_detail in passion_details %}
                                     <div class="d-flex justify-content-between align-items-center">
-                                        <h5 class="card-title">{{ passion_detail.passion.name }}</h5>
+                                        <h5 class="card-title" style="color: #FFFFFF;">{{ passion_detail.passion.name }}</h5>
                                         <div class="dropdown">
                                             <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
                                                 Options
@@ -351,13 +357,13 @@
                                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                                 <a class="dropdown-item" href="#" onclick="loadPassionActivityCreateModal({{passion_detail.passion.pk}}, this); return false;" data-account-creation-year="{{ account_creation_year }}">
                                                     <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="margin-right: 5px;">
-                                                        <path fill="#000000" d="M18 7c-1.1 0-2 .9-2 2v6c0 1.1.9 2 2 2h2c1.1 0 2-.9 2-2v-4h-2v4h-2V9h4V7h-4M2 7v10h6v-2H4V7H2m9 0c-1.1 0-2 .9-2 2v6c0 1.1.9 2 2 2h2c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2h-2m0 2h2v6h-2V9Z"></path>
+                                                        <path fill="#FFFFFF" d="M18 7c-1.1 0-2 .9-2 2v6c0 1.1.9 2 2 2h2c1.1 0 2-.9 2-2v-4h-2v4h-2V9h4V7h-4M2 7v10h6v-2H4V7H2m9 0c-1.1 0-2 .9-2 2v6c0 1.1.9 2 2 2h2c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2h-2m0 2h2v6h-2V9Z"></path>
                                                     </svg>
                                                     Session
                                                 </a>
                                                 <li><a class="dropdown-item" href="#" onclick="loadPassionUpdateModal({{passion_detail.passion.pk}}); return false;">
                                                     <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="margin-right: 5px;">
-                                                        <g fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                                                        <g fill="none" stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
                                                             <path d="M7 7H6a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-1"></path>
                                                             <path d="M20.385 6.585a2.1 2.1 0 0 0-2.97-2.97L9 12v3h3l8.385-8.415zM16 5l3 3"></path>
                                                         </g>
@@ -366,20 +372,20 @@
                                                 </a></li>
                                                 <li><a class="dropdown-item" href="#" onclick="loadPassionDeleteModal({{passion_detail.passion.pk}}); return false;">
                                                     <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="margin-right: 5px;">
-                                                        <path fill="#000000" d="M7 4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2h4a1 1 0 1 1 0 2h-1.069l-.867 12.142A2 2 0 0 1 17.069 22H6.93a2 2 0 0 1-1.995-1.858L4.07 8H3a1 1 0 0 1 0-2h4V4zm2 2h6V4H9v2zM6.074 8l.857 12H17.07l.857-12H6.074zM10 10a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1zm4 0a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1z"></path>
+                                                        <path fill="#FFFFFF" d="M7 4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2h4a1 1 0 1 1 0 2h-1.069l-.867 12.142A2 2 0 0 1 17.069 22H6.93a2 2 0 0 1-1.995-1.858L4.07 8H3a1 1 0 0 1 0-2h4V4zm2 2h6V4H9v2zM6.074 8l.857 12H17.07l.857-12H6.074zM10 10a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1zm4 0a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1z"></path>
                                                     </svg>
                                                     Delete
                                                 </a></li>
                                             </ul>
                                         </div>
                                     </div>
-                                    <h6 class="card-subtitle mb-2 text-muted">{{ passion_detail.passion.description }}</h6>
+                                    <h6 class="card-subtitle mb-2" style="color: #D3D3D3;">{{ passion_detail.passion.description }}</h6>
                                     <div class="week-container">
                                         {% for i, day in passion_detail.week_days_range %}
                                             {% for index, date in passion_detail.dates %}
                                                 {% if index == i %}
                                                     <div class="weekday-box">
-                                                        <div class="weekday-label mx-auto">{{ day|slice:":3" }}</div>
+                                                        <div class="weekday-label mx-auto" style="color: #FFFFFF;">{{ day|slice:":3" }}</div>
                                                         <div class="form-check form-check-inline">
                                                             <input class="form-check-input mx-auto" type="checkbox"
                                                                 id="checkbox{{ i }}{{ passion_detail.passion.pk }}"
@@ -442,17 +448,17 @@
 
         </div>
         
-        <div class="col-12 col-lg-6 col-md-8 col-sm-8 order-1 order-lg-2 justify-content-center mt-3">
+        <div class="col-12 col-lg-6 col-md-8 col-sm-8 order-1 order-lg-2 justify-content-center mt-2">
             <div class="row flex-column flex-lg-row">
-                <div class="card" style="width: 100%;">
+                <div class="card w-100 m-0 p-0" style="width: 100%;">
                     <!-- Time div -->
-                    <div class="card-header text-center">
+                    <div class="card-header m-0 py-2 text-center" style="color: #D3D3D3; background-color: #673AB7; padding-left: 0 !important; padding-right: 0 !important;">
                         <p id="day_of_week"></p>
                         <p id="date"></p>
                         <p id="current_time"></p>
                     </div>
-                    <div class="card-body">
-                        <h5 class="card-title"><span id="city_name"></span></h5>
+                    <div class="card-body" style="color: #D3D3D3;">
+                        <h5 class="card-title" style="font-size: 50px; color: #FFFFFF;"><span id="city_name"></span></h5>
                         <div id="weather-info" class="card-text d-flex flex-column justify-content-center align-items-center">
                             <div class="d-flex justify-content-between w-100" style="padding-right: 10%;">
                                 <span id="temperature" class="fs-1"></span>
@@ -491,81 +497,98 @@
                     </div>
                 </div>
 
-
                 <div class="col-12 col-lg-6 mt-3" style="width: 100%;">
-                    <ul class="nav nav-tabs" id="quoteTabs" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="quoteOfDay-tab" data-bs-toggle="tab" data-bs-target="#quoteOfDay" type="button" role="tab" aria-controls="quoteOfDay" aria-selected="true">Quotes of the Day</button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="savedQuotes-tab" data-bs-toggle="tab" data-bs-target="#savedQuotes" type="button" role="tab" aria-controls="savedQuotes" aria-selected="false">Saved Quotes</button>
-                        </li>
-                    </ul>
-                    <div class="tab-content" id="quoteTabsContent">
-                        <div class="tab-pane fade show active" id="quoteOfDay" role="tabpanel" aria-labelledby="quoteOfDay-tab">
-                            <div class="carousel slide" id="quoteOfDayCarouselSlideQOTD" data-bs-ride="carousel" data-bs-interval="5000">
-                                <div class="carousel-inner" id="qotd-carousel-inner">
-                                    <div class="carousel-item active">
-                                        <div class="qotd-quote-card">
-                                            <div class="qotd-quote-content" style="display: none;">
-                                                <p class="quote">"{quote.quote}" - {quote.author}</p>
-                                            </div>
-                                            <div class="qotd-icon-container">
-                                                <i class="fas fa-save qotd-save-icon" title="Save quote" data-quote-id="{quote.id}"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <button class="carousel-control-prev" type="button" data-bs-target="#quoteOfDayCarouselSlideQOTD" data-bs-slide="prev">
-                                    <div class="control-background"></div>
-                                    <span class="visually-hidden">Previous</span>
-                                </button>
-                                <button class="carousel-control-next" type="button" data-bs-target="#quoteOfDayCarouselSlideQOTD" data-bs-slide="next">
-                                    <div class="control-background"></div>
-                                    <span class="visually-hidden">Next</span>
+                    <div class="card-like-container rounded" style="background-color: #7C61B3;">
+                        <div class="d-flex justify-content-between" style="background-color: #673AB7;">
+                            <ul class="nav nav-tabs m-0 p-0" id="quoteTabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="quoteOfDay-tab" data-bs-toggle="tab" data-bs-target="#quoteOfDay" type="button" role="tab" aria-controls="quoteOfDay" aria-selected="true">Quotes of the Day</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="savedQuotes-tab" data-bs-toggle="tab" data-bs-target="#savedQuotes" type="button" role="tab" aria-controls="savedQuotes" aria-selected="false">Saved Quotes</button>
+                                </li>
+                            </ul>
+                            <div>
+                                <button type="button" class="btn btn-primary me-2 mt-2" onclick="loadQuoteModal()">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle; margin-right: 5px;">
+                                        <g fill="#ffffff" fill-rule="evenodd" clip-rule="evenodd">
+                                            <path d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12Zm10-8a8 8 0 1 0 0 16a8 8 0 0 0 0-16Z"></path>
+                                            <path d="M13 7a1 1 0 1 0-2 0v4H7a1 1 0 1 0 0 2h4v4a1 1 0 1 0 2 0v-4h4a1 1 0 1 0 0-2h-4V7Z"></path>
+                                        </g>
+                                    </svg>
+                                    Quote
                                 </button>
                             </div>
                         </div>
-                        <div class="tab-pane fade" id="savedQuotes" role="tabpanel" aria-labelledby="savedQuotes-tab">
-                            <div class="carousel slide" id="savedQuotesCarousel" data-bs-ride="carousel">
-                                <div class="carousel-inner" id="carousel-inner">
-                                    {% for quote in user_quotes %}
-                                    <div id="quote-{{ quote.id }}" data-id="{{ quote.id }}" class="carousel-item{% if forloop.first %} active{% endif %}">
-                                        <div class="quote-card">
-                                            <div class="quote-content-wrapper">
-                                                <div class="quote-content">
-                                                    <p class="quote">"${quote.quote}" - ${quote.author}</p>
+                        <div class="tab-content" id="quoteTabsContent" style="color: #FFFFFF;">
+                            <div class="tab-pane fade show active" id="quoteOfDay" role="tabpanel" aria-labelledby="quoteOfDay-tab">
+                                <div class="carousel slide" id="quoteOfDayCarouselSlideQOTD" data-bs-ride="carousel" data-bs-interval="5000">
+                                    <div class="carousel-inner" id="qotd-carousel-inner">
+                                        <div class="carousel-item active">
+                                            <div class="qotd-quote-card">
+                                                <div class="qotd-quote-content" style="display: none;">
+                                                    <p class="quote">"{quote.quote}" - {quote.author}</p>
                                                 </div>
-                                            </div>
-                                            <div class="action-container">
-                                                <i class="quote-edit fas fa-pencil-alt" data-quote-id="${quote.id}" data-bs-toggle="tooltip" title="Edit quote"></i>
-                                                <i class="quote-star fas fa-star" data-quote-id="${quote.id}" data-bs-toggle="tooltip" title="Star quote"></i>
-                                                <i class="quote-delete fas fa-trash" data-quote-id="${quote.id}" data-bs-toggle="tooltip" title="Delete quote"></i>
+                                                <div class="qotd-icon-container">
+                                                    <i class="fas fa-save qotd-save-icon" title="Save quote" data-quote-id="{quote.id}"></i>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                    {% empty %}
-                                    <div id="noQuotesMessage" class="quote-empty-message d-flex justify-content-center align-items-center mt-4">
-                                        <p>No Quotes Saved</p>
-                                    </div>
-                                    {% endfor %}
+                                    <button class="carousel-control-prev" type="button" data-bs-target="#quoteOfDayCarouselSlideQOTD" data-bs-slide="prev">
+                                        <div class="control-background"></div>
+                                        <span class="visually-hidden">Previous</span>
+                                    </button>
+                                    <button class="carousel-control-next" type="button" data-bs-target="#quoteOfDayCarouselSlideQOTD" data-bs-slide="next">
+                                        <div class="control-background"></div>
+                                        <span class="visually-hidden">Next</span>
+                                    </button>
                                 </div>
-                                <button id="Saved-prev" class="carousel-control-prev" type="button">
-                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                    <span class="visually-hidden">Previous</span>
-                                </button>
-                                <button id="Saved-next" class="carousel-control-next" type="button">
-                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                    <span class="visually-hidden">Next</span>
-                                </button>
                             </div>
-                            <div class="d-flex justify-content-center">
-                            <button type="button" class="btn btn-primary" onclick="loadQuoteModal()">
-                                Add Quote
-                            </button>
+                            <div class="tab-pane fade" id="savedQuotes" role="tabpanel" aria-labelledby="savedQuotes-tab">
+                                <div class="carousel slide" id="savedQuotesCarousel" data-bs-ride="carousel">
+                                    <div class="carousel-inner" id="carousel-inner">
+                                        {% for quote in user_quotes %}
+                                        <div id="quote-{{ quote.id }}" data-id="{{ quote.id }}" class="carousel-item{% if forloop.first %} active{% endif %}">
+                                            <div class="quote-card">
+                                                <div class="quote-content-wrapper">
+                                                    <div class="quote-content">
+                                                        <p class="quote">"${quote.quote}" - ${quote.author}</p>
+                                                    </div>
+                                                </div>
+                                                <div class="action-container">
+                                                    <a class="quote-edit" data-quote-id="${quote.id}" data-bs-toggle="tooltip" title="Edit quote">
+                                                        <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="margin-right: 5px;">
+                                                            <g fill="none" stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                                                                <path d="M7 7H6a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-1"></path>
+                                                                <path d="M20.385 6.585a2.1 2.1 0 0 0-2.97-2.97L9 12v3h3l8.385-8.415zM16 5l3 3"></path>
+                                                            </g>
+                                                        </svg>
+                                                    </a>
+                                                    <i class="quote-star fas fa-star mb-2{% if quote.starred %} starred{% endif %}" data-quote-id="${quote.id}" data-bs-toggle="tooltip" title="Star quote"></i>
+                                                    <i class="quote-delete fas fa-trash" data-quote-id="${quote.id}" data-bs-toggle="tooltip" title="Delete quote"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% empty %}
+                                        <div id="noQuotesMessage" class="quote-empty-message d-flex justify-content-center align-items-center mt-4">
+                                            <p>No Quotes Saved</p>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    <button id="Saved-prev" class="carousel-control-prev" type="button">
+                                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                        <span class="visually-hidden">Previous</span>
+                                    </button>
+                                    <button id="Saved-next" class="carousel-control-next" type="button">
+                                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                        <span class="visually-hidden">Next</span>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
+
                     <div class="modal fade" id="quoteModal" tabindex="-1" aria-labelledby="quoteModalLabel" aria-hidden="true">
                         <div class="modal-dialog">
                             <div class="modal-content" id="quoteModalContent">
@@ -738,7 +761,6 @@
             });
         }
     });
-
 
     // Scheduling modal js
     async function loadDailyModal(year = null, month = null, day = null) {

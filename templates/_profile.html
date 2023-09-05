@@ -1,0 +1,71 @@
+{% load widget_tweaks %}
+
+<div class="modal-body profile-modal" style="background-color: #f7f7f7; border-radius: 12px;">
+  <h2 class="text-center mb-4">Edit Profile</h2>
+  <form method="post" id="editProfileForm">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label for="id_username">{{ form.first_name.label }}</label>
+      {{ form.first_name|add_class:"small-form-input" }}
+    </div>
+    <div class="mb-3">
+      <label for="id_username">{{ form.last_name.label }}</label>
+      {{ form.last_name|add_class:"small-form-input" }}
+    </div>
+    <div class="mb-3">
+      <label for="id_date_of_birth">{{ form.date_of_birth.label }}</label>
+      {{ form.date_of_birth|add_class:"small-form-input" }}
+    </div>
+    <div class="mb-3">
+      <label for="id_email">{{ form.email.label }}</label>
+      {{ form.email|add_class:"small-form-input" }}
+    </div>
+    <div class="modal-footer">
+      <button type="submit" class="btn btn-primary">Save changes</button>
+    </div>
+  </form>
+  <div class="mt-3 text-center">
+    <span>Current timezone: <strong>{{ user.timezone }}</strong></span>
+  </div>
+</div>
+
+<style>
+  .profile-modal {
+    font-family: 'Roboto', sans-serif;
+  }
+
+  .profile-modal .modal-body {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 12px;
+  }
+
+  .profile-modal .small-form-input {
+    width: 100%;
+    height: 40px;
+    padding-left: 15px;
+    border-radius: 5px;
+    border: 1px solid #5944A6;
+    background-color: #D4DBF5;
+  }
+
+  .profile-modal input:focus {
+    border: 2px solid #5944A6;
+  }
+
+  .profile-modal .btn-primary {
+    background-color: #7638C2;
+    border-color: #7638C2;
+    width: 100%;
+    height: 40px;
+  }
+
+  .profile-modal .btn-primary:hover {
+    background-color: #492378;
+    border-color: #492378;
+  }
+
+  .profile-modal .mb-3 {
+    margin-bottom: 15px;
+  }
+</style>

@@ -1029,6 +1029,8 @@ async function updateInsightOverview(year) {
                 </div>
             </div>
         `;
+        slide.querySelector('.content').style.display = 'flex';
+        slide.querySelector('.loader').style.display = 'none';
     } catch (error) {
         console.error("Failed to update insight overview:", error);
     }

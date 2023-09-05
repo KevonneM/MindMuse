@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.forms import DateField
 from .models import CustomUser
+from django.contrib.auth import get_user_model
 
 
 class CustomUserCreationForm(UserCreationForm):
@@ -34,3 +35,14 @@ class CustomUserCreationForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
         model = CustomUser
         fields = ('username', 'email','first_name', 'last_name', 'date_of_birth', 'password1', 'password2')
+
+class EditProfileForm(forms.ModelForm):
+    class Meta:
+        model = get_user_model()
+        fields = ['first_name', 'last_name', 'email', 'date_of_birth']
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        if commit:
+            user.save()
+        return user

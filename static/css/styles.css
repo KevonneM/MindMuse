@@ -1,4 +1,24 @@
-/* Overrides for Bootstrap 5 buttons */
+.main-content{
+  min-height: 100vh;
+  height: 100%;
+  background-color: #2D2350;
+}
+
+html {
+  min-height: 100vh;
+  height: 100%;
+  background-color: #2D2350;
+}
+
+.card {
+  background-color: #7C61B3;
+  background: rgba( 103, 58, 183, 0.75 );
+  box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
+  border-radius: 10px;
+  border: 1px solid rgba( 255, 255, 255, 0.18 );
+}
+
+/* Overrides for Bootstrap 5 buttons #9575CD*/
 .btn-primary {
   background-color: #7638C2 !important;
   border-color: #7638C2 !important;
@@ -24,6 +44,35 @@
   border-right: none;
   padding-right: 0;
   margin-right: 0;
+}
+
+/* Events Accordion */
+.custom-accordion {
+  border: none !important;
+  border-radius: 1rem !important;
+}
+
+/* Closed */
+.accordion-button {
+  background-color: #7C61B3;
+  color: #ffffff;
+  border: none !important;
+}
+
+.accordion-button:focus {
+  outline: none !important;
+  box-shadow: 0 0 0 0.2rem rgba(124, 97, 179, 0.5);
+}
+
+/* Open or Active */
+.accordion-button:not(.collapsed) {
+  background-color: #673AB7;  /* Slightly darker shade for contrast */
+  color: #ffffff;
+}
+
+.accordion-header {
+  background-color: #7C61B3;
+  color: #ffffff;
 }
 
 /* Weekly Calendar css */
@@ -184,7 +233,7 @@ ul li {
 }
 
 .no-tasks-message {
-  color: gray;
+  color: #D3D3D3;
 }
 
 .task-container {
@@ -198,7 +247,7 @@ ul li {
 
 .task-title {
   text-decoration: none;
-  color: #333;
+  color: #FFFFFF;
   position: relative;
   z-index: 0;
   flex: 1;
@@ -207,7 +256,7 @@ ul li {
 }
 
 .task-title:hover {
-  color: #007BFF;
+  color: #e5e3e8;
 }
 
 .strikethrough {
@@ -321,7 +370,11 @@ input[type="checkbox"].task-checkbox:checked + label:before {
 /* saved quote styling */
 .quote-star {
   font-size: 2em;
-  color: gray;
+  color: #FFFFFF;
+}
+
+.starred {
+  color: gold;
 }
 
 .quote-star:hover {
@@ -337,7 +390,7 @@ input[type="checkbox"].task-checkbox:checked + label:before {
 }
 
 .quote-delete {
-  color: gray;
+  color: #FFFFFF;
 }
 
 .quote-delete:hover {
@@ -358,13 +411,13 @@ input[type="checkbox"].task-checkbox:checked + label:before {
 
 /* qotd styling */
 .qotd-save-icon {
-  color: gray;
+  color: #FFFFFF;
   cursor: pointer;
   font-size: 24px;
 }
 
 .qotd-save-icon:hover {
-  color: #007bff;
+  color: gold;
 }
 
 .qotd-content-wrapper {
@@ -464,4 +517,9 @@ input[type="checkbox"].task-checkbox:checked + label:before {
 #Saved-next:hover .carousel-control-next-icon {
     background: rgba(0,0,0,0.2);
     transition: background 0.3s ease-in-out;
+}
+
+.card-like-container.rounded {
+  border-radius: 15px;
+  overflow: hidden;
 }
