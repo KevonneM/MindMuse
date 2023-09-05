@@ -44,6 +44,8 @@ function displayQuote(index, shouldPause) {
         noQuotesMessage.remove();
     }
 
+    let starClass = quote.starred ? ' starred': '';
+
     let newCarouselItem = document.createElement('div');
     newCarouselItem.className = 'carousel-item';
     newCarouselItem.style.opacity = 0;
@@ -55,8 +57,15 @@ function displayQuote(index, shouldPause) {
                 </div>
             </div>
             <div class="action-container">
-                <i class="quote-edit fas fa-pencil-alt" data-quote-id="${quote.id}" data-bs-toggle="tooltip" title="Edit quote"></i>
-                <i class="quote-star fas fa-star" data-quote-id="${quote.id}" data-bs-toggle="tooltip" title="Star quote"></i>
+                <button class="quote-edit" data-quote-id="${quote.id}" data-bs-toggle="tooltip" title="Edit quote" style="background: none; border: none;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="margin-right: 5px;">
+                    <g fill="none" stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                        <path d="M7 7H6a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-1"></path>
+                        <path d="M20.385 6.585a2.1 2.1 0 0 0-2.97-2.97L9 12v3h3l8.385-8.415zM16 5l3 3"></path>
+                    </g>
+                    </svg>
+                </button>          
+                <i class="quote-star fas fa-star mb-2${starClass}" data-quote-id="${quote.id}" data-bs-toggle="tooltip" title="Star quote"></i>
                 <i class="quote-delete fas fa-trash" data-quote-id="${quote.id}" data-bs-toggle="tooltip" title="Delete quote"></i>
             </div>
         </div>`;
@@ -86,17 +95,21 @@ function displayQuote(index, shouldPause) {
         newCarouselItem.style.opacity = 1;
         newCarouselItem.classList.add('active');  // Add the 'active' class
 
+        newCarouselItem.querySelectorAll("[data-bs-toggle='tooltip']").forEach(function (elem) {
+            new bootstrap.Tooltip(elem);
+        });
+
         newCarouselItem.querySelectorAll(".quote-star, .quote-delete, .quote-edit").forEach((icon) => {
             icon.addEventListener("click", function(e) {
-                console.log("Icon clicked:", e.target);
-                if (e.target.classList.contains('quote-star')) {
-                    handleStarClick(e.target);
+                console.log("Icon clicked:", e.currentTarget);
+                if (e.currentTarget.classList.contains('quote-star')) {
+                    handleStarClick(e.currentTarget);
                 }
-                else if (e.target.classList.contains('quote-delete')) {
-                    loadQuoteDeleteModal(e.target.getAttribute('data-quote-id'));
+                else if (e.currentTarget.classList.contains('quote-delete')) {
+                    loadQuoteDeleteModal(e.currentTarget.getAttribute('data-quote-id'));
                 }
-                else if (e.target.classList.contains('quote-edit')) {
-                    loadQuoteEditModal(e.target.getAttribute('data-quote-id'));
+                else if (e.currentTarget.classList.contains('quote-edit')) {
+                    loadQuoteEditModal(e.currentTarget.getAttribute('data-quote-id'));
                 }
             });
         });        
@@ -146,6 +159,7 @@ function handleStarClick(starIcon) {
     .then(response => response.json())
     .then(data => {
         if (data.status === 'ok') {
+            starIcon.classList.toggle('starred');
             getQuotes();
         } else {
             console.error("Error while handling star click:", data.status);
@@ -220,13 +234,13 @@ function displayQOTD(index) {
     newCarouselItem.style.opacity = 0;
     newCarouselItem.innerHTML = `
         <div class="qotd-quote-card">
-            <div class="qotd-content-wrapper">
+            <div class="qotd-content-wrapper mt-2">
                 <div class="qotd-quote-content">
                     <p class="quote">"${quote.quote}" - ${quote.author}</p>
                 </div>
             </div>
             <div class="qotd-icon-container">
-                <i class="fas fa-save qotd-save-icon" title="Save quote" data-bs-toggle="tooltip" data-bs-placement="top"></i>
+                <i class="fas fa-save qotd-save-icon pb-4" title="Save quote" data-bs-toggle="tooltip" data-bs-placement="top"></i>
             </div>
         </div>`;
 

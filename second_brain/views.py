@@ -11,6 +11,7 @@ from django.db.models.functions import TruncDay
 from django.db.models import Count
 from .models import Event, Task, TaskHistory, Passion, PassionActivity, PassionCategory, Quote, QuoteOfTheDay
 from .forms import TaskForm, PassionForm, PassionActivityForm, QuoteForm
+from users.forms import EditProfileForm
 import json
 import requests
 import pytz
@@ -119,7 +120,19 @@ def home(request):
 
 @login_required
 def profile(request):
-    return render(request, 'profile.html')
+    if request.method == 'POST':
+        form = EditProfileForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({'status': 'success'})
+    else:
+        form = EditProfileForm(instance=request.user)
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return render(request, '_profile.html', {'form': form})
+        
+    return render(request, '_profile.html', {'form': form})
 
 @csrf_exempt
 def set_timezone(request):
