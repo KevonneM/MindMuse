@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load tz %}
+{% load static %}
 
 {% block content %}
 
@@ -640,15 +641,142 @@
 
 {% else %}
 
-<div class="container" style="display: grid; place-items: center; height: calc( 100vh - 75px);">
-    <div style="text-align: center; margin-bottom: 150px;">
-        <h1 class="MindMuse mb-4">MindMuse</h1>
-        
-        <button id="loginBtn" class="btn btn-primary">Login</button>
-        <button id="signupBtn" class="btn btn-primary">Sign Up</button>
-        
+<section>
+    <div class="position-relative" style="background: linear-gradient(90deg, rgba(114,67,202,1) 5%, rgba(73,54,114,1) 100%);">
+        <div class="container">
+            <div class="row justify-content-between align-items-center">
+                <!-- Text Description -->
+                <div class="col-lg-6 text-center text-lg-start mt-4 mb-4 d-flex flex-column justify-content-between">
+                    <div>
+                        <h2 class="mb-4" style="font-size: 40px; color: #FFFFFF;">Why 
+                        <span style="color: #FFFFFF; font-style: italic;">You</span>
+                        Need a Second Brain</h2>
+                        <p style="color: #D3D3D3; font-size: 18px;">Ever feel like you're juggling a million things at once?</p>
+                        <p style="color: #D3D3D3; font-size: 18px;">Transform <span style="color: #FFFFFF; font-weight: bold;">Chaos</span>
+                        into 
+                        <span style="color: #FFFFFF; font-style: italic;">Clarity.</span>
+                        </p>
+                        <p style="color: #D3D3D3; font-size: 18px;">That's where '<span style="color: #FFFFFF">MindMuse</span>' comes in, acting as your second brain. 
+                            It captures, organizes, and helps execute the tasks and thoughts that are important to you. 
+                            So you can focus on your self-development and pursuing your passions and ambitions, while your digital brain handles the details.
+                        </p>
+                    </div>
+                    <button class="btn-hover-trial my-auto p-to-g" style="width: 50%; margin-left: auto; margin-right: auto; display: block;">Get Started</button>
+                </div>
+
+                <!-- Neumorphic Card -->
+                <div class="col-lg-6 text-center mt-4 mb-4">
+                    <div class="card neumorphic text-dark">
+                        <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                            <!-- Image inside the card -->
+                            <img class="img-fluid" src="static/img/Task-amico.svg" alt="" style="max-width: 40%; margin: auto; display: block;" />
+                            <h3 class="card-title text-center mb-4" style="font-size: 2rem; color: #FFFFFF">Live <span style="font-style: italic;">Intentionally</span>
+                            , Grow 
+                            <span style="font-style: italic;">Consistently</span></h3>
+                            <p class="card-text text-center mb-4" style="color: #D3D3D3">The all-in-one app designed to unclutter your mind and fast-track your personal development journey.</p>
+                        </div>
+                    </div>
+                </div>   
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="row mt-4 justify-content-center">
+    <div class="col-12 text-center">
+        <h1 style="color: #FFFFFF; font-style: italic; font-family: 'Frank Ruhl Libre', serif;">Features</h1>
     </div>
 </div>
+<!-- Features Row 1 -->
+<div class="row mt-4" style="display: flex; justify-content: space-around;">
+    <!-- Event Tracking Card -->
+    <div class="col-lg-3 col-md-4 col-sm-6 mb-4" style="display: flex; justify-content: center;">
+      <div class="card landing-card">
+        <div class="card-body">
+            <h5 class="card-title">Event Tracking</h5>
+            <a href="#" class="feature-image-link">
+                <img src="{% static 'img/mindmuse-events.png' %}" alt="personal schedule" class="card-image-feature">
+            </a>
+            <p class="card-text">Never miss an important event again! Our app helps you keep track of all your daily, weekly, and monthly events.</p>
+        </div>
+      </div>
+    </div>
+    <!-- Task Management Card -->
+    <div class="col-lg-3 col-md-4 col-sm-6 mb-4" style="display: flex; justify-content: center;">
+      <div class="card landing-card">
+        <div class="card-body">
+            <h5 class="card-title">Task Management</h5>
+            <a href="#" class="feature-image-link">
+                <img src="{% static 'img/mindmuse-tasks.png' %}" alt="task management" class="card-image-feature">
+            </a>
+            <p class="card-text">Organize your life by setting, tracking, and completing tasks. Stay ahead of your to-dos.</p>
+        </div>
+      </div>
+    </div>
+    <!-- Weather Updates Card -->
+    <div class="col-lg-3 col-md-4 col-sm-6 mb-4" style="display: flex; justify-content: center;">
+      <div class="card landing-card">
+        <div class="card-body">
+            <h5 class="card-title">Weather Updates</h5>
+            <a href="#" class="feature-image-link">
+                <img src="{% static 'img/mindmuse-weather.png' %}" alt="weather" class="card-image-feature">
+            </a>
+            <p class="card-text">Get real-time weather updates for your location. Plan your day with confidence.</p>
+        </div>
+      </div>
+    </div>
+</div>
+
+<!-- Features Row 2 -->
+<div class="row mt-4" style="display: flex; justify-content: space-around;">
+    <!-- Daily Quotes Card -->
+    <div class="col-lg-3 col-md-4 col-sm-6 mb-4" style="display: flex; justify-content: center;">
+      <div class="card landing-card">
+        <div class="card-body">
+            <h5 class="card-title">Daily Quotes</h5>
+            <a href="#" class="feature-image-link">
+                <img src="{% static 'img/mindmuse-quotes.png' %}" alt="daily quotes" class="card-image-feature">
+            </a>
+            <p class="card-text">Start your day inspired with daily quotes. Save your favorites or even create your own!</p>
+        </div>
+      </div>
+    </div>
+    <!-- Passion Logging Card -->
+    <div class="col-lg-3 col-md-4 col-sm-6 mb-4" style="display: flex; justify-content: center;">
+      <div class="card landing-card">
+        <div class="card-body">
+            <h5 class="card-title">Passion Logging</h5>
+            <a href="#" class="feature-image-link">
+                <img src="{% static 'img/mindmuse-passions.png' %}" alt="passion progression" class="card-image-feature">
+            </a>
+            <p class="card-text">Log time spent on your hobbies and passions. Do more of what makes you happy.</p>
+        </div>
+      </div>
+    </div>
+    <!-- Data Insights Card -->
+    <div class="col-lg-3 col-md-4 col-sm-6 mb-4" style="display: flex; justify-content: center;">
+      <div class="card landing-card">
+        <div class="card-body">
+            <h5 class="card-title">Data Insights</h5>
+            <a href="#" class="feature-image-link">
+                <img src="{% static 'img/Mindmuse-insights.png' %}" alt="personal analytics" class="card-image-feature">
+            </a>
+            <p class="card-text">Gain valuable insights into your life patterns through easy-to-understand charts and analytics.</p>
+        </div>
+      </div>
+    </div>
+</div>
+
+<div class="row mt-4 justify-content-center">
+    <div class="col-12 text-center">
+        <h1 style="color: #FFFFFF; font-style: italic; font-family: 'Frank Ruhl Libre', serif;">Why Use Us?</h1>
+    </div>
+</div>
+
+<div>
+    <a href="https://storyset.com/work">Work illustrations by Storyset</a>
+</div>
+
 
 <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -665,6 +793,13 @@
         </div>
     </div>
 </div>
+
+<div id="featureimageModal" class="feature-modal">
+    <span class="close">&times;</span>
+        <img class="feature-modal-content" id="imageInModal">
+    <div id="caption"></div>
+</div>
+
 
 {% endif %}
 
@@ -759,6 +894,8 @@
             document.getElementById('loginBtn').addEventListener('click', function() {
                 loadLoginModal();
             });
+
+            initfeatureModal();
         }
     });
 
@@ -1203,6 +1340,32 @@
 
         var myModal = new bootstrap.Modal(document.getElementById('quoteSavedModal'));
         myModal.show();
+    }
+
+    /* landing page js */
+
+    function initfeatureModal() {
+        var modal = document.getElementById("featureimageModal");
+        var modalImg = document.getElementById("imageInModal");
+
+        function openModal(event) {
+            event.preventDefault();
+            var targetImg = event.target;
+            var imgSrc = targetImg.getAttribute('src');
+            modal.style.display = "block";
+            modalImg.src = imgSrc;
+        }
+
+        var images = document.querySelectorAll(".card-image-feature");
+        images.forEach(function(image) {
+            image.addEventListener("click", openModal);
+        });
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+            modal.style.display = "none";
+            }
+        }
     }
     
 </script>
