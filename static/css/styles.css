@@ -677,3 +677,23 @@ input[type="checkbox"].task-checkbox:checked + label:before {
   max-width: 700px;
   max-height: 90%;
 }
+
+.swiper {
+  width: 90%;
+  height: 450px;
+}
+
+.swiper-wrapper {
+  align-items: center;  /* vertically center the slides */
+}
+
+.swiper-slide {
+  display: flex;
+  justify-content: center;  /* horizontally center the card */
+  align-items: center;
+  z-index: 1;
+}
+
+.swiper-slide-active {
+  z-index: 2;
+}

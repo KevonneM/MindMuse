@@ -661,7 +661,7 @@
                             So you can focus on your self-development and pursuing your passions and ambitions, while your digital brain handles the details.
                         </p>
                     </div>
-                    <button class="btn-hover-trial my-auto p-to-g" style="width: 50%; margin-left: auto; margin-right: auto; display: block;">Get Started</button>
+                    <button id="getStarted" class="btn-hover-trial my-auto p-to-g" style="width: 50%; margin-left: auto; margin-right: auto; display: block;">Get Started</button>
                 </div>
 
                 <!-- Neumorphic Card -->
@@ -681,6 +681,101 @@
         </div>
     </div>
 </section>
+
+<div class="row mt-4 justify-content-center">
+    <div class="col-12 text-center">
+        <h1 style="color: #FFFFFF; font-style: italic; font-family: 'Frank Ruhl Libre', serif;">Why Use Us?</h1>
+    </div>
+</div>
+<!-- Slider main container -->
+<div class="swiper">
+    <!-- Additional required wrapper -->
+    <div class="swiper-wrapper">
+        <!-- Slides -->
+        <div class="swiper-slide">
+            <!-- Card 1: Simplicity and Ease of Use -->
+            <div class="card landing-card">
+                <div class="card-body">
+                    <h5 class="card-title">Simplicity and Ease of Use</h5>
+                    <a href="#" class="feature-image-link">
+                        <img src="{% static 'img/ease-of-use.svg' %}" alt="Simplicity and Ease of Use" class="card-image-feature">
+                    </a>
+                    <p class="card-text mb-4">The app offers a straightforward and ready-to-use interface.</p>
+                </div>
+            </div>
+        </div>
+        <!-- Card 2: Focus on Personal Development -->
+        <div class="swiper-slide">
+            <div class="card landing-card">
+                <div class="card-body">
+                    <h5 class="card-title">Focus on Personal Development</h5>
+                    <a href="#" class="feature-image-link">
+                        <img src="{% static 'img/personal-development.svg' %}" alt="Focus on Personal Development" class="card-image-feature">
+                    </a>
+                    <p class="card-text">Unlike general-purpose productivity apps, our app is tailored specifically for personal growth.</p>
+                </div>
+            </div>
+        </div>
+        <!-- Card 3: Actionable Insights -->
+        <div class="swiper-slide">
+            <div class="card landing-card">
+                <div class="card-body">
+                    <h5 class="card-title">Actionable Insights</h5>
+                    <a href="#" class="feature-image-link">
+                        <img src="{% static 'img/insights.svg' %}" alt="Actionable Insights" class="card-image-feature">
+                    </a>
+                    <p class="card-text">The app doesn’t just serve as a repository of information; it offers analytical insights that can guide life changes.</p>
+                </div>
+            </div>
+        </div>
+        <!-- Card 4: Holistic Approach -->
+        <div class="swiper-slide">
+            <div class="card landing-card">
+                <div class="card-body">
+                    <h5 class="card-title">Holistic Approach</h5>
+                    <a href="#" class="feature-image-link">
+                        <img src="{% static 'img/holistic-features.svg' %}" alt="Holistic Approach" class="card-image-feature">
+                    </a>
+                    <p class="card-text">It integrates features ranging from task management to daily quotes, aiming to cover multiple facets of personal development.</p>
+                </div>
+            </div>
+        </div>
+        <!-- Card 5: Convenience -->
+        <div class="swiper-slide">
+            <div class="card landing-card">
+                <div class="card-body">
+                    <h5 class="card-title">Convenience</h5>
+                    <a href="#" class="feature-image-link">
+                        <img src="{% static 'img/convenient.svg' %}" alt="Convenience" class="card-image-feature">
+                    </a>
+                    <p class="card-text">Features like weather updates add daily practical value to the app, making it a one-stop platform for various needs.</p>
+                </div>
+            </div>
+        </div>
+        <!-- Card 6: All-Digital Tool -->
+        <div class="swiper-slide">
+            <div class="card landing-card">
+                <div class="card-body">
+                    <h5 class="card-title">All-Digital Tool</h5>
+                    <a href="#" class="feature-image-link">
+                        <img src="{% static 'img/all-digital.svg' %}" alt="All-Digital Tool" class="card-image-feature">
+                    </a>
+                    <p class="card-text">Say goodbye to paper clutter. Manage your personal development, to-do lists, and stat tracking all in one digital space.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+  <!-- If we need pagination -->
+  <div class="swiper-pagination"></div>
+
+  <!-- If we need navigation buttons -->
+  <div class="swiper-button-prev"></div>
+  <div class="swiper-button-next"></div>
+
+  <!-- If we need scrollbar -->
+  <div class="swiper-scrollbar"></div>
+</div>
 
 <div class="row mt-4 justify-content-center">
     <div class="col-12 text-center">
@@ -709,7 +804,7 @@
             <a href="#" class="feature-image-link">
                 <img src="{% static 'img/mindmuse-tasks.png' %}" alt="task management" class="card-image-feature">
             </a>
-            <p class="card-text">Organize your life by setting, tracking, and completing tasks. Stay ahead of your to-dos.</p>
+            <p class="card-text">Organize your life by setting, tracking, and completing reccurring daily, weekly, & monthly tasks. Stay ahead of your to-dos.</p>
         </div>
       </div>
     </div>
@@ -761,20 +856,14 @@
             <a href="#" class="feature-image-link">
                 <img src="{% static 'img/Mindmuse-insights.png' %}" alt="personal analytics" class="card-image-feature">
             </a>
-            <p class="card-text">Gain valuable insights into your life patterns through easy-to-understand charts and analytics.</p>
+            <p class="card-text mb-4">Gain valuable insights into your life patterns through easy-to-understand charts and analytics.</p>
         </div>
       </div>
     </div>
 </div>
 
-<div class="row mt-4 justify-content-center">
-    <div class="col-12 text-center">
-        <h1 style="color: #FFFFFF; font-style: italic; font-family: 'Frank Ruhl Libre', serif;">Why Use Us?</h1>
-    </div>
-</div>
-
 <div>
-    <a href="https://storyset.com/work">Work illustrations by Storyset</a>
+    <a style="color: #FFFFFF;" href="https://storyset.com/work">Work illustrations by Storyset</a>
 </div>
 
 
@@ -789,6 +878,14 @@
 <div class="modal fade" id="signupModal" tabindex="-1" aria-labelledby="signupModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content" id="signupModalContent">
+            <!-- content loaded by JS -->
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-labelledby="forgotPasswordModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" id="forgotPasswordModalContent">
             <!-- content loaded by JS -->
         </div>
     </div>
@@ -814,7 +911,34 @@
             // Check event status every 5 minutes.
             setInterval(updateEventStatus, 30000);
         } else {
-            console.log("User is not authenticated");
+
+            var mySwiper = new Swiper('.swiper', {
+                // Optional parameters
+                direction: 'horizontal',
+                loop: true,
+                slidesPerView: 3, // Show 3 slides at the same time
+                centeredSlides: true, // Active slide will be centered
+                spaceBetween: 30, // 30 pixels between each slide
+                speed: 700, // transition duration in milliseconds
+                ease: 'cubic-bezier(0.68, -0.55, 0.27, 1.55)', // cubic-bezier easing
+
+                // If we need pagination
+                pagination: {
+                    el: '.swiper-pagination',
+                },
+
+                // Navigation arrows
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+
+                // And if we need scrollbar
+                scrollbar: {
+                    el: '.swiper-scrollbar',
+                },
+            });
+
 
             async function loadSignupModal() {
                 let response = await fetch('/users/signup/', {headers: {'X-Requested-With': 'XMLHttpRequest'}});
@@ -854,6 +978,9 @@
             document.getElementById('signupBtn').addEventListener('click', function() {
                 loadSignupModal();
             });
+            document.getElementById('getStarted').addEventListener('click', function() {
+                loadSignupModal();
+            });
 
             async function loadLoginModal() {
                 let response = await fetch('/users/login/', {headers: {'X-Requested-With': 'XMLHttpRequest'}});
@@ -889,11 +1016,100 @@
                     }
                 });
 
+                const forgotPasswordLink = document.getElementById('forgot-password-link');
+                if (forgotPasswordLink) {
+                    forgotPasswordLink.addEventListener('click', function() {
+                    var loginModal = bootstrap.Modal.getInstance(document.getElementById('loginModal'));
+                    loginModal.hide();
+                    initializeForgotPasswordModal();
+                    });
+                }
+
                 myModal.show();
             }
             document.getElementById('loginBtn').addEventListener('click', function() {
                 loadLoginModal();
             });
+
+            async function initializeForgotPasswordModal() {
+                
+                let response = await fetch('/users/password_reset/', {
+                    headers: {'X-Requested-With': 'XMLHttpRequest'}
+                });
+
+                let data = await response.text();
+
+                document.getElementById('forgotPasswordModalContent').innerHTML = data;
+
+                var forgotPasswordModal = new bootstrap.Modal(document.getElementById('forgotPasswordModal'));
+                var signupModal = new bootstrap.Modal(document.getElementById('signupModal'));
+
+                let switchToSignup = document.getElementById('switchToSignup');
+                if (switchToSignup) {
+                    // Remove previous event listeners to avoid duplicates
+                    switchToSignup.removeEventListener('click', switchModal);
+                    
+                    function switchModal(e) {
+                        e.preventDefault();
+                    
+                        forgotPasswordModal.hide();
+
+                        loadSignupModal();
+                    }
+
+                    switchToSignup.addEventListener('click', switchModal);
+                }
+
+                const forgotPasswordForm = document.getElementById('forgotPasswordForm');
+                if (forgotPasswordForm) {
+
+                    let notification = document.createElement("div");
+                    notification.id = "notification";
+                    notification.style.display = "none";
+                    notification.style.border = "1px solid #4CAF50";
+                    notification.style.backgroundColor = "#dff0d8";
+                    notification.style.color = "#4CAF50";
+                    notification.style.padding = "12px";
+                    notification.style.borderRadius = "6px";
+                    notification.innerHTML = "<p><i class='fa fa-check-circle'></i> An email has been sent to the address you provided.</p>";
+
+                    document.getElementById('forgotPasswordModalContent').appendChild(notification);
+
+                    let sendEmailButton = document.querySelector('.form-submit-btn');
+
+                    forgotPasswordForm.addEventListener('submit', async function (e) {
+                        e.preventDefault();
+                        
+                        let form = document.getElementById('forgotPasswordForm');
+                        let formData = new FormData(form);
+
+                        let csrf_token = getCookie('csrftoken');
+
+                        let response = await fetch('/users/password_reset/', {
+                            method: 'POST',
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'X-CSRFToken': csrf_token
+                            },
+                            body: formData
+                        });
+
+                        let responseData = await response.json();
+
+                        if (responseData.success === 'ok') {
+                            sendEmailButton.style.display = "none";
+                            notification.style.display = "block";
+                        } else {
+                            alert(responseData.error);
+                        }
+                    });
+                } else {
+                    console.error('forgotPasswordForm not found.');
+                }
+
+                // Show the forgot password modal
+                forgotPasswordModal.show();
+            }
 
             initfeatureModal();
         }

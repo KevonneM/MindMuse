@@ -17,6 +17,10 @@
                 <input type="submit" class="login-submit btn btn-primary" value="Login">
             </div>
         </form>
+        <div class="text-center mt-2">
+            <!-- Assuming you have set up Django's URL patterns properly -->
+            <a class="btn btn-forgot-link" id="forgot-password-link">Forgot Password?</a>
+        </div>
     </div>
 </div>
 
@@ -58,5 +62,14 @@
         background-color: #492378;
         border-color: #492378;
     }
+
+    .login-modal .btn-forgot-link {
+        color: #7638C2;
+    }
+
+    .login-modal .btn-forgot-link:hover {
+        color: #492378;
+    }
+
 
 </style>

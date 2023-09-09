@@ -13,7 +13,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre&family=Josefin+Sans:ital@1&display=swap" rel="stylesheet">
 
-
+    <!-- swiper js -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
 
     <script src="{% static 'js/hub.js' %}"></script>
     <script src="{% static 'js/task.js' %}"></script>
@@ -101,12 +103,12 @@
             </button>
             
             <div class="collapse navbar-collapse" id="navbarUnauthenticated">
-              <ul class="navbar-nav ms-auto">
+              <ul class="navbar-nav ms-auto mt-2">
                 <li class="nav-item me-4">
-                  <button id="loginBtn" class="btn btn-primary">Login</button>
+                  <button id="loginBtn" class="btn btn-primary d-md-inline d-block w-100 w-md-auto">Login</button>
                 </li>
                 <li class="nav-item me-4">
-                  <button id="signupBtn" class="btn btn-primary">Sign Up</button>
+                  <button id="signupBtn" class="btn btn-primary d-md-inline d-block w-100 w-md-auto">Sign Up</button>
                 </li>
               </ul>
             </div>
