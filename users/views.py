@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from .forms import CustomUserCreationForm
 from django.contrib.auth import login, authenticate
+from django.contrib.auth.views import PasswordResetView
 from django.contrib.auth.forms import AuthenticationForm
 from django.http import JsonResponse
 from django.urls import reverse
@@ -45,4 +46,24 @@ def custom_login_view(request):
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
             return render(request, 'registration/_login.html', {'form': form})
         else:
-            return render(request, 'registration/login.html', {'form': form})
+            return redirect('second_brain:home')
+
+class CustomPasswordResetView(PasswordResetView):
+
+    ajax_template_name = 'registration/_forgot_password.html'
+
+    def get_template_names(self):
+        if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return [self.ajax_template_name]
+        return super().get_template_names()
+    
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        
+        if response.status_code == 302:
+            return JsonResponse({"success": "ok"})
+        else:
+            if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                form_content = render_to_string(self.ajax_template_name, self.get_context_data())
+                return JsonResponse({"success": "fail", "form_content": form_content}, status=400)
+            return JsonResponse({"success": "fail"}, status=400)
