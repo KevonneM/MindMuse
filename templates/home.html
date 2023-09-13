@@ -773,8 +773,6 @@
   <div class="swiper-button-prev"></div>
   <div class="swiper-button-next"></div>
 
-  <!-- If we need scrollbar -->
-  <div class="swiper-scrollbar"></div>
 </div>
 
 <div class="row mt-4 justify-content-center">
@@ -782,88 +780,96 @@
         <h1 style="color: #FFFFFF; font-style: italic; font-family: 'Frank Ruhl Libre', serif;">Features</h1>
     </div>
 </div>
-<!-- Features Row 1 -->
-<div class="row mt-4" style="display: flex; justify-content: space-around;">
-    <!-- Event Tracking Card -->
-    <div class="col-lg-3 col-md-4 col-sm-6 mb-4" style="display: flex; justify-content: center;">
-      <div class="card landing-card">
-        <div class="card-body">
-            <h5 class="card-title">Event Tracking</h5>
-            <a href="#" class="feature-image-link">
-                <img src="{% static 'img/mindmuse-events.png' %}" alt="personal schedule" class="card-image-feature">
-            </a>
-            <p class="card-text">Never miss an important event again! Our app helps you keep track of all your daily, weekly, and monthly events.</p>
+<!-- Slider main container -->
+<div class="swiper">
+    <div class="swiper-wrapper">
+        <!-- Slide 1: Event Tracking Card -->
+        <div class="swiper-slide">
+            <div class="card landing-card">
+                <div class="card-body">
+                    <h5 class="card-title">Event Tracking</h5>
+                    <a href="#" class="feature-image-link">
+                        <img src="{% static 'img/mindmuse-events.png' %}" alt="personal schedule" class="card-image-feature">
+                    </a>
+                    <p class="card-text">Never miss an important event again! Our app helps you keep track of all your daily, weekly, and monthly events.</p>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-    <!-- Task Management Card -->
-    <div class="col-lg-3 col-md-4 col-sm-6 mb-4" style="display: flex; justify-content: center;">
-      <div class="card landing-card">
-        <div class="card-body">
-            <h5 class="card-title">Task Management</h5>
-            <a href="#" class="feature-image-link">
-                <img src="{% static 'img/mindmuse-tasks.png' %}" alt="task management" class="card-image-feature">
-            </a>
-            <p class="card-text">Organize your life by setting, tracking, and completing reccurring daily, weekly, & monthly tasks. Stay ahead of your to-dos.</p>
+        <!-- Slide 2: Task Management Card -->
+        <div class="swiper-slide">
+            <div class="card landing-card">
+                <div class="card-body">
+                    <h5 class="card-title">Task Management</h5>
+                    <a href="#" class="feature-image-link">
+                        <img src="{% static 'img/mindmuse-tasks.png' %}" alt="task management" class="card-image-feature">
+                    </a>
+                    <p class="card-text">Organize your life by setting, tracking, and completing recurring daily, weekly, & monthly tasks. Stay ahead of your to-dos.</p>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-    <!-- Weather Updates Card -->
-    <div class="col-lg-3 col-md-4 col-sm-6 mb-4" style="display: flex; justify-content: center;">
-      <div class="card landing-card">
-        <div class="card-body">
-            <h5 class="card-title">Weather Updates</h5>
-            <a href="#" class="feature-image-link">
-                <img src="{% static 'img/mindmuse-weather.png' %}" alt="weather" class="card-image-feature">
-            </a>
-            <p class="card-text">Get real-time weather updates for your location. Plan your day with confidence.</p>
+        <!-- Slide 3: Weather Updates Card -->
+        <div class="swiper-slide">
+            <div class="card landing-card">
+                <div class="card-body">
+                    <h5 class="card-title">Weather Updates</h5>
+                    <a href="#" class="feature-image-link">
+                        <img src="{% static 'img/mindmuse-weather.png' %}" alt="weather" class="card-image-feature">
+                    </a>
+                    <p class="card-text">Get real-time weather updates for your location. Plan your day with confidence.</p>
+                </div>
+            </div>
         </div>
-      </div>
+        <!-- Slide 4: Daily Quotes Card -->
+        <div class="swiper-slide">
+            <div class="card landing-card">
+                <div class="card-body">
+                    <h5 class="card-title">Daily Quotes</h5>
+                    <a href="#" class="feature-image-link">
+                        <img src="{% static 'img/mindmuse-quotes.png' %}" alt="daily quotes" class="card-image-feature">
+                    </a>
+                    <p class="card-text">Start your day inspired with daily quotes. Save your favorites or even create your own!</p>
+                </div>
+            </div>
+        </div>
+        <!-- Slide 5: Passion Logging Card -->
+        <div class="swiper-slide">
+            <div class="card landing-card">
+                <div class="card-body">
+                    <h5 class="card-title">Passion Logging</h5>
+                    <a href="#" class="feature-image-link">
+                        <img src="{% static 'img/mindmuse-passions.png' %}" alt="passion progression" class="card-image-feature">
+                    </a>
+                    <p class="card-text">Log time spent on your hobbies and passions. Do more of what makes you happy.</p>
+                </div>
+            </div>
+        </div>
+        <!-- Slide 6: Data Insights Card -->
+        <div class="swiper-slide">
+            <div class="card landing-card">
+                <div class="card-body">
+                    <h5 class="card-title">Data Insights</h5>
+                    <a href="#" class="feature-image-link">
+                        <img src="{% static 'img/Mindmuse-insights.png' %}" alt="personal analytics" class="card-image-feature">
+                    </a>
+                    <p class="card-text">Gain valuable insights into your life patterns through easy-to-understand charts and analytics.</p>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
 
-<!-- Features Row 2 -->
-<div class="row mt-4" style="display: flex; justify-content: space-around;">
-    <!-- Daily Quotes Card -->
-    <div class="col-lg-3 col-md-4 col-sm-6 mb-4" style="display: flex; justify-content: center;">
-      <div class="card landing-card">
-        <div class="card-body">
-            <h5 class="card-title">Daily Quotes</h5>
-            <a href="#" class="feature-image-link">
-                <img src="{% static 'img/mindmuse-quotes.png' %}" alt="daily quotes" class="card-image-feature">
-            </a>
-            <p class="card-text">Start your day inspired with daily quotes. Save your favorites or even create your own!</p>
-        </div>
-      </div>
-    </div>
-    <!-- Passion Logging Card -->
-    <div class="col-lg-3 col-md-4 col-sm-6 mb-4" style="display: flex; justify-content: center;">
-      <div class="card landing-card">
-        <div class="card-body">
-            <h5 class="card-title">Passion Logging</h5>
-            <a href="#" class="feature-image-link">
-                <img src="{% static 'img/mindmuse-passions.png' %}" alt="passion progression" class="card-image-feature">
-            </a>
-            <p class="card-text">Log time spent on your hobbies and passions. Do more of what makes you happy.</p>
-        </div>
-      </div>
-    </div>
-    <!-- Data Insights Card -->
-    <div class="col-lg-3 col-md-4 col-sm-6 mb-4" style="display: flex; justify-content: center;">
-      <div class="card landing-card">
-        <div class="card-body">
-            <h5 class="card-title">Data Insights</h5>
-            <a href="#" class="feature-image-link">
-                <img src="{% static 'img/Mindmuse-insights.png' %}" alt="personal analytics" class="card-image-feature">
-            </a>
-            <p class="card-text mb-4">Gain valuable insights into your life patterns through easy-to-understand charts and analytics.</p>
-        </div>
-      </div>
-    </div>
+    <!-- If we need pagination -->
+    <div class="swiper-pagination"></div>
+
+    <!-- If we need navigation buttons -->
+    <div class="swiper-button-prev"></div>
+    <div class="swiper-button-next"></div>
+
+    <!-- If we need scrollbar -->
+    <div class="swiper-scrollbar"></div>
 </div>
 
 <div>
-    <a style="color: #FFFFFF;" href="https://storyset.com/work">Work illustrations by Storyset</a>
+    <a class="mt-4 text-center" style="color: #FFFFFF;" href="https://storyset.com/work">Work illustrations by Storyset</a>
 </div>
 
 
@@ -916,12 +922,24 @@
                 // Optional parameters
                 direction: 'horizontal',
                 loop: true,
-                slidesPerView: 3, // Show 3 slides at the same time
-                centeredSlides: true, // Active slide will be centered
-                spaceBetween: 30, // 30 pixels between each slide
-                speed: 700, // transition duration in milliseconds
-                ease: 'cubic-bezier(0.68, -0.55, 0.27, 1.55)', // cubic-bezier easing
-
+                
+                // Default to 1 slide for mobile first design
+                slidesPerView: 1,
+                centeredSlides: true,
+                spaceBetween: 10,
+                
+                speed: 700,
+                ease: 'cubic-bezier(0.68, -0.55, 0.27, 1.55)',
+                
+                // Responsive breakpoints
+                breakpoints: {
+                    // when window width is >= 640px
+                    680: {
+                        slidesPerView: 3,
+                        spaceBetween: 30
+                    }
+                },
+                
                 // If we need pagination
                 pagination: {
                     el: '.swiper-pagination',
@@ -938,7 +956,6 @@
                     el: '.swiper-scrollbar',
                 },
             });
-
 
             async function loadSignupModal() {
                 let response = await fetch('/users/signup/', {headers: {'X-Requested-With': 'XMLHttpRequest'}});
