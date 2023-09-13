@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, timedelta
 from django.utils import timezone
 from celery import shared_task
 from .models import Task, TaskHistory, QuoteOfTheDay
