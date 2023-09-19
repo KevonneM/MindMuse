@@ -1,0 +1,263 @@
+{% extends 'base.html' %}
+{% block content %}
+
+{% load widget_tweaks %}
+<div class="container">
+        <form method="post" class="form pt-2" id="linkPaymentForm">
+            {% csrf_token %}
+            <p class="title">Link Existing Payment</p>
+            <p class="message">If you have already made a payment, you can link it to a new account here.</p>
+
+            <label>
+                <input type="email" id="payment_email" name="payment_email" class="input" placeholder="" required>
+                <span class="always-on-top">Payment Email</span>
+            </label>
+
+            <div class="flex">
+                <label>
+                    {{ form.first_name|add_class:"input"|attr:"placeholder:" }}
+                    <span>Firstname</span>
+                </label>
+
+                <label>
+                    {{ form.last_name|add_class:"input"|attr:"placeholder:" }}
+                    <span>Lastname</span>
+                </label>
+            </div>
+
+            <label>
+                {{ form.email|add_class:"input no-animation"|attr:"placeholder:" }}
+                <span class="always-on-top">Email</span>
+            </label>
+
+            <label>
+                {{ form.username|add_class:"input"|attr:"placeholder:" }}
+                <span>Username</span>
+            </label>
+
+            <label>
+                {{ form.date_of_birth|add_class:"input no-animation"|attr:"placeholder:" }}
+                <span class="always-on-top">Date of Birth</span>
+            </label>
+
+            <label>
+                {{ form.password1|add_class:"input"|attr:"placeholder:" }}
+                <span>Password</span>
+            </label>
+
+            <label>
+                {{ form.password2|add_class:"input"|attr:"placeholder:" }}
+                <span>Confirm Password</span>
+            </label>
+
+            <button type="submit" class="submit">Submit</button>
+        </form>
+
+        <!-- Error Message Container -->
+        <div id="form-error"></div>
+    </div>
+
+<script>
+
+document.getElementById('linkPaymentForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    let existingError = document.getElementById('form-error');
+    if (existingError) {
+        existingError.remove();
+    }
+    
+    let form = document.getElementById('linkPaymentForm');
+    let formData = new FormData(form);
+    
+    let csrf_token = getCookie('csrftoken');
+    
+    let response = await fetch('/users/link_existing_payment/', {
+        method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRFToken': csrf_token
+        },
+        body: formData
+    });
+    
+    let data = await response.json();
+
+    let errorMessage = document.createElement('div');
+    errorMessage.id = 'form-error';
+    errorMessage.style.backgroundColor = '#ffdddd';
+    errorMessage.style.border = '1px solid red';
+    errorMessage.style.padding = '10px';
+    errorMessage.style.marginTop = '10px';
+    errorMessage.style.color = 'red';
+    errorMessage.style.fontWeight = 'bold';
+
+    if (data.success) {
+        window.location.href = "/";
+    } else {
+        let errorData = data.errors || data.error;
+        
+        if (typeof errorData === 'object') {
+            for (let field in errorData) {
+                for (let i = 0; i < errorData[field].length; i++) {
+                    errorMessage.innerHTML += `<p>${field}: ${errorData[field][i].message}</p>`;
+                }
+            }
+        } else {
+            errorMessage.innerHTML = `<p>${errorData}</p>`;
+        }
+
+        form.appendChild(errorMessage);
+    }
+});
+
+</script>
+
+<style>
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 500px;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 20px;
+  position: relative;
+  margin: auto;
+}
+
+.title {
+  font-size: 28px;
+  color: #7638C2;
+  font-weight: 600;
+  letter-spacing: -1px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding-left: 30px;
+}
+
+.title::before,.title::after {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  left: 0px;
+  background-color: #7638C2;
+}
+
+.title::before {
+  width: 18px;
+  height: 18px;
+  background-color: #7638C2;
+}
+
+.title::after {
+  width: 18px;
+  height: 18px;
+  animation: pulse 1s linear infinite;
+}
+
+.message, .signin {
+  color: rgba(88, 87, 87, 0.822);
+  font-size: 14px;
+}
+
+.signin {
+  text-align: center;
+}
+
+.signin a {
+  color: royalblue;
+}
+
+.signin a:hover {
+  text-decoration: underline royalblue;
+}
+
+.flex {
+  display: flex;
+  width: 100%;
+  gap: 6px;
+}
+
+.form label {
+  position: relative;
+}
+
+.form label .input {
+  width: 100%;
+  padding: 10px 10px 20px 10px;
+  outline: 0;
+  border: 1px solid rgba(105, 105, 105, 0.397);
+  border-radius: 10px;
+}
+
+.form label .input + span {
+  position: absolute;
+  left: 10px;
+  top: 15px;
+  color: grey;
+  font-size: 0.9em;
+  cursor: text;
+  transition: 0.3s ease;
+}
+
+.form label .input:placeholder-shown + span {
+  top: 15px;
+  font-size: 0.9em;
+}
+
+.form label .input:focus + span,.form label .input:valid + span {
+  top: 0px;
+  font-size: 0.7em;
+  font-weight: 600;
+}
+
+.form label .input:valid + span {
+  color: green;
+}
+
+.submit {
+  border: none;
+  outline: none;
+  background-color: #7638C2;
+  padding: 10px;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 16px;
+  transform: .3s ease;
+}
+
+.submit:hover {
+  background-color: #492378;
+  cursor: pointer;
+}
+
+@keyframes pulse {
+  from {
+    transform: scale(0.9);
+    opacity: 1;
+  }
+
+  to {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+
+.no-animation + span {
+    transition: none !important;
+    animation: none !important;
+}
+
+.always-on-top {
+    top: 0px !important;
+    font-size: 0.7em !important;
+    font-weight: 600 !important;
+}
+
+</style>
+
+{% endblock content %}

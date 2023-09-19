@@ -3,7 +3,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.forms import DateField
 from .models import CustomUser
 from django.contrib.auth import get_user_model
-
+from django.core.exceptions import ValidationError
 
 class CustomUserCreationForm(UserCreationForm):
 
@@ -23,14 +23,31 @@ class CustomUserCreationForm(UserCreationForm):
         widget=forms.widgets.DateInput(attrs={'type': 'date', 'placeholder': 'Date of Birth'})
     )
     username = forms.CharField(
+        required=True,
         widget=forms.TextInput(attrs={'placeholder': 'Username'})
     )
     password1 = forms.CharField(
+        required=True,
         widget=forms.PasswordInput(attrs={'placeholder': 'Password'})
     )
     password2 = forms.CharField(
+        required=True,
         widget=forms.PasswordInput(attrs={'placeholder': 'Confirm Password'})
     )
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+
+        if not email:
+            raise ValidationError(_("Email field must not be empty"))
+
+        return email.lower()
+
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        if CustomUser.objects.filter(username__iexact=username).exists():
+            raise ValidationError("That username is already taken.")
+        return username
 
     class Meta(UserCreationForm.Meta):
         model = CustomUser
@@ -40,6 +57,14 @@ class EditProfileForm(forms.ModelForm):
     class Meta:
         model = get_user_model()
         fields = ['first_name', 'last_name', 'email', 'date_of_birth']
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+
+        if not email:
+            raise ValidationError(_("Email field must not be empty"))
+
+        return email.lower()
 
     def save(self, commit=True):
         user = super().save(commit=False)

@@ -26,3 +26,9 @@ class CustomUser(AbstractUser):
             age = today.year - self.date_of_birth.year - ((today.month, today.day) < (self.date_of_birth.month, self.date_of_birth.day))
             self.age = age
         super().save(*args, **kwargs)
+
+class Payment(models.Model):
+    user = models.ForeignKey(CustomUser, null=True, blank=True, on_delete=models.CASCADE)
+    payment_status = models.BooleanField(default=False)
+    payment_email = models.EmailField(max_length=255, null=True, blank=True)
+    transaction_id = models.CharField(unique=True, max_length=100, null=True)

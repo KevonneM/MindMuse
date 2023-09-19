@@ -2,83 +2,200 @@
 
 <div class="modal-body signup-modal" style="background-color: #f7f7f7; border-radius: 12px;">
     <div class="signup-card">
-        <h2 class="text-center mb-4">Sign Up</h2>
-        <form method="post" id="signupForm">
+        <form method="post" class="form pt-2" id="signupForm">
           {% csrf_token %}
-          <p>
-            <label for="id_username">{{ form.username.label }}</label>
-            {{ form.username|add_class:"form-input" }}
-          </p>
-          <p>
-            <label for="id_email">{{ form.email.label }}</label>
-            {{ form.email|add_class:"form-input" }}
-          </p>
-          <p>
-            <label for="id_first_name">{{ form.first_name.label }}</label>
-            {{ form.first_name|add_class:"form-input" }}
-          </p>
-          <p>
-            <label for="id_last_name">{{ form.last_name.label }}</label>
-            {{ form.last_name|add_class:"form-input" }}
-          </p>
-          <p>
-            <label for="id_date_of_birth">{{ form.date_of_birth.label }}</label>
-            {{ form.date_of_birth|add_class:"form-input" }}
-          </p>
-          <p>
-            <label for="id_password1">Password</label>
-            {{ form.password1|add_class:"form-input" }}
-          </p>
-          <p>
-            <label for="id_password2">Confirm Password</label>
-            {{ form.password2|add_class:"form-input" }}
-          </p>
-          <div class="modal-footer">
-            <input type="submit" class="btn btn-primary" value="Sign Up">
+          <p class="title">Register</p>
+          <p class="message">Signup now and get full access to our app.</p>
+
+          <div class="flex">
+            <label>
+                {{ form.first_name|add_class:"input"|attr:"placeholder:" }}
+                <span>Firstname</span>
+            </label>
+
+            <label>
+                {{ form.last_name|add_class:"input"|attr:"placeholder:" }}
+                <span>Lastname</span>
+            </label>
           </div>
+
+          <label>
+              {{ form.email|add_class:"input no-animation"|attr:"placeholder:" }}
+              <span class="always-on-top">Email</span>
+          </label>
+
+          <label>
+              {{ form.username|add_class:"input"|attr:"placeholder:" }}
+              <span>Username</span>
+          </label>
+
+          <label>
+              {{ form.date_of_birth|add_class:"input no-animation"|attr:"placeholder:" }}
+              <span class="always-on-top">Date of Birth</span>
+          </label>
+
+          <label>
+              {{ form.password1|add_class:"input"|attr:"placeholder:" }}
+              <span>Password</span>
+          </label>
+
+          <label>
+              {{ form.password2|add_class:"input"|attr:"placeholder:" }}
+              <span>Confirm password</span>
+          </label>
+          <input type="hidden" name="paymentEmail" id="paymentEmail" value="">
+          <input type="hidden" name="orderID" id="orderID" value="">
+
+          <button type="submit" class="submit">Submit</button>
+            
         </form>
     </div>
 </div>
 
 <style>
 
-    .signup-modal {
-        font-family: 'Roboto', sans-serif;
-    }
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 500px;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 20px;
+  position: relative;
+  margin: auto;
+}
 
-    .signup-modal .modal-body {
-        background-color: #fff;
-        padding: 30px;
-        border-radius: 12px;
-    }
+.title {
+  font-size: 28px;
+  color: #7638C2;
+  font-weight: 600;
+  letter-spacing: -1px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding-left: 30px;
+}
 
-    .signup-modal .form-input {
-        width: 100%;
-        height: 60px;
-        padding-left: 15px;
-        border-radius: 5px;
-        border: 1px solid #5944A6;
-        background-color: #D4DBF5;
-    }
+.title::before,.title::after {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  left: 0px;
+  background-color: #7638C2;
+}
 
-    .signup-modal input:focus {
-        border: 2px solid #5944A6;
-    }
+.title::before {
+  width: 18px;
+  height: 18px;
+  background-color: #7638C2;
+}
 
-    .signup-modal .btn-primary {
-        background-color: #7638C2;
-        border-color: #7638C2;
-        width: 100%;
-        height: 40px;
-    }
+.title::after {
+  width: 18px;
+  height: 18px;
+  animation: pulse 1s linear infinite;
+}
 
-    .signup-modal .btn-primary:hover {
-        background-color: #492378;
-        border-color: #492378;
-    }
+.message, .signin {
+  color: rgba(88, 87, 87, 0.822);
+  font-size: 14px;
+}
 
-    .signup-modal p {
-        margin-bottom: 15px;
-    }
+.signin {
+  text-align: center;
+}
+
+.signin a {
+  color: royalblue;
+}
+
+.signin a:hover {
+  text-decoration: underline royalblue;
+}
+
+.flex {
+  display: flex;
+  width: 100%;
+  gap: 6px;
+}
+
+.form label {
+  position: relative;
+}
+
+.form label .input {
+  width: 100%;
+  padding: 10px 10px 20px 10px;
+  outline: 0;
+  border: 1px solid rgba(105, 105, 105, 0.397);
+  border-radius: 10px;
+}
+
+.form label .input + span {
+  position: absolute;
+  left: 10px;
+  top: 15px;
+  color: grey;
+  font-size: 0.9em;
+  cursor: text;
+  transition: 0.3s ease;
+}
+
+.form label .input:placeholder-shown + span {
+  top: 15px;
+  font-size: 0.9em;
+}
+
+.form label .input:focus + span,.form label .input:valid + span {
+  top: 0px;
+  font-size: 0.7em;
+  font-weight: 600;
+}
+
+.form label .input:valid + span {
+  color: green;
+}
+
+.submit {
+  border: none;
+  outline: none;
+  background-color: #7638C2;
+  padding: 10px;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 16px;
+  transform: .3s ease;
+}
+
+.submit:hover {
+  background-color: #492378;
+  cursor: pointer;
+}
+
+@keyframes pulse {
+  from {
+    transform: scale(0.9);
+    opacity: 1;
+  }
+
+  to {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+
+.no-animation + span {
+    transition: none !important;
+    animation: none !important;
+}
+
+.always-on-top {
+    top: 0px !important;
+    font-size: 0.7em !important;
+    font-weight: 600 !important;
+}
 
 </style>

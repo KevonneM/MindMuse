@@ -662,6 +662,10 @@
                         </p>
                     </div>
                     <button id="getStarted" class="btn-hover-trial my-auto p-to-g" style="width: 50%; margin-left: auto; margin-right: auto; display: block;">Get Started</button>
+                    <!-- Lemon Squeezy button (hidden) -->
+                    <a href="https://mindmuse.lemonsqueezy.com/checkout/buy/4c221004-46ee-4f5d-99ac-20adc27ab175?embed=1&media=0&dark=1" class="lemonsqueezy-button" style="display:none;">Buy MindMuse Subscription</a>
+                    <!-- Lemon Squeezy script -->
+                    <script src="https://assets.lemonsqueezy.com/lemon.js"></script>
                 </div>
 
                 <!-- Neumorphic Card -->
@@ -957,11 +961,70 @@
                 },
             });
 
-            async function loadSignupModal() {
+            const lemonButton = document.querySelector('.lemonsqueezy-button');
+
+            let checkoutSuccessful = false;
+
+            if (typeof LemonSqueezy !== 'undefined') {
+                LemonSqueezy.Setup({
+                eventHandler: (event) => {
+                    console.log("Event received:", event);
+
+                    // Handle object events like 'Checkout.Success'
+                    if (event.event === 'Checkout.Success') {
+                        console.log(event.data)
+                        window.localStorage.setItem('checkoutData', JSON.stringify(event.data));
+                        // Save order id in cookie to link to the new user       
+                        document.cookie = "orderID=" + encodeURIComponent(event.data.order.data.id) + ";path=/";
+                        document.cookie = "paymentEmail=" + encodeURIComponent(event.data.order.data.attributes.user_email) + ";path=/";
+                        document.cookie = "userName=" + encodeURIComponent(event.data.order.data.attributes.user_name) + ";path=/";
+                        console.log("Cookies set before redirecting:", document.cookie);
+                        checkoutSuccessful = true;
+                    } else if (event === 'close') {
+                        if (checkoutSuccessful) {
+                            const checkoutData = JSON.parse(window.localStorage.getItem('checkoutData'));
+                            console.log("Checkout Data:", checkoutData);
+                            if (checkoutData) {
+                                let paymentEmail = checkoutData.order.data.attributes.user_email;
+                                let userName = checkoutData.order.data.attributes.user_name;
+                                let userNameParts = userName.split(' ');
+                                let firstName = userNameParts[0];
+                                let lastName = userNameParts.slice(1).join(' ');
+
+                                // Setting cookies
+                                document.cookie = "paymentEmail=" + encodeURIComponent(paymentEmail) + ";path=/";
+                                document.cookie = "userName=" + encodeURIComponent(userName) + ";path=/";
+                                
+                                loadSignupModal(paymentEmail, firstName, lastName);
+                            }
+                        } 
+                    }
+                }
+            });
+            } else {
+                console.error('LemonSqueezy not loaded');
+            }
+
+            async function loadSignupModal(paymentEmail, firstName, lastName) {
+                LemonSqueezy.Url.Close();
+
                 let response = await fetch('/users/signup/', {headers: {'X-Requested-With': 'XMLHttpRequest'}});
                 let data = await response.text();
                 document.getElementById('signupModalContent').innerHTML = data;
-                var myModal = new bootstrap.Modal(document.getElementById('signupModal'));
+
+                // Populate fields before showing modal
+                if (firstName && lastName) {
+                    let firstNameField = document.getElementById('id_first_name');
+                    let lastNameField = document.getElementById('id_last_name');
+                    
+                    firstNameField.value = firstName;
+                    lastNameField.value = lastName;
+                }
+
+                var myModal = new bootstrap.Modal(document.getElementById('signupModal'), {
+                    backdrop: 'static',
+                    keyboard: false
+                });
 
                 // Form submission handler
                 document.getElementById('signupForm').addEventListener('submit', async function(e) {
@@ -969,6 +1032,13 @@
                     
                     let form = document.getElementById('signupForm');
                     let formData = new FormData(form);
+
+                    let orderID = getCookie('orderID');
+                    formData.append('orderID', orderID);
+
+                    if (paymentEmail) {
+                        formData.append('paymentEmail', decodeURIComponent(paymentEmail));
+                    }
 
                     var csrf_token = getCookie('csrftoken');
 
@@ -981,22 +1051,55 @@
                         body: formData
                     });
 
+                    let existingError = document.getElementById('form-error');
+                    if (existingError) {
+                        existingError.remove();
+                    }
+
                     let signupData = await signupResponse.json();
 
                     if (signupData.success === 'ok') {
                         window.location.href = signupData.redirect_url;
                     } else {
-                        alert(signupData.error);
+                        let errorData = signupData.errors || signupData.error; 
+                        let errorMessage = document.createElement('div');
+                        errorMessage.id = 'form-error';
+                        errorMessage.style.backgroundColor = '#ffdddd';
+                        errorMessage.style.border = '1px solid red';
+                        errorMessage.style.padding = '10px';
+                        errorMessage.style.marginTop = '10px';
+                        errorMessage.style.color = 'red';
+                        errorMessage.style.fontWeight = 'bold';
+
+                        if (typeof errorData === 'object') {
+                            let errorSummary = document.createElement('p');
+                            errorSummary.textContent = "There were some errors with your submission:";
+                            errorMessage.appendChild(errorSummary);
+
+                            let errorList = document.createElement('ul');
+                            for (let field in errorData) {
+                                for (let i = 0; i < errorData[field].length; i++) {
+                                    let listItem = document.createElement('li');
+                                    listItem.innerHTML = `${field}: ${errorData[field][i].message}`;
+                                    errorList.appendChild(listItem);
+                                }
+                            }
+                            errorMessage.appendChild(errorList);
+                        } else {
+                            errorMessage.innerHTML = `<p>${errorData}</p>`;
+                        }
+
+                        form.appendChild(errorMessage);
                     }
                 });
 
                 myModal.show();
             }
             document.getElementById('signupBtn').addEventListener('click', function() {
-                loadSignupModal();
+                lemonButton.click();
             });
             document.getElementById('getStarted').addEventListener('click', function() {
-                loadSignupModal();
+                lemonButton.click();
             });
 
             async function loadLoginModal() {
