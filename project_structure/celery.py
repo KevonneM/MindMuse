@@ -13,14 +13,11 @@ app.conf.result_backend = 'redis://localhost:6379/0'
 
 app.conf.beat_schedule = {
     'refresh-tasks-every-minute': {
-        'task': 'second_brain.tasks.refresh_tasks', 
+        'task': 'second_brain.tasks.refresh_tasks',
         'schedule': crontab(),  # Execute every minute
     },
-}
-
-app.conf.beat_schedule = {
     'fetch-and-save-quotes-of-the-day': {
-        'task': 'second_brain.fetch_and_save_quotes_of_the_day',
-        'schedule': crontab(minute=0, hour=0),
+        'task': 'second_brain.tasks.fetch_and_save_quotes_of_the_day',
+        'schedule': crontab(minute=0, hour=0),  # Execute daily at midnight
     }
 }
