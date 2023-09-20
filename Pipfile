@@ -12,8 +12,10 @@ celery = {extras = ["redis"], version = "*"}
 django-celery-beat = "*"
 python-dateutil = "*"
 django-widget-tweaks = "*"
+gunicorn = "*"
+flower = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "3.10"
+python_version = "3.7.3"
