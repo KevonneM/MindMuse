@@ -26,6 +26,16 @@ def home(request):
 
     if user.is_authenticated:
 
+        # Fetch city name from IP Geolocation API
+        try:
+            ip_geoloc_api_key = settings.IP_GEOLOCATION_API_KEY
+            response = requests.get(f'https://api.ipgeolocation.io/ipgeo?apiKey={ip_geoloc_api_key}')
+            geo_data = response.json()
+            city_name = geo_data.get('city', None)
+        except Exception as e:
+            city_name = None
+            print(f"Error fetching city: {e}")
+
         if user.timezone:
             user_timezone = pytz.timezone(user.timezone)
         else:
@@ -111,6 +121,7 @@ def home(request):
             'user_quotes': user_quotes,
             'account_creation_year': account_creation_year,
             'is_authenticated': user.is_authenticated,
+            'city_name': city_name,
         }
     else:
         context = {

@@ -133,10 +133,10 @@ function fetchWeatherByCity() {
 }
 
 function fetchCityByIP() {
-  fetch('http://ip-api.com/json/')
+  fetch('')
     .then(response => response.json())
     .then(data => {
-      const cityName = data.city;
+      const cityName = cityNameFromServer;
       if (cityName) {
         updateWeatherData(cityName);
       } else {
