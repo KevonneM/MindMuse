@@ -18,6 +18,6 @@ app.conf.beat_schedule = {
     },
     'fetch-and-save-quotes-of-the-day': {
         'task': 'second_brain.tasks.fetch_and_save_quotes_of_the_day',
-        'schedule': crontab(minute=0, hour=0),  # Execute daily at midnight
-    }
+        'schedule': crontab(minute=0, hour=0),
+    },
 }
