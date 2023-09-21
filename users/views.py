@@ -10,6 +10,7 @@ from .models import Payment, CustomUser
 import hashlib
 import hmac
 import json
+from django.db import IntegrityError
 
 # Create your views here.
 
@@ -22,13 +23,13 @@ def signup(request):
 
         try:
             payment, created = Payment.objects.get_or_create(
-                transaction_id=order_id, payment_email=payment_email, payment_status=True
+                transaction_id=order_id, defaults={'payment_email': payment_email, 'payment_status': True}
             )
-        except Payment.DoesNotExist:
+        except IntegrityError:
             if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                return JsonResponse({'error': 'Payment not confirmed'})
+                return JsonResponse({'error': 'Transaction ID must be unique.'})
             else:
-                return JsonResponse({'error': 'Payment not confirmed'})
+                return JsonResponse({'error': 'Transaction ID must be unique.'})
 
         if CustomUser.objects.filter(email=email).exists():
             return JsonResponse({'error': 'That e-mail is currently in use.'})
@@ -122,39 +123,39 @@ def lemon_squeezy_webhook(request):
         return HttpResponseBadRequest('Invalid signature')
 
     events = payload_json['data']['attributes'].get('events', [])
-    paymentEmail = payload_json['data']['attributes']['checkout_data']['email']
-    transaction_id = payload_json['data']['id']
+    paymentEmail = payload_json['data']['attributes']['user_email']
+    customer_id = payload_json['data']['attributes']['customer_id']
 
     payment, created = Payment.objects.get_or_create(
-        transaction_id=transaction_id, 
-        defaults={'payment_status': False, 'payment_email': payment_email}
+        transaction_id=customer_id, 
+        defaults={'payment_status': False, 'payment_email': paymentEmail}
     )
 
     for event in events:
         if event == "order_created":
-            Payment.objects.update_or_create(transaction_id=transaction_id, defaults={'payment_status': True})
+            print(f"order created for customer id:{transaction_id} payment_email:{paymentEmail}.")
         elif event == "order_refunded":
-            Payment.objects.filter(transaction_id=transaction_id).update(payment_status=False)
+            Payment.objects.filter(transaction_id=customer_id).update(payment_status=False)
         elif event == "subscription_created":
-            Payment.objects.update_or_create(transaction_id=transaction_id, defaults={'payment_status': True})
+            Payment.objects.update_or_create(transaction_id=customer_id, defaults={'payment_status': True})
         elif event == "subscription_updated":
-            Payment.objects.update_or_create(transaction_id=transaction_id, defaults={'payment_status': True})
+            Payment.objects.update_or_create(transaction_id=customer_id, defaults={'payment_status': True})
         elif event == "subscription_cancelled":
-            Payment.objects.filter(transaction_id=transaction_id).update(payment_status=False)
+            Payment.objects.filter(transaction_id=customer_id).update(payment_status=False)
         elif event == "subscription_resumed":
-            Payment.objects.filter(transaction_id=transaction_id).update(payment_status=True)
+            Payment.objects.filter(transaction_id=customer_id).update(payment_status=True)
         elif event == "subscription_expired":
-            Payment.objects.filter(transaction_id=transaction_id).update(payment_status=False)
+            Payment.objects.filter(transaction_id=customer_id).update(payment_status=False)
         elif event == "subscription_paused":
-            Payment.objects.filter(transaction_id=transaction_id).update(payment_status=False)
+            Payment.objects.filter(transaction_id=customer_id).update(payment_status=False)
         elif event == "subscription_unpaused":
-            Payment.objects.filter(transaction_id=transaction_id).update(payment_status=True)
+            Payment.objects.filter(transaction_id=customer_id).update(payment_status=True)
         elif event == "subscription_payment_failed":
-            Payment.objects.filter(transaction_id=transaction_id).update(payment_status=False)
+            Payment.objects.filter(transaction_id=customer_id).update(payment_status=False)
         elif event == "subscription_payment_success":
-            Payment.objects.filter(transaction_id=transaction_id).update(payment_status=True)
+            print(f"Subscription payment success for customer id: {transaction_id}")
         elif event == "subscription_payment_recovered":
-            Payment.objects.filter(transaction_id=transaction_id).update(payment_status=True)
+            Payment.objects.filter(transaction_id=customer_id).update(payment_status=True)
         else:
             continue
 

@@ -975,7 +975,7 @@
                         console.log(event.data)
                         window.localStorage.setItem('checkoutData', JSON.stringify(event.data));
                         // Save order id in cookie to link to the new user       
-                        document.cookie = "orderID=" + encodeURIComponent(event.data.order.data.id) + ";path=/";
+                        document.cookie = "orderID=" + encodeURIComponent(event.data.order.data.attributes.customer_id) + ";path=/";
                         document.cookie = "paymentEmail=" + encodeURIComponent(event.data.order.data.attributes.user_email) + ";path=/";
                         document.cookie = "userName=" + encodeURIComponent(event.data.order.data.attributes.user_name) + ";path=/";
                         console.log("Cookies set before redirecting:", document.cookie);
