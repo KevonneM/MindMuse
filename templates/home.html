@@ -977,7 +977,9 @@
                     // Handle object events like 'Checkout.Success'
                     if (event.event === 'Checkout.Success') {
                         console.log(event.data)
-                        window.localStorage.setItem('checkoutData', JSON.stringify(event.data));
+                        const checkoutDataString = JSON.stringify(event.data);
+                        window.localStorage.setItem('checkoutData', checkoutDataString);
+                        window.sessionStorage.setItem('checkoutData', checkoutDataString);
                         // Save order id in cookie to link to the new user       
                         document.cookie = "orderID=" + encodeURIComponent(event.data.order.data.attributes.customer_id) + ";path=/";
                         document.cookie = "paymentEmail=" + encodeURIComponent(event.data.order.data.attributes.user_email) + ";path=/";
@@ -986,7 +988,10 @@
                         checkoutSuccessful = true;
                     } else if (event === 'close') {
                         if (checkoutSuccessful) {
-                            const checkoutData = JSON.parse(window.localStorage.getItem('checkoutData'));
+                            // Checking sessionStorage first, then fallback to localStorage
+                            const checkoutDataString = window.sessionStorage.getItem('checkoutData') || window.localStorage.getItem('checkoutData');
+                            const checkoutData = JSON.parse(checkoutDataString);
+                            
                             console.log("Checkout Data:", checkoutData);
                             if (checkoutData) {
                                 let paymentEmail = checkoutData.order.data.attributes.user_email;
