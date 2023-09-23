@@ -132,20 +132,12 @@ function fetchWeatherByCity() {
   }
 }
 
-function fetchCityByIP() {
-  fetch('')
-    .then(response => response.json())
-    .then(data => {
-      const cityName = cityNameFromServer;
-      if (cityName) {
-        updateWeatherData(cityName);
-      } else {
-        console.error('Failed to fetch city by IP:', data);
-      }
-    })
-    .catch(error => {
-      console.error('Error fetching city by IP:', error);
-    });
+function fetchCityByIP(cityNameFromServer) {
+  if (cityNameFromServer) {
+    updateWeatherData(cityNameFromServer);
+  } else {
+    console.error('Failed to fetch city by IP: City name not provided');
+  }
 }
 
 function getLastTrackedCity() {
@@ -175,7 +167,7 @@ function init() {
 
   if (refreshButton) refreshButton.addEventListener('click', getLastTrackedCity);
   if (submitCity) submitCity.addEventListener('click', fetchWeatherByCity);
-  if (useIP) useIP.addEventListener('click', fetchCityByIP);
+  if (useIP) useIP.addEventListener('click', () => fetchCityByIP(cityNameFromServer));
 
   if (weatherCardFooter) {
     weatherCardFooter.addEventListener('keydown', function(event) {
