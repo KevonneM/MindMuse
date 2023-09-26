@@ -31,9 +31,9 @@ def home(request):
         # Fetch city name from IP Geolocation API
         try:
             ip_geoloc_api_key = settings.IP_GEOLOCATION_API_KEY
-            if user_ip:
-                print(user_ip)
-                response = requests.get(f'https://api.ipgeolocation.io/ipgeo?apiKey={ip_geoloc_api_key}&ip={user_ip}')
+            if ip_address:
+                print(ip_address)
+                response = requests.get(f'https://api.ipgeolocation.io/ipgeo?apiKey={ip_geoloc_api_key}&ip={ip_address}')
             else:
                 response = requests.get(f'https://api.ipgeolocation.io/ipgeo?apiKey={ip_geoloc_api_key}')
 
