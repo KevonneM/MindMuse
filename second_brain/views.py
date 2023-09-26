@@ -26,13 +26,7 @@ def home(request):
 
     if user.is_authenticated:
 
-        # Fetch user IP from httpbin
-        try:
-            ip_response = requests.get("https://httpbin.org/ip")
-            user_ip = ip_response.json().get("origin", "").split(",")[0]
-        except Exception as e:
-            user_ip = None
-            print(f"Error fetching user IP: {e}")
+        ip_address = get_client_ip(request)
 
         # Fetch city name from IP Geolocation API
         try:
@@ -159,6 +153,14 @@ def profile(request):
         return render(request, '_profile.html', {'form': form})
         
     return render(request, '_profile.html', {'form': form})
+
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
 
 @csrf_exempt
 def set_timezone(request):
