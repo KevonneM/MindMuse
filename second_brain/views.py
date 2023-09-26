@@ -26,12 +26,25 @@ def home(request):
 
     if user.is_authenticated:
 
+        # Fetch user IP from httpbin
+        try:
+            ip_response = requests.get("https://httpbin.org/ip")
+            user_ip = ip_response.json().get("origin", "").split(",")[0]  # Takes the first IP if there are multiple
+        except Exception as e:
+            user_ip = None
+            print(f"Error fetching user IP: {e}")
+
         # Fetch city name from IP Geolocation API
         try:
             ip_geoloc_api_key = settings.IP_GEOLOCATION_API_KEY
-            response = requests.get(f'https://api.ipgeolocation.io/ipgeo?apiKey={ip_geoloc_api_key}')
+            if user_ip:
+                response = requests.get(f'https://api.ipgeolocation.io/ipgeo?apiKey={ip_geoloc_api_key}&ip={user_ip}')
+            else:
+                response = requests.get(f'https://api.ipgeolocation.io/ipgeo?apiKey={ip_geoloc_api_key}')
+
             geo_data = response.json()
             city_name = geo_data.get('city', None)
+
         except Exception as e:
             city_name = None
             print(f"Error fetching city: {e}")
