@@ -29,7 +29,7 @@ def home(request):
         # Fetch user IP from httpbin
         try:
             ip_response = requests.get("https://httpbin.org/ip")
-            user_ip = ip_response.json().get("origin", "").split(",")[0]  # Takes the first IP if there are multiple
+            user_ip = ip_response.json().get("origin", "").split(",")[0]
         except Exception as e:
             user_ip = None
             print(f"Error fetching user IP: {e}")
@@ -38,12 +38,14 @@ def home(request):
         try:
             ip_geoloc_api_key = settings.IP_GEOLOCATION_API_KEY
             if user_ip:
+                print(user_up)
                 response = requests.get(f'https://api.ipgeolocation.io/ipgeo?apiKey={ip_geoloc_api_key}&ip={user_ip}')
             else:
                 response = requests.get(f'https://api.ipgeolocation.io/ipgeo?apiKey={ip_geoloc_api_key}')
 
             geo_data = response.json()
             city_name = geo_data.get('city', None)
+            print(city_name)
 
         except Exception as e:
             city_name = None
