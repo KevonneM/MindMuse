@@ -38,7 +38,7 @@ def home(request):
         try:
             ip_geoloc_api_key = settings.IP_GEOLOCATION_API_KEY
             if user_ip:
-                print(user_up)
+                print(user_ip)
                 response = requests.get(f'https://api.ipgeolocation.io/ipgeo?apiKey={ip_geoloc_api_key}&ip={user_ip}')
             else:
                 response = requests.get(f'https://api.ipgeolocation.io/ipgeo?apiKey={ip_geoloc_api_key}')
