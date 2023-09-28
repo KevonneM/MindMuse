@@ -131,6 +131,7 @@ def home(request):
             'account_creation_year': account_creation_year,
             'is_authenticated': user.is_authenticated,
             'city_name': city_name,
+            'last_tracked_city': user.last_tracked_city,
         }
     else:
         context = {
