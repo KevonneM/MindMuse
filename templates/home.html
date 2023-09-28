@@ -912,6 +912,7 @@
 
 <script type="text/javascript">
     var cityNameFromServer = "{{ city_name }}";
+    var users_last_tracked_city = "{{ last_tracked_city }}";
 </script>
 
 <script>
@@ -922,6 +923,12 @@
         console.log("Is user authenticated?", window.isUserAuthenticated);
         if (window.isUserAuthenticated) {
             detectTimezoneAndSet();
+            
+            if (!users_last_tracked_city || users_last_tracked_city === "" || users_last_tracked_city === "None") {
+                // Populate user.last_tracked_city value for default city display if value is null.
+                fetchCityByIP(cityNameFromServer);
+            }
+
             // Check event status every 5 minutes.
             setInterval(updateEventStatus, 30000);
         } else {
