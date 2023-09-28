@@ -43,7 +43,10 @@
               {{ form.password2|add_class:"input"|attr:"placeholder:" }}
               <span>Confirm password</span>
           </label>
-          <input type="hidden" name="paymentEmail" id="paymentEmail" value="">
+          <label>
+            <input type="text" name="paymentEmail" id="paymentEmail" class="input no-animation" placeholder="Enter e-mail you used at checkout..." hidden>
+            <span class="always-on-top">Payment Email</span>
+          </label>
           <input type="hidden" name="orderID" id="orderID" value="">
 
           <button type="submit" class="submit">Submit</button>
