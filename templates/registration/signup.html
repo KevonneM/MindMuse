@@ -44,7 +44,10 @@
         {{ form.password2|add_class:"input"|attr:"placeholder:" }}
         <span>Confirm password</span>
     </label>
-    <input type="hidden" name="paymentEmail" id="paymentEmail" value="">
+    <label>
+      <input type="text" name="paymentEmail" id="paymentEmail" class="input no-animation" placeholder="Enter e-mail you used at checkout..." hidden>
+      <span class="always-on-top">Payment Email</span>
+    </label>
     <input type="hidden" name="orderID" id="orderID" value="">
 
     <button type="submit" class="submit">Submit</button>
@@ -70,6 +73,11 @@ document.addEventListener("DOMContentLoaded", function() {
 
     if (paymentEmail) {
         document.getElementById('paymentEmail').value = decodeURIComponent(paymentEmail);
+        document.getElementById('paymentEmail').parentNode.style.display = 'none';
+    } else {
+        // If the paymentEmail cookie is missing or empty, show the payment email input field.
+        let paymentEmailInput = document.getElementById('paymentEmail');
+        paymentEmailInput.removeAttribute('hidden');
     }
 
     document.getElementById('usersignupForm').addEventListener('submit', async function(e) {
@@ -79,7 +87,9 @@ document.addEventListener("DOMContentLoaded", function() {
         let formData = new FormData(form);
 
         let orderID = getCookie('orderID');
-        formData.append('orderID', orderID);
+        if (orderID) {
+          formData.append('orderID', orderID);
+        }
 
         if (paymentEmail) {
             formData.append('paymentEmail', decodeURIComponent(paymentEmail));

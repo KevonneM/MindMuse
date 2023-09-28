@@ -21,15 +21,30 @@ def signup(request):
         payment_email = request.POST.get('paymentEmail', None)
         order_id = request.POST.get('orderID', None)
 
-        try:
-            payment, created = Payment.objects.get_or_create(
-                transaction_id=order_id, defaults={'payment_email': payment_email, 'payment_status': True}
-            )
-        except IntegrityError:
-            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                return JsonResponse({'error': 'Transaction ID must be unique.'})
-            else:
-                return JsonResponse({'error': 'Transaction ID must be unique.'})
+        payment = None
+
+        if order_id and order_id.strip() != '':
+            try:
+                payment = Payment.objects.get(transaction_id=order_id)
+            except Payment.DoesNotExist:
+                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                    return JsonResponse({'error': 'No payment found for the provided Transaction ID.'})
+                else:
+                    return JsonResponse({'error': 'No payment found for the provided Transaction ID.'})
+
+        elif payment_email:
+            try:
+                payment = Payment.objects.get(payment_email=payment_email, user__isnull=True)
+            except Payment.DoesNotExist:
+                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                    return JsonResponse({'error': 'No payment found for the provided payment email.'})
+                else:
+                    return JsonResponse({'error': 'No payment found for the provided payment email.'})
+        else:
+            return JsonResponse({'error': 'No matching payment information provided.'})
+
+        if not payment:
+            return JsonResponse({'error': 'No matching payment found. Please provide a valid transaction ID or payment email.'})
 
         if CustomUser.objects.filter(email=email).exists():
             return JsonResponse({'error': 'That e-mail is currently in use.'})
@@ -133,32 +148,13 @@ def lemon_squeezy_webhook(request):
 
     for event in events:
         if event == "order_created":
-            print(f"order created for customer id:{transaction_id} payment_email:{paymentEmail}.")
-        elif event == "order_refunded":
-            Payment.objects.filter(transaction_id=customer_id).update(payment_status=False)
-        elif event == "subscription_created":
-            Payment.objects.update_or_create(transaction_id=customer_id, defaults={'payment_status': True})
-        elif event == "subscription_updated":
-            Payment.objects.update_or_create(transaction_id=customer_id, defaults={'payment_status': True})
-        elif event == "subscription_cancelled":
-            Payment.objects.filter(transaction_id=customer_id).update(payment_status=False)
-        elif event == "subscription_resumed":
+            print(f"order created for customer id:{customer_id} payment_email:{paymentEmail}.")
+        elif event in ["subscription_created", "subscription_updated", "subscription_payment_success", "subscription_resumed", "subscription_unpaused", "subscription_payment_recovered"]:
             Payment.objects.filter(transaction_id=customer_id).update(payment_status=True)
-        elif event == "subscription_expired":
+        elif event in ["order_refunded", "subscription_cancelled", "subscription_expired", "subscription_paused", "subscription_payment_failed"]:
             Payment.objects.filter(transaction_id=customer_id).update(payment_status=False)
-        elif event == "subscription_paused":
-            Payment.objects.filter(transaction_id=customer_id).update(payment_status=False)
-        elif event == "subscription_unpaused":
-            Payment.objects.filter(transaction_id=customer_id).update(payment_status=True)
-        elif event == "subscription_payment_failed":
-            Payment.objects.filter(transaction_id=customer_id).update(payment_status=False)
-        elif event == "subscription_payment_success":
-            print(f"Subscription payment success for customer id: {transaction_id}")
-        elif event == "subscription_payment_recovered":
-            Payment.objects.filter(transaction_id=customer_id).update(payment_status=True)
         else:
             continue
-
     
     return JsonResponse({'status': 'success'})
 

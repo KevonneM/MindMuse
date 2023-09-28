@@ -1050,10 +1050,17 @@
                     let formData = new FormData(form);
 
                     let orderID = getCookie('orderID');
-                    formData.append('orderID', orderID);
+                    if (orderID) {
+                        formData.append('orderID', orderID);
+                    }
 
                     if (paymentEmail) {
                         formData.append('paymentEmail', decodeURIComponent(paymentEmail));
+                        document.getElementById('paymentEmail').parentNode.style.display = 'none';
+                    } else {
+                        // If the paymentEmail cookie is missing or empty, show the payment email input field.
+                        let paymentEmailInput = document.getElementById('paymentEmail');
+                        paymentEmailInput.removeAttribute('hidden');
                     }
 
                     var csrf_token = getCookie('csrftoken');
