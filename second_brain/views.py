@@ -814,7 +814,15 @@ def get_quotes_of_the_day(request):
         user = request.user
         user_tz = pytz.timezone(user.get_timezone())
         now_in_user_tz = timezone.now().astimezone(user_tz)
-        quotes_of_the_day = QuoteOfTheDay.objects.filter(created_at__date=now_in_user_tz.date()).values('id','quote', 'author')
+
+        # Shift to fetch the previous day's quote for all users to ensure timezones behind, at, or ahead utc will receive 'new' quotes based on their respective local time with no quoteless periods (UTC+).
+        start_time_utc = user_tz.localize(datetime.combine(now_in_user_tz - timedelta(days=1), datetime.min.time())).astimezone(pytz.utc)
+        end_time_utc = user_tz.localize(datetime.combine(now_in_user_tz - timedelta(days=1), datetime.max.time())).astimezone(pytz.utc)
+
+        quotes_of_the_day = QuoteOfTheDay.objects.filter(
+            created_at__gte=start_time_utc,
+            created_at__lte=end_time_utc
+        ).values('id', 'quote', 'author')
         
         return JsonResponse({'quotes': list(quotes_of_the_day)}, safe=False)
     else:
