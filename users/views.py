@@ -137,7 +137,7 @@ def lemon_squeezy_webhook(request):
     if not hmac.compare_digest(generated_signature, received_signature):
         return HttpResponseBadRequest('Invalid signature')
 
-    events = payload_json['data']['attributes'].get('events', [])
+    event_name = payload_json['meta']['event_name']
     paymentEmail = payload_json['data']['attributes']['user_email']
     customer_id = payload_json['data']['attributes']['customer_id']
 
@@ -146,15 +146,15 @@ def lemon_squeezy_webhook(request):
         defaults={'payment_status': False, 'payment_email': paymentEmail}
     )
 
-    should_set_true = any(event in ["order_created", "subscription_created", "subscription_payment_success", "subscription_updated", "subscription_resumed", "subscription_unpaused", "subscription_payment_recovered"] for event in events)
-    should_set_false = any(event in ["order_refunded", "subscription_cancelled", "subscription_expired", "subscription_paused", "subscription_payment_failed"] for event in events)
+    payment_status = False
 
-    if should_set_true:
-        payment.payment_status = True
-        payment.save()
-    elif should_set_false:
-        payment.payment_status = False
-        payment.save()
+    if event_name in ["order_created", "subscription_created", "subscription_payment_success", "subscription_updated", "subscription_resumed", "subscription_unpaused", "subscription_payment_recovered"]:
+        payment_status = True
+    elif event_name in ["order_refunded", "subscription_cancelled", "subscription_expired", "subscription_paused", "subscription_payment_failed"]:
+        payment_status = False
+
+    payment.payment_status = payment_status
+    payment.save()
     
     return JsonResponse({'status': 'success'})
 
