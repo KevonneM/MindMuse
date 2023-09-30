@@ -141,20 +141,20 @@ def lemon_squeezy_webhook(request):
     paymentEmail = payload_json['data']['attributes']['user_email']
     customer_id = payload_json['data']['attributes']['customer_id']
 
-    payment, created = Payment.objects.get_or_create(
+    payment, created = Payment.objects.select_for_update().get_or_create(
         transaction_id=customer_id, 
         defaults={'payment_status': False, 'payment_email': paymentEmail}
     )
 
-    for event in events:
-        if event == "order_created":
-            print(f"order created for customer id:{customer_id} payment_email:{paymentEmail}.")
-        elif event in ["subscription_created", "subscription_updated", "subscription_payment_success", "subscription_resumed", "subscription_unpaused", "subscription_payment_recovered"]:
-            Payment.objects.filter(transaction_id=customer_id).update(payment_status=True)
-        elif event in ["order_refunded", "subscription_cancelled", "subscription_expired", "subscription_paused", "subscription_payment_failed"]:
-            Payment.objects.filter(transaction_id=customer_id).update(payment_status=False)
-        else:
-            continue
+    should_set_true = any(event in ["order_created", "subscription_created", "subscription_payment_success", "subscription_updated", "subscription_resumed", "subscription_unpaused", "subscription_payment_recovered"] for event in events)
+    should_set_false = any(event in ["order_refunded", "subscription_cancelled", "subscription_expired", "subscription_paused", "subscription_payment_failed"] for event in events)
+
+    if should_set_true:
+        payment.payment_status = True
+        payment.save()
+    elif should_set_false:
+        payment.payment_status = False
+        payment.save()
     
     return JsonResponse({'status': 'success'})
 
