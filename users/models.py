@@ -32,3 +32,6 @@ class Payment(models.Model):
     payment_status = models.BooleanField(default=False)
     payment_email = models.EmailField(max_length=255, null=True, blank=True)
     transaction_id = models.CharField(unique=True, max_length=100, null=True)
+
+    def __str__(self):
+        return f'Payment object under {self.payment_email}, for {self.user}'
