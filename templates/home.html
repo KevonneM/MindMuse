@@ -918,6 +918,7 @@
 <script>
 
     window.isUserAuthenticated = {{ is_authenticated|yesno:"true,false" }};
+    window.payment_status = {{ payment_status|yesno:"true,false" }}
 
     window.addEventListener('load', function() {
         console.log("Is user authenticated?", window.isUserAuthenticated);
@@ -931,6 +932,47 @@
 
             // Check event status every 5 minutes.
             setInterval(updateEventStatus, 30000);
+
+            if (window.payment_status === false) {
+                fetch('/users/get_update_payment_url/', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const updatePaymentMethodUrl = data.update_payment_url;
+                    if(updatePaymentMethodUrl) {
+                        LemonSqueezy.Url.Open(updatePaymentMethodUrl);
+
+                        LemonSqueezy.Setup({
+                            eventHandler: (data) => {
+                                if (["subscription_payment_success", "subscription_payment_recovered", "subscription_resumed", "Checkout.Success"].includes(data.event)) {
+                                    fetch('/users/check_payment_status/', {
+                                        method: 'GET',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                            'X-Requested-With': 'XMLHttpRequest',
+                                        }
+                                    })
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        if (data.payment_status) {
+                                            location.reload();
+                                        }
+                                    });
+                                } else if (data.event === "PaymentMethodUpdate.Closed") {
+                                    location.href = '/users/logout/';
+                                }
+                            }
+                        });
+                    } else {
+                        console.error('updatePaymentMethodUrl is null');
+                    }
+                });
+            }
         } else {
 
             var mySwiper = new Swiper('.swiper', {

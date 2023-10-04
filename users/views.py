@@ -11,6 +11,8 @@ import hashlib
 import hmac
 import json
 from django.db import IntegrityError
+from django.conf import settings
+import requests
 
 # Create your views here.
 
@@ -140,10 +142,15 @@ def lemon_squeezy_webhook(request):
     event_name = payload_json['meta']['event_name']
     paymentEmail = payload_json['data']['attributes']['user_email']
     customer_id = payload_json['data']['attributes']['customer_id']
+    subscription_id = payload_json['data']['attributes']['subscription_id']
 
     payment, created = Payment.objects.select_for_update().get_or_create(
         transaction_id=customer_id, 
-        defaults={'payment_status': False, 'payment_email': paymentEmail}
+        defaults={
+            'payment_status': False,
+            'payment_email': paymentEmail,
+            'subscription_id': subscription_id,
+        }
     )
 
     payment_status = False
@@ -187,3 +194,24 @@ def link_existing_payment(request):
         form = CustomUserCreationForm()
 
     return render(request, 'registration/link_existing_payment.html', {'form': form})
+
+def check_payment_status(request):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        user = request.user
+        payment = Payment.objects.get(user=user)
+        return JsonResponse({'payment_status': payment.payment_status})
+    else:
+        return HttpResponseBadRequest("Bad Request: Not an AJAX request")
+
+def get_update_payment_url(request):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        subscription_id = Payment.objects.get(user=request.user).subscription_id
+        url = f'https://api.lemonsqueezy.com/v1/subscriptions/{subscription_id}'
+        headers = {'Authorization': f'Bearer {settings.LEMON_MINDMUSE_TEST}'}
+        response = requests.get(url, headers=headers)
+        if response.status_code == 200:
+            update_payment_url = response.json().get('data', {}).get('attributes', {}).get('urls', {}).get('update_payment_method')
+            return JsonResponse({'update_payment_url': update_payment_url})
+        return JsonResponse({'error': 'Failed to retrieve URL'}, status=400)
+    else:
+        return HttpResponseBadRequest("Bad Request: Not an AJAX request")
