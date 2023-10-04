@@ -144,15 +144,12 @@ def lemon_squeezy_webhook(request):
     customer_id = payload_json['data']['attributes']['customer_id']
     subscription_id = payload_json['data']['attributes']['subscription_id']
 
-    update_payment_url = payload_json['data']['attributes']['urls']['update_payment_method']
-
     payment, created = Payment.objects.select_for_update().get_or_create(
         transaction_id=customer_id, 
         defaults={
             'payment_status': False,
             'payment_email': paymentEmail,
             'subscription_id': subscription_id,
-            'update_payment_url': update_payment_url
         }
     )
 
