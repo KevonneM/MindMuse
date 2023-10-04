@@ -25,6 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY')
 OPENWEATHERMAP_API_KEY = config('OPENWEATHERMAP_API_KEY')
 IP_GEOLOCATION_API_KEY = config('IP_GEOLOCATION_API_KEY')
+LEMON_MINDMUSE_TEST = config('LEMON_MINDMUSE_TEST')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True

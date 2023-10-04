@@ -12,6 +12,7 @@ from django.db.models import Count
 from .models import Event, Task, TaskHistory, Passion, PassionActivity, PassionCategory, Quote, QuoteOfTheDay
 from .forms import TaskForm, PassionForm, PassionActivityForm, QuoteForm
 from users.forms import EditProfileForm
+from users.models import Payment
 import json
 import requests
 import pytz
@@ -25,6 +26,11 @@ def home(request):
     user_quotes = []
 
     if user.is_authenticated:
+        if not user.is_staff:
+            payment = Payment.objects.get(user=user)
+            payment_status = payment.payment_status
+        else:
+            payment_status = True
 
         ip_address = get_client_ip(request)
 
@@ -132,6 +138,7 @@ def home(request):
             'is_authenticated': user.is_authenticated,
             'city_name': city_name,
             'last_tracked_city': user.last_tracked_city,
+            'payment_status': payment_status,
         }
     else:
         context = {

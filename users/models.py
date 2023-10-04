@@ -31,7 +31,10 @@ class Payment(models.Model):
     user = models.ForeignKey(CustomUser, null=True, blank=True, on_delete=models.CASCADE)
     payment_status = models.BooleanField(default=False)
     payment_email = models.EmailField(max_length=255, null=True, blank=True)
+    # customer_id from lemon squeezy.
     transaction_id = models.CharField(unique=True, max_length=100, null=True)
+    # subscription_id from lemon squeezy.
+    subscription_id = models.CharField(max_length=100, null=True, blank=True)
 
     def __str__(self):
         return f'Payment object under {self.payment_email}, for {self.user}'
