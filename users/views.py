@@ -142,16 +142,19 @@ def lemon_squeezy_webhook(request):
     event_name = payload_json['meta']['event_name']
     paymentEmail = payload_json['data']['attributes']['user_email']
     customer_id = payload_json['data']['attributes']['customer_id']
-    subscription_id = payload_json['data']['attributes']['subscription_id']
+
+    subscription_id = payload_json['data']['attributes'].get('subscription_id', None)
 
     payment, created = Payment.objects.select_for_update().get_or_create(
         transaction_id=customer_id, 
         defaults={
             'payment_status': False,
             'payment_email': paymentEmail,
-            'subscription_id': subscription_id,
         }
     )
+
+    if subscription_id is not None:
+        payment.subscription_id = subscription_id
 
     payment_status = False
 
