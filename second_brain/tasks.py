@@ -23,7 +23,6 @@ def refresh_tasks():
             task.create_history()
 
             # Reset the task
-            task.completion_count = 0
             task.status = False
             task.last_reset_date = now
             task.save()

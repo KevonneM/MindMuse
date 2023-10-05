@@ -81,7 +81,7 @@ class Task(models.Model):
             return next_month
 
     def __str__(self):
-        return f'{self.frequency} Task for {self.user}'
+        return f'{self.frequency} Task for {self.user}, "{self.title}"'
 
 class TaskHistory(models.Model):
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
@@ -95,7 +95,7 @@ class TaskHistory(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f'{self.frequency} Task for {self.user}, created {self.created_at}'
+        return f'{self.frequency} Task for {self.user}, created {self.created_at}, "{self.title}"'
 
 class PassionCategory(models.Model):
     name = models.CharField(max_length=100, unique=True)
