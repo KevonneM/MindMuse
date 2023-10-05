@@ -146,13 +146,17 @@ def yearly_task_completion_data(request, year):
             day_start_utc = day_start.astimezone(utc)
             day_end_utc = day_end.astimezone(utc)
 
-            daily_tasks_for_day = daily_task_histories.filter(created_at__gte=day_start_utc, created_at__lt=day_end_utc)
-            print(f"\nLocal Day: {day_start} to {day_end} --> UTC Day: {day_start_utc} to {day_end_utc}")
-            print(f"Total tasks for day: {daily_tasks_for_day.count()}")
+            # Get the offset of utc and the users local timezone.
+            offset = day_start_utc - day_start
 
-            print("Task created_at times in UTC:")
-            for task in daily_tasks_for_day:
-                print(f"  - {task.created_at}")
+            # Get the hour of day_start in UTC.
+            history_creation_time_utc = user_timezone.localize(day_start).astimezone(utc).hour
+
+            fixed_offset = timedelta(hours=history_creation_time_utc)
+            final_day_start_utc = day_start_utc + offset + fixed_offset
+            final_day_end_utc = day_end_utc + offset + fixed_offset
+
+            daily_tasks_for_day = daily_task_histories.filter(created_at__gte=final_day_start_utc, created_at__lt=final_day_end_utc)
 
             daily_tasks_completed = daily_tasks_for_day.filter(status=True).count()
             total_daily_tasks = daily_tasks_for_day.count()
