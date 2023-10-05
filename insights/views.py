@@ -150,7 +150,10 @@ def yearly_task_completion_data(request, year):
             offset = day_start_utc - day_start
 
             # Get the hour of day_start in UTC.
-            history_creation_time_utc = user_timezone.localize(day_start).astimezone(utc).hour
+            if day_start.tzinfo is None:
+                history_creation_time_utc = user_timezone.localize(day_start).astimezone(utc).hour
+            else:  # if day_start is aware
+                history_creation_time_utc = day_start.astimezone(utc).hour
 
             fixed_offset = timedelta(hours=history_creation_time_utc)
             final_day_start_utc = day_start_utc + offset + fixed_offset
