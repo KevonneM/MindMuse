@@ -147,9 +147,13 @@ def yearly_task_completion_data(request, year):
             day_end_utc = day_end.astimezone(utc)
 
             daily_tasks_for_day = daily_task_histories.filter(created_at__gte=day_start_utc, created_at__lt=day_end_utc)
-            print(f"\nDay: {day_start.date()} - {day_end.date()}")
-            print(f"  Total tasks for day: {daily_tasks_for_day.count()}")
-            
+            print(f"\nLocal Day: {day_start} to {day_end} --> UTC Day: {day_start_utc} to {day_end_utc}")
+            print(f"Total tasks for day: {daily_tasks_for_day.count()}")
+
+            print("Task created_at times in UTC:")
+            for task in daily_tasks_for_day:
+                print(f"  - {task.created_at}")
+
             daily_tasks_completed = daily_tasks_for_day.filter(status=True).count()
             total_daily_tasks = daily_tasks_for_day.count()
             completion_rate = daily_tasks_completed / total_daily_tasks * 100 if total_daily_tasks != 0 else 0
