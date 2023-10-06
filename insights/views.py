@@ -128,8 +128,13 @@ def yearly_task_completion_data(request, year):
             end_of_year = start_of_year + relativedelta(years=1) - timedelta(seconds=1)
 
         end_of_year_utc = end_of_year.astimezone(utc)
+        print(f"[DEBUG] Now (Local): {now}, Now (UTC): {now.astimezone(utc)}")
+        print(f"[DEBUG] Computed End of Year (Local/UTC): {end_of_year} / {end_of_year_utc}")
 
         task_histories = TaskHistory.objects.filter(user=user, created_at__gte=start_of_year_utc, created_at__lt=end_of_year_utc)
+        print(f"[DEBUG] Tasks fetched from DB: {task_histories.count()}")
+        for task in task_histories[:5]:
+            print(f"[DEBUG] Task: {task.id}, Created At: {task.created_at}")
 
         daily_task_histories = task_histories.filter(frequency='D')
         print(f"[INFO] Total daily tasks retrieved: {daily_task_histories.count()}")
@@ -147,7 +152,7 @@ def yearly_task_completion_data(request, year):
             day_start_utc = day_start.astimezone(utc)
             day_end_utc = day_end.astimezone(utc)
 
-            print(f"[INFO] User timezone: {user.timezone}")
+            print(f"[INFO] User timezone: {user.timezone}, for {user.username}")
             print(f"[INFO] Start of Year (Local/UTC): {start_of_year} / {start_of_year_utc}")
             print(f"[INFO] End of Year (Local/UTC): {end_of_year} / {end_of_year_utc}")
             print(f"[INFO] start of day (Local/UTC): {day_start} / {day_start_utc}")
@@ -194,6 +199,8 @@ def yearly_task_completion_data(request, year):
                 'completed': weekly_tasks_completed,
                 'incompleted': total_weekly_tasks - weekly_tasks_completed,
             })
+            for task in daily_tasks_for_day:
+                print(f"[DEBUG] Processing task: {task.id}, Status: {task.status}, Created At: {task.created_at}")
 
         # Compute monthly task completion rates
         for month in range(1, 13):
