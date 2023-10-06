@@ -132,6 +132,7 @@ def yearly_task_completion_data(request, year):
         task_histories = TaskHistory.objects.filter(user=user, created_at__gte=start_of_year_utc, created_at__lt=end_of_year_utc)
 
         daily_task_histories = task_histories.filter(frequency='D')
+        print(f"[INFO] Total daily tasks retrieved: {daily_task_histories.count()}")
         weekly_task_histories = task_histories.filter(frequency='W')
         monthly_task_histories = task_histories.filter(frequency='M')
 
@@ -146,8 +147,11 @@ def yearly_task_completion_data(request, year):
             day_start_utc = day_start.astimezone(utc)
             day_end_utc = day_end.astimezone(utc)
 
-            # Get the offset of utc and the users local timezone.
-            offset = day_start_utc - day_start
+            print(f"[INFO] User timezone: {user.timezone}")
+            print(f"[INFO] Start of Year (Local/UTC): {start_of_year} / {start_of_year_utc}")
+            print(f"[INFO] End of Year (Local/UTC): {end_of_year} / {end_of_year_utc}")
+            print(f"[INFO] start of day (Local/UTC): {day_start} / {day_start_utc}")
+            print(f"[INFO] end of day (Local/UTC): {day_end} / {day_end_utc}")
 
             # Get the hour of day_start in UTC.
             if day_start.tzinfo is None:
@@ -155,11 +159,7 @@ def yearly_task_completion_data(request, year):
             else:  # if day_start is aware
                 history_creation_time_utc = day_start.astimezone(utc).hour
 
-            fixed_offset = timedelta(hours=history_creation_time_utc)
-            final_day_start_utc = day_start_utc + offset + fixed_offset
-            final_day_end_utc = day_end_utc + offset + fixed_offset
-
-            daily_tasks_for_day = daily_task_histories.filter(created_at__gte=final_day_start_utc, created_at__lt=final_day_end_utc)
+            daily_tasks_for_day = daily_task_histories.filter(created_at__gte=day_start_utc, created_at__lt=day_end_utc)
 
             daily_tasks_completed = daily_tasks_for_day.filter(status=True).count()
             total_daily_tasks = daily_tasks_for_day.count()
