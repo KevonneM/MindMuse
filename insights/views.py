@@ -178,6 +178,8 @@ def yearly_task_completion_data(request, year):
                 'completed': daily_tasks_completed,
                 'incompleted': total_daily_tasks - daily_tasks_completed,
             })
+            for task in daily_tasks_for_day:
+                print(f"[DEBUG] Processing task: {task.id}, Status: {task.status}, Created At: {task.created_at}")
 
         # Compute weekly task completion rates
         for week in range((end_of_year - start_of_year).days // 7 + 1):
@@ -199,8 +201,6 @@ def yearly_task_completion_data(request, year):
                 'completed': weekly_tasks_completed,
                 'incompleted': total_weekly_tasks - weekly_tasks_completed,
             })
-            for task in daily_tasks_for_day:
-                print(f"[DEBUG] Processing task: {task.id}, Status: {task.status}, Created At: {task.created_at}")
 
         # Compute monthly task completion rates
         for month in range(1, 13):
