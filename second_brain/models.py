@@ -46,6 +46,7 @@ class Task(models.Model):
     frequency = models.CharField(max_length=1, choices=FREQUENCY_CHOICES)
     status = models.BooleanField(default=False)
     last_reset_date = models.DateField(auto_now_add=True, null=True)
+    last_reset_time = models.DateTimeField(auto_now_add=True, null=True)
 
     def create_history(self):
         TaskHistory.objects.create(
