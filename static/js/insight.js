@@ -65,7 +65,7 @@ function updateEventsChart() {
             let dataNonZero = [];
 
             data.daily_event_data.forEach((value, index) => {
-                let pointData = { x: index + 1, y: value };
+                let pointData = { x: index, y: value };
 
                 if (value === 0) {
                     dataZero.push(pointData);
