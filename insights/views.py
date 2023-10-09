@@ -47,10 +47,6 @@ def yearly_event_data(request, year):
         days_elapsed = (end_of_year_utc - start_of_year_utc).days + 1
         daily_average = total_events / days_elapsed if days_elapsed > 0 else 0
 
-        start_of_week_utc = start_of_year_utc
-        weeks_elapsed = ((end_of_year_utc - start_of_week_utc).days // 7) + 1
-        weekly_average = total_events / weeks_elapsed if weeks_elapsed > 0 else 0
-
         start_of_month_utc = start_of_year_utc
         months_elapsed = (end_of_year_utc.month - start_of_year_utc.month) + (end_of_year_utc.day / calendar.monthrange(year, end_of_year_utc.month)[1])
         monthly_average = total_events / months_elapsed if months_elapsed > 0 else 0
@@ -66,16 +62,30 @@ def yearly_event_data(request, year):
             daily_events = Event.objects.filter(user=user, start_time__gte=day_start_utc, start_time__lt=day_end_utc).count()
             daily_event_data.append(daily_events)
 
-        for week in range(weeks_elapsed):
-            end_of_week_utc = start_of_week_utc + timedelta(days=6, hours=23, minutes=59, seconds=59)
+        # Adjust the initial current_week_end to the first Saturday of the year
+        current_week_start = start_of_year_utc
+        current_week_end = start_of_year_utc + timedelta(days=(5 - start_of_year_utc.weekday()) % 7)
+        current_week_end = current_week_end.replace(hour=23, minute=59, second=59)  # Set time to the end of Saturday
+        total_events = 0
+        weeks_count = 0
+        while current_week_start < end_of_year_utc:
 
-            if end_of_week_utc > end_of_year_utc:
-                end_of_week_utc = end_of_year_utc
+            weekly_events = Event.objects.filter(user=user, start_time__gte=current_week_start, start_time__lt=current_week_end).count()
+            total_events += weekly_events
+            weeks_count += 1
+            weekly_event_data.append([weekly_events, current_week_start.date(), current_week_end.date()])
 
-            weekly_events = Event.objects.filter(user=user, start_time__gte=start_of_week_utc, start_time__lt=end_of_week_utc).count()
-            weekly_event_data.append([weekly_events, start_of_week_utc.date(), end_of_week_utc.date()])
+            # Move to the next Sunday
+            current_week_start = current_week_end + timedelta(days=1)
+            
+            # Move to the following Saturday
+            current_week_end = (current_week_start + timedelta(days=6)).replace(hour=23, minute=59, second=59)
+            
+            # Ensure the last week ends on Dec 31st
+            if current_week_end > end_of_year_utc:
+                current_week_end = end_of_year_utc
 
-            start_of_week_utc = end_of_week_utc + timedelta(seconds=1)
+        weekly_average = total_events / weeks_count if weeks_count > 0 else 0
 
         for month in range(1, end_of_year_utc.month + 1):  
             if month == end_of_year_utc.month:
@@ -116,16 +126,9 @@ def yearly_task_completion_data(request, year):
         else:
             end_of_year_utc = start_of_year_utc + relativedelta(years=1) - timedelta(seconds=1)
 
-        print(f"[DEBUG] Computed End of Year (UTC): {end_of_year_utc}")
-
         task_histories = TaskHistory.objects.filter(user=user, created_at__gte=start_of_year_utc, created_at__lt=end_of_year_utc)
 
-        print(f"[DEBUG] Tasks fetched from DB: {task_histories.count()}")
-        for task in task_histories[:5]:
-            print(f"[DEBUG] Task: {task.id}, Created At: {task.created_at}")
-
         daily_task_histories = task_histories.filter(frequency='D')
-        print(f"[INFO] Total daily tasks retrieved: {daily_task_histories.count()}")
         weekly_task_histories = task_histories.filter(frequency='W')
         monthly_task_histories = task_histories.filter(frequency='M')
 
@@ -137,11 +140,6 @@ def yearly_task_completion_data(request, year):
         for day in range((end_of_year_utc - start_of_year_utc).days + 1):
             day_start_utc = start_of_year_utc + timedelta(days=day)
             day_end_utc = day_start_utc + timedelta(days=1, seconds=-1)
-
-            print(f"[INFO] User timezone: {user.timezone}, for {user.username}")
-            print(f"[INFO] Start of Year (UTC):{start_of_year_utc}")
-            print(f"[INFO] start of day (UTC):{day_start_utc}")
-            print(f"[INFO] end of day (UTC):{day_end_utc}")
 
             daily_tasks_for_day = daily_task_histories.filter(created_at__gte=day_start_utc, created_at__lt=day_end_utc)
 
@@ -159,23 +157,34 @@ def yearly_task_completion_data(request, year):
             })
 
         # Compute weekly task completion rates
-        for week in range((end_of_year_utc - start_of_year_utc).days // 7 + 1):
-            week_start_utc = start_of_year_utc + timedelta(weeks=week)
-            week_end_utc = week_start_utc + timedelta(weeks=1, seconds=-1)
+        print(f"start of year (UTC): {start_of_year_utc}, end of year (UTC): {end_of_year_utc}")
 
-            weekly_tasks_for_week = weekly_task_histories.filter(created_at__gte=week_start_utc, created_at__lt=week_end_utc)
+        current_week_start = start_of_year_utc
+        current_week_end = start_of_year_utc + timedelta(days=(5 - start_of_year_utc.weekday()) % 7)
+        current_week_end = current_week_end.replace(hour=23, minute=59, second=59)  # Set time to the end of Saturday
+        while current_week_start < end_of_year_utc:
+
+            print(f"Current week start: {current_week_start}, Current week end: {current_week_end}")
+
+            weekly_tasks_for_week = weekly_task_histories.filter(created_at__gte=current_week_start, created_at__lte=current_week_end)
             weekly_tasks_completed = weekly_tasks_for_week.filter(status=True).count()
             total_weekly_tasks = weekly_tasks_for_week.count()
             completion_rate = weekly_tasks_completed / total_weekly_tasks * 100 if total_weekly_tasks != 0 else 0
 
             weekly_task_data.append({
-                'date': f"{week_start_utc.astimezone(user_timezone).date()} - {week_end_utc.astimezone(user_timezone).date()}",
+                'date': f"{current_week_start.date()} - {current_week_end.date()}",
                 'completion_rate': completion_rate,
                 'ratio': f"{weekly_tasks_completed}/{total_weekly_tasks}",
                 'total_tasks': total_weekly_tasks,
                 'completed': weekly_tasks_completed,
                 'incompleted': total_weekly_tasks - weekly_tasks_completed,
             })
+
+            current_week_start = current_week_end + timedelta(days=1)
+            current_week_end = (current_week_start + relativedelta(days=6)).replace(hour=23, minute=59, second=59) # Move to the following Saturday
+            # Ensure the last week ends on Dec 31st
+            if current_week_end > end_of_year_utc:
+                current_week_end = end_of_year_utc
 
         # Compute monthly task completion rates
         for month in range(1, 13):
@@ -225,20 +234,18 @@ def yearly_passion_progress_data(request, year):
         weekly_passion_data = []
 
         # Compute weekly passion activity data
-        for week in range((end_of_year_utc - start_of_year_utc).days // 7 + 1):
-            week_start_utc = start_of_year_utc + timedelta(weeks=week)
-            week_end_utc = week_start_utc + timedelta(days=6)
-
-            if week_end_utc > end_of_year_utc:
-                week_end_utc = end_of_year_utc
+        current_week_start = start_of_year_utc
+        current_week_end = start_of_year_utc + timedelta(days=(5 - start_of_year_utc.weekday()) % 7)
+        current_week_end = current_week_end.replace(hour=23, minute=59, second=59)  # Set time to the end of Saturday
+        while current_week_start < end_of_year_utc:
 
             week_data = {
-                'date_range': f"{week_start_utc.date()} - {week_end_utc.date()}",
+                'date_range': f"{current_week_start.date()} - {current_week_end.date()}",
                 'passions': {},
                 'categories': {}
             }
 
-            activities_for_week = passion_activities.filter(date__gte=week_start_utc.date(), date__lte=week_end_utc.date())
+            activities_for_week = passion_activities.filter(date__gte=current_week_start.date(), date__lte=current_week_end.date())
             
             for activity in activities_for_week:
                 passion_name = activity.passion.name
@@ -259,6 +266,14 @@ def yearly_passion_progress_data(request, year):
                 week_data['categories'][category_name] += activity.duration
 
             weekly_passion_data.append(week_data)
+
+            # Move to the next Sunday
+            current_week_start = current_week_end + timedelta(days=1)
+            # Move to the following Saturday
+            current_week_end = (current_week_start + timedelta(days=6)).replace(hour=23, minute=59, second=59)
+            # Ensure the last week ends on Dec 31st
+            if current_week_end > end_of_year_utc:
+                current_week_end = end_of_year_utc
 
         data = {
             'weekly_passion_data': weekly_passion_data
