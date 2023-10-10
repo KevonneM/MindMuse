@@ -45,8 +45,8 @@ class Task(models.Model):
     category = models.CharField(max_length=1, choices=CATEGORY_CHOICES)
     frequency = models.CharField(max_length=1, choices=FREQUENCY_CHOICES)
     status = models.BooleanField(default=False)
-    last_reset_date = models.DateField(auto_now_add=True, null=True)
-    last_reset_time = models.DateTimeField(auto_now_add=True, null=True)
+    last_reset_date = models.DateField(default=timezone.now, null=True)
+    last_reset_time = models.DateTimeField(default=timezone.now, null=True)
 
     def create_history(self):
         TaskHistory.objects.create(
@@ -70,8 +70,11 @@ class Task(models.Model):
             return self.last_reset_date + timedelta(days=1)
         elif self.frequency == 'W':
             # For weekly tasks, find the next Sunday from the last reset date
-            days_until_sunday = (6 - self.last_reset_date.weekday()) % 7
-            next_sunday = self.last_reset_date + timedelta(days=days_until_sunday)
+            if self.last_reset_date.weekday() == 6:
+                next_sunday = self.last_reset_date + timedelta(weeks=1)
+            else:
+                days_until_sunday = (6 - self.last_reset_date.weekday()) % 7
+                next_sunday = self.last_reset_date + timedelta(days=days_until_sunday)
             return next_sunday
         elif self.frequency == 'M':
             # For monthly tasks, the next reset date is the first day of the next month

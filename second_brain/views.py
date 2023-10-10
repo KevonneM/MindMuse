@@ -5,7 +5,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponse, HttpResponseBadRequest
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta, date, time
 from calendar import month_name
 from django.db.models.functions import TruncDay
 from django.db.models import Count
@@ -499,6 +499,14 @@ def create_task(request):
         if form.is_valid():
             task = form.save(commit=False)
             task.user = request.user
+
+            user_tz = pytz.timezone(task.user.timezone)  
+            now_local = timezone.localtime(timezone.now(), user_tz)
+
+            start_of_day = now_local.replace(hour=0, minute=0, second=0)
+            task.last_reset_date = start_of_day.date()
+            task.last_reset_time = start_of_day
+
             task.save()
             task.create_history()
             
@@ -530,6 +538,15 @@ def update_task(request, pk):
             task_history.frequency = task.frequency
             task_history.status = task.status
             task_history.save()
+
+            user_tz = pytz.timezone(task.user.timezone)
+            now_local = timezone.localtime(timezone.now(), user_tz)
+
+            start_of_day = now_local.replace(hour=0, minute=0, second=0)
+            task.last_reset_date = start_of_day.date()
+            task.last_reset_time = start_of_day
+
+            task.save()
 
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
                 return JsonResponse({"success": True})
