@@ -50,12 +50,10 @@ function updateEventsChart() {
         if (isDailyTabActive) {
             ctx = document.getElementById('dailyEventsChart').getContext('2d');
 
-            maxEventValue = Math.max(...data.daily_event_data);
-            maxEventIndex = data.daily_event_data.indexOf(maxEventValue);
+            maxEventValue = Math.max(...data.daily_event_data.map(day => day.events));
+            maxEventIndex = data.daily_event_data.findIndex(day => day.events === maxEventValue);
 
-            var date = new Date(currentYear, 0);
-            date.setDate(maxEventIndex + 1);
-            var dateString = date.toLocaleDateString();
+            var dateString = data.daily_event_data[maxEventIndex].date;
 
             document.querySelector('#busiest-day').textContent = `Busiest Day: ${dateString} : Events: ${maxEventValue}`;
 
@@ -65,9 +63,9 @@ function updateEventsChart() {
             let dataNonZero = [];
 
             data.daily_event_data.forEach((value, index) => {
-                let pointData = { x: index, y: value };
+                let pointData = { x: new Date(value.date).getTime(), y: value.events };
 
-                if (value === 0) {
+                if (value.events === 0) {
                     dataZero.push(pointData);
                     pointBackgroundColorsZero.push(index === maxEventIndex ? 'rgba(255, 0, 0, 0.5)' : 'rgba(0, 123, 255, 0.5)');
                 } else {
@@ -97,9 +95,8 @@ function updateEventsChart() {
                         tooltip: {
                             callbacks: {
                                 label: function(context) {
-                                    var date = new Date(currentYear, 0);
-                                    date.setDate(context.parsed.x);
-                                    var dateString = date.toLocaleDateString();
+                                    var date = new Date(context.parsed.x);
+                                    var dateString = moment(date).utc().format('L');
 
                                     var events = context.parsed.y;
 
@@ -117,6 +114,11 @@ function updateEventsChart() {
                             title: {
                                 display: true,
                                 text: 'Day of the year'
+                            },
+                            ticks: {
+                                callback: function(value, index, values) {
+                                    return moment(value).format('MMM DD');
+                                }
                             }
                         },
                         y: {
@@ -189,11 +191,11 @@ function updateEventsChart() {
         } else if (isMonthlyTabActive) {
             ctx = document.getElementById('monthlyEventsChart').getContext('2d');
 
-            maxEventValue = Math.max(...data.monthly_event_data);
-            maxEventIndex = data.monthly_event_data.indexOf(maxEventValue);
+            maxEventValue = Math.max(...data.monthly_event_data.map(month => month.events));
+            maxEventIndex = data.monthly_event_data.findIndex(month => month.events === maxEventValue);
 
             var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
-            var monthString = monthNames[maxEventIndex];
+            var monthString = data.monthly_event_data[maxEventIndex].month;
 
             document.querySelector('#busiest-month').textContent = `Busiest Month: ${monthString} : Events: ${maxEventValue}`;
 
@@ -203,10 +205,10 @@ function updateEventsChart() {
             myEventChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: monthNames,
+                    labels: data.monthly_event_data.map(month => month.month),
                     datasets: [{
                         label: 'Number of events',
-                        data: data.monthly_event_data,
+                        data: data.monthly_event_data.map(month => month.events),
                         backgroundColor: pointBackgroundColors,
                     }],
                 },
@@ -303,6 +305,7 @@ function updateTaskCharts(year) {
     fetch(`/yearly-task-completion-data/${year}`)
         .then(response => response.json())
         .then(data => {
+            console.log(data);
             const dailyTaskData = data.daily_task_data;
             const weeklyTaskData = data.weekly_task_data;
             const monthlyTaskData = data.monthly_task_data;

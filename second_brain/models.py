@@ -57,7 +57,8 @@ class Task(models.Model):
             priority=self.priority,
             category=self.category,
             frequency=self.frequency,
-            status=self.status
+            status=self.status,
+            created_at=self.last_reset_time
         )
 
     def calculate_next_reset_date(self):
@@ -96,7 +97,7 @@ class TaskHistory(models.Model):
     category = models.CharField(max_length=1, choices=Task.CATEGORY_CHOICES)
     frequency = models.CharField(max_length=1, choices=Task.FREQUENCY_CHOICES)
     status = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField()
 
     def __str__(self):
         return f'{self.frequency} Task for {self.user}, created {self.created_at}, "{self.title}"'
