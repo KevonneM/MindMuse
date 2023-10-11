@@ -37,11 +37,7 @@ def yearly_event_data(request, year):
         
         start_of_year_utc = datetime(year, 1, 1, 0, 0, 0, tzinfo=utc)
 
-        if year == timezone.now().year:
-            now_utc = timezone.now().astimezone(utc)
-            end_of_year_utc = utc.localize(datetime(now_utc.year, now_utc.month, now_utc.day, 23, 59,59))
-        else:
-            end_of_year_utc = start_of_year_utc + relativedelta(years=1) - timedelta(seconds=1)
+        end_of_year_utc = start_of_year_utc + relativedelta(years=1) - timedelta(seconds=1)
 
         total_events = Event.objects.filter(user=user, start_time__gte=start_of_year_utc, start_time__lt=end_of_year_utc).count()
         days_elapsed = (end_of_year_utc - start_of_year_utc).days + 1
@@ -56,11 +52,15 @@ def yearly_event_data(request, year):
         monthly_event_data = []
 
         for day in range(days_elapsed):
-            day_start_utc = start_of_year_utc + timedelta(days=day)
-            day_end_utc = day_start_utc + timedelta(days=1, seconds=-1)
+
+            local_day_start = user_timezone.localize(datetime(year, 1, 1, 0, 0, 0)) + timedelta(days=day)
+            local_day_end = local_day_start + timedelta(days=1, seconds=-1)
+
+            day_start_utc = local_day_start.astimezone(utc)
+            day_end_utc = local_day_end.astimezone(utc)
 
             daily_events = Event.objects.filter(user=user, start_time__gte=day_start_utc, start_time__lt=day_end_utc).count()
-            daily_event_data.append(daily_events)
+            daily_event_data.append({"date": local_day_start.strftime("%Y-%m-%d"), "events": daily_events})
 
         # Adjust the initial current_week_end to the first Saturday of the year
         current_week_start = start_of_year_utc
@@ -93,8 +93,10 @@ def yearly_event_data(request, year):
             else:
                 end_of_month_utc = start_of_month_utc + relativedelta(months=1) - timedelta(seconds=1)
 
+            month_name = start_of_month_utc.strftime("%B")
+
             monthly_events = Event.objects.filter(user=user, start_time__gte=start_of_month_utc, start_time__lt=end_of_month_utc).count()
-            monthly_event_data.append(monthly_events)
+            monthly_event_data.append({"month": month_name, "events": monthly_events})
 
             start_of_month_utc = end_of_month_utc + timedelta(seconds=1)
 
@@ -164,8 +166,6 @@ def yearly_task_completion_data(request, year):
         current_week_end = current_week_end.replace(hour=23, minute=59, second=59)  # Set time to the end of Saturday
         while current_week_start < end_of_year_utc:
 
-            print(f"Current week start: {current_week_start}, Current week end: {current_week_end}")
-
             weekly_tasks_for_week = weekly_task_histories.filter(created_at__gte=current_week_start, created_at__lte=current_week_end)
             weekly_tasks_completed = weekly_tasks_for_week.filter(status=True).count()
             total_weekly_tasks = weekly_tasks_for_week.count()
@@ -197,7 +197,7 @@ def yearly_task_completion_data(request, year):
             completion_rate = monthly_tasks_completed / total_monthly_tasks * 100 if total_monthly_tasks != 0 else 0
 
             monthly_task_data.append({
-                'month': month_start_utc.astimezone(user_timezone).strftime("%B"),
+                'month': month_start_utc.strftime("%B"),
                 'completion_rate': completion_rate,
                 'ratio': f"{monthly_tasks_completed}/{total_monthly_tasks}",
                 'total_tasks': total_monthly_tasks,
