@@ -63,7 +63,10 @@ function updateEventsChart() {
             let dataNonZero = [];
 
             data.daily_event_data.forEach((value, index) => {
-                let pointData = { x: new Date(value.date).getTime(), y: value.events };
+
+                let [year, month, day] = value.date.split("-");
+                let timestamp = Date.UTC(year, month - 1, day);
+                let pointData = { x: timestamp, y: value.events };
 
                 if (value.events === 0) {
                     dataZero.push(pointData);
@@ -135,7 +138,7 @@ function updateEventsChart() {
         } else if (isWeeklyTabActive) {
             ctx = document.getElementById('weeklyEventsChart').getContext('2d');
 
-            let weeklyEventCounts = data.weekly_event_data.map(weekData => weekData[0]);
+            let weeklyEventCounts = data.weekly_event_data.map(weekData => weekData.events);
             maxEventValue = Math.max(...weeklyEventCounts);
             maxEventIndex = weeklyEventCounts.indexOf(maxEventValue);
 
@@ -171,9 +174,11 @@ function updateEventsChart() {
                             callbacks: {
                                 title: function(tooltipItem) {
                                     var weekData = data.weekly_event_data[tooltipItem[0].dataIndex];
-                                    var startDate = weekData[1];
-                                    var endDate = weekData[2];
-                                    return `${startDate} - ${endDate}`;
+                                    var startDate = weekData.start_date;
+                                    var endDate = weekData.end_date;
+                                    var formattedStartDate = moment.utc(startDate).format('YYYY-MM-DD');
+                                    var formattedEndDate = moment.utc(endDate).format('YYYY-MM-DD');
+                                    return `${formattedStartDate} - ${formattedEndDate}`;
                                 },
                                 label: function(tooltipItem) {
                                     var events = tooltipItem.raw;
@@ -847,8 +852,8 @@ function findWeekByDate(targetDate, weeklyEventData) {
     const targetDateString = formatDateToYYYYMMDD(targetDate);
 
     for (const week of weeklyEventData) {
-        let startDateString = week[1];
-        let endDateString = week[2];
+        let startDateString = week.start_date;
+        let endDateString = week.end_date;
 
         if (targetDateString >= startDateString && targetDateString <= endDateString) {
             return week;
@@ -900,8 +905,8 @@ async function updateInsightOverview(year) {
         }
 
         let currentIndex = eventData.weekly_event_data.indexOf(currentWeek);
-        const currentWeekEvents = currentWeek[0];
-        const previousWeekEvents = currentIndex > 0 ? eventData.weekly_event_data[currentIndex - 1][0] : 0;
+        const currentWeekEvents = currentWeek.events;
+        const previousWeekEvents = currentIndex > 0 ? eventData.weekly_event_data[currentIndex - 1].events : 0;
 
         const eventDifference = currentWeekEvents - previousWeekEvents;
         const eventChangePercent = (previousWeekEvents === 0 && currentWeekEvents === 0) ? 0 :

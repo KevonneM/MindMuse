@@ -34,84 +34,83 @@ def yearly_event_data(request, year):
         # Daily, Weekly, Monthly average calculations
         user_timezone = pytz.timezone(user.timezone)
         utc = pytz.timezone('UTC')
-        
-        start_of_year_utc = datetime(year, 1, 1, 0, 0, 0, tzinfo=utc)
 
-        end_of_year_utc = start_of_year_utc + relativedelta(years=1) - timedelta(seconds=1)
+        start_of_year_local = user_timezone.localize(datetime(year, 1, 1, 0, 0, 0))
+        end_of_year_local = start_of_year_local + relativedelta(years=1) - timedelta(seconds=1)
 
-        total_events = Event.objects.filter(user=user, start_time__gte=start_of_year_utc, start_time__lt=end_of_year_utc).count()
-        days_elapsed = (end_of_year_utc - start_of_year_utc).days + 1
-        daily_average = total_events / days_elapsed if days_elapsed > 0 else 0
+        start_of_year_utc = start_of_year_local.astimezone(utc)
+        end_of_year_utc = end_of_year_local.astimezone(utc)
+        # Fetch all relevent events from user
+        events = list(Event.objects.filter(user=user, start_time__gte=start_of_year_utc, start_time__lte=end_of_year_utc))
 
-        start_of_month_utc = start_of_year_utc
-        months_elapsed = (end_of_year_utc.month - start_of_year_utc.month) + (end_of_year_utc.day / calendar.monthrange(year, end_of_year_utc.month)[1])
-        monthly_average = total_events / months_elapsed if months_elapsed > 0 else 0
-
-        weekly_event_data = []
+        # Daily event data
         daily_event_data = []
-        monthly_event_data = []
-
-        for day in range(days_elapsed):
-
-            local_day_start = user_timezone.localize(datetime(year, 1, 1, 0, 0, 0)) + timedelta(days=day)
+        for day in range((end_of_year_local - start_of_year_local).days + 1):
+            local_day_start = start_of_year_local + timedelta(days=day)
             local_day_end = local_day_start + timedelta(days=1, seconds=-1)
-
-            day_start_utc = local_day_start.astimezone(utc)
-            day_end_utc = local_day_end.astimezone(utc)
-
-            daily_events = Event.objects.filter(user=user, start_time__gte=day_start_utc, start_time__lt=day_end_utc).count()
+            daily_events = sum(e.start_time >= local_day_start.astimezone(utc) and e.start_time <= local_day_end.astimezone(utc) for e in events)
             daily_event_data.append({"date": local_day_start.strftime("%Y-%m-%d"), "events": daily_events})
 
-        # Adjust the initial current_week_end to the first Saturday of the year
-        current_week_start = start_of_year_utc
-        current_week_end = start_of_year_utc + timedelta(days=(5 - start_of_year_utc.weekday()) % 7)
-        current_week_end = current_week_end.replace(hour=23, minute=59, second=59)  # Set time to the end of Saturday
-        total_events = 0
-        weeks_count = 0
-        while current_week_start < end_of_year_utc:
-
-            weekly_events = Event.objects.filter(user=user, start_time__gte=current_week_start, start_time__lt=current_week_end).count()
-            total_events += weekly_events
-            weeks_count += 1
-            weekly_event_data.append([weekly_events, current_week_start.date(), current_week_end.date()])
-
-            # Move to the next Sunday
-            current_week_start = current_week_end + timedelta(days=1)
-            
-            # Move to the following Saturday
-            current_week_end = (current_week_start + timedelta(days=6)).replace(hour=23, minute=59, second=59)
-            
-            # Ensure the last week ends on Dec 31st
-            if current_week_end > end_of_year_utc:
-                current_week_end = end_of_year_utc
-
-        weekly_average = total_events / weeks_count if weeks_count > 0 else 0
-
-        for month in range(1, end_of_year_utc.month + 1):  
-            if month == end_of_year_utc.month:
-                end_of_month_utc = end_of_year_utc
+        # Weekly event data
+        weekly_bins = get_weekly_bins(start_of_year_local, end_of_year_local)
+        weekly_event_data = []
+        for week_start, week_end in weekly_bins:
+            weekly_events = sum(e.start_time >= week_start.astimezone(utc) and e.start_time <= week_end.astimezone(utc) for e in events)
+            weekly_event_data.append({
+                "events": weekly_events,
+                "start_date": week_start.date(),
+                "end_date": week_end.date()
+            })
+        
+        # Monthly event data
+        monthly_event_data = []
+        for month in range(1, 13):
+            start_of_month_local = user_timezone.localize(datetime(year, month, 1, 0, 0, 0))
+            if month == 12:
+                end_of_month_local = end_of_year_local
             else:
-                end_of_month_utc = start_of_month_utc + relativedelta(months=1) - timedelta(seconds=1)
-
-            month_name = start_of_month_utc.strftime("%B")
-
-            monthly_events = Event.objects.filter(user=user, start_time__gte=start_of_month_utc, start_time__lt=end_of_month_utc).count()
+                end_of_month_local = start_of_month_local + relativedelta(months=1) - timedelta(seconds=1)
+            month_name = start_of_month_local.strftime("%B")
+            monthly_events = sum(e.start_time >= start_of_month_local.astimezone(utc) and e.start_time < end_of_month_local.astimezone(utc) for e in events)
             monthly_event_data.append({"month": month_name, "events": monthly_events})
 
-            start_of_month_utc = end_of_month_utc + timedelta(seconds=1)
-
+        # Calculating averages
+        total_events = len(events)
+        daily_average = total_events / len(daily_event_data) if daily_event_data else 0
+        weekly_average = total_events / len(weekly_bins) if weekly_bins else 0
+        monthly_average = total_events / len(monthly_event_data) if monthly_event_data else 0
+        
         data = {
+            'total_events': total_events,
             'daily_average': daily_average,
             'weekly_average': weekly_average,
             'monthly_average': monthly_average,
-            'weekly_event_data': weekly_event_data,
             'daily_event_data': daily_event_data,
+            'weekly_event_data': weekly_event_data,
             'monthly_event_data': monthly_event_data
         }
 
         return JsonResponse(data)
     else:
         return JsonResponse({"error": "Not authenticated"}, status=401)
+
+def get_weekly_bins(start_of_year_local, end_of_year_local):
+    weekly_bins = []
+
+    current_week_start = start_of_year_local
+    current_week_end = start_of_year_local + timedelta(days=(5 - start_of_year_local.weekday()) % 7)
+    current_week_end = current_week_end.replace(hour=23, minute=59, second=59)  
+    
+    while current_week_start < end_of_year_local:
+        weekly_bins.append((current_week_start, current_week_end))
+        
+        current_week_start = current_week_end + timedelta(seconds=1)
+        current_week_end = (current_week_start + timedelta(days=6)).replace(hour=23, minute=59, second=59)
+        
+        if current_week_end > end_of_year_local:
+            current_week_end = end_of_year_local
+            
+    return weekly_bins
 
 def yearly_task_completion_data(request, year):
     user = request.user
