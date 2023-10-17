@@ -310,8 +310,8 @@ function updateTaskCharts(year) {
     fetch(`/yearly-task-completion-data/${year}`)
         .then(response => response.json())
         .then(data => {
-            console.log(data);
-            const dailyTaskData = data.daily_task_data;
+            /*Daily tasks are filtered to only display if total_tasks > 0*/
+            const dailyTaskData = data.daily_task_data.filter(entry => entry.total_tasks > 0);
             const weeklyTaskData = data.weekly_task_data;
             const monthlyTaskData = data.monthly_task_data;
 
@@ -354,11 +354,19 @@ function updateTaskCharts(year) {
                 const canvasContext = document.getElementById(ctx).getContext('2d');
                 const chartType = ctx.replace('TasksChart', '').toLowerCase();
 
-                if (chart) {
-                    chart.destroy();
-                }
-
                 const completionRateData = data.map(entry => entry.completion_rate);
+
+                let currentChart;
+                if (ctx === 'dailyTasksChart') currentChart = dailyTasksChart;
+                else if (ctx === 'weeklyTasksChart') currentChart = weeklyTasksChart;
+                else if (ctx === 'monthlyTasksChart') currentChart = monthlyTasksChart;
+
+                if (currentChart) {
+                    currentChart.data.labels = labels;
+                    currentChart.data.datasets[0].data = completionRateData;
+                    currentChart.update();
+                } else {
+
                 chart = new Chart(canvasContext, {
                     type: 'bar',
                     data: {
@@ -384,19 +392,7 @@ function updateTaskCharts(year) {
                                     title: function(context) {
                                         const dateStr = context[0].label;
                                         
-                                        switch (chartType) {
-                                            case 'daily': {
-                                                return dateStr;
-                                            }
-                                            case 'weekly': {
-                                                return dateStr;
-                                            }
-                                            case 'monthly': {
-                                                return dateStr;
-                                            }
-                                            default:
-                                                return dateStr;
-                                        }
+                                        return dateStr
                                     },
                                     label: function(context) {
                                         const index = context.dataIndex;
@@ -414,6 +410,7 @@ function updateTaskCharts(year) {
                         }
                     }
                 });
+            }
 
                 // Update the global chart variables
                 if(ctx == 'dailyTasksChart'){
@@ -555,18 +552,15 @@ function createDataset(name, data, color) {
 function updatePassionInsightsChart(currentYear) {
     const ctx = document.getElementById('passionChart').getContext('2d');
 
-    if (passionChartInstance) {
-        passionChartInstance.destroy();
-    }
-
     yearTitlePassions.textContent = currentYear;
 
-    chevronLeftPassions.classList.toggle("disabled", currentYear <= accountCreationYearPassions);
+    chevronLeftPassions.classList.toggle("disabled", currentYear <= accountCreationYear);
     chevronRightPassions.classList.toggle("disabled", currentYear >= new Date().getFullYear());
 
     fetch(`/yearly-passion-progress-data/${currentYear}/`)
         .then(response => response.json())
         .then(data => {
+            console.log(data)
             let labels, datasets;
 
             if (!data.weekly_passion_data.some(week => Object.keys(week.passions).length > 0)) {
@@ -635,7 +629,13 @@ function updatePassionInsightsChart(currentYear) {
                 }
             };
 
-            passionChartInstance = new Chart(ctx, chartConfig);
+            if (passionChartInstance) {
+                passionChartInstance.data.labels = labels;
+                passionChartInstance.data.datasets = datasets;
+                passionChartInstance.update();
+            } else {
+                passionChartInstance = new Chart(ctx, chartConfig);
+            }
         })
         .catch(error => {
             console.error("Error fetching passion data:", error);
@@ -644,10 +644,6 @@ function updatePassionInsightsChart(currentYear) {
 
 function initCategoryChart(currentYear) {
     const ctx = document.getElementById('categoriesChart').getContext('2d');
-
-    if (categoryChartInstance) {
-        categoryChartInstance.destroy();
-    }
 
     const baseCategoryColors = {
         'Physical': '#614280',
@@ -784,7 +780,13 @@ function initCategoryChart(currentYear) {
                 }
             };
 
-            categoryChartInstance = new Chart(ctx, chartConfig);
+            if (categoryChartInstance) {
+                categoryChartInstance.data.labels = labels;
+                categoryChartInstance.data.datasets = datasets;
+                categoryChartInstance.update();
+            } else {
+                categoryChartInstance = new Chart(ctx, chartConfig);
+            }
         })
         .catch(error => {
             console.error("Error fetching category data:", error);
@@ -842,9 +844,9 @@ function initPassionInsights(currentYear, accountCreationYear) {
 
 // Helper function to to find current week for event overview.
 function formatDateToYYYYMMDD(dateObj) {
-    const year = dateObj.getUTCFullYear();
-    const month = (dateObj.getUTCMonth() + 1).toString().padStart(2, '0');
-    const day = dateObj.getUTCDate().toString().padStart(2, '0');
+    const year = dateObj.getFullYear();
+    const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+    const day = dateObj.getDate().toString().padStart(2, '0');
     return `${year}-${month}-${day}`;
 }
 
@@ -868,6 +870,13 @@ function stripTimeFromDate(dateObj) {
     return new Date(Date.UTC(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate()));
 }
 
+// Split the date range into start and end dates and then check if currentLocalDate falls between them.
+function isDateWithinWeek(weekRange, dateToCheck) {
+    const [start, end] = weekRange.split(" - ").map(dateStr => new Date(dateStr));
+    const date = new Date(dateToCheck);
+    return date >= start && date <= end;
+}
+
 async function updateInsightOverview(year) {
     currentDate = stripTimeFromDate(new Date());
     const currentYear = new Date().getFullYear();
@@ -882,11 +891,15 @@ async function updateInsightOverview(year) {
         const taskData = await taskResponse.json();
         
         // Aquire and manipulate latest and previous task data.
-        const dailyLastData = taskData.daily_task_data[taskData.daily_task_data.length - 1];
-        const dailyPrevData = taskData.daily_task_data[taskData.daily_task_data.length - 2] || { completion_rate: 0 };
+        const currentLocalDate = moment(taskData.current_date);
 
-        const weeklyLastData = taskData.weekly_task_data[taskData.weekly_task_data.length - 1];
-        const weeklyPrevData = taskData.weekly_task_data[taskData.weekly_task_data.length - 2] || { completion_rate: 0 };
+        const dailyLastData = taskData.daily_task_data.find(entry => moment(entry.date).isSame(currentLocalDate, 'day'));
+        const dailyPrevDataIndex = taskData.daily_task_data.indexOf(dailyLastData) - 1;
+        const dailyPrevData = dailyPrevDataIndex >= 0 ? taskData.daily_task_data[dailyPrevDataIndex] : { completion_rate: 0 };
+
+        const weeklyLastData = taskData.weekly_task_data.find(entry => isDateWithinWeek(entry.date, currentLocalDate));
+        const weeklyPrevDataIndex = taskData.weekly_task_data.indexOf(weeklyLastData) - 1;
+        const weeklyPrevData = weeklyPrevDataIndex >= 0 ? taskData.weekly_task_data[weeklyPrevDataIndex] : { completion_rate: 0 };
 
         const monthlyLastData = taskData.monthly_task_data.find(monthData => new Date(monthData.month + " 1 " + currentYear).getMonth() === currentMonthIndex);
         const monthlyPrevData = taskData.monthly_task_data.find(monthData => new Date(monthData.month + " 1 " + currentYear).getMonth() === prevMonthIndex);
@@ -1037,8 +1050,18 @@ async function updateInsightOverview(year) {
                 </div>
             </div>
         `;
-        slide.querySelector('.content').style.display = 'flex';
-        slide.querySelector('.loader').style.display = 'none';
+        const content = slide.querySelector('.content');
+        const loader = slide.querySelector('.loader');
+
+        if (content) {
+            content.style.display = 'flex';
+        }
+        
+        if (loader) {
+            loader.style.display = 'none';
+        } else {
+            console.warn('Loader not found!');
+        }
     } catch (error) {
         console.error("Failed to update insight overview:", error);
     }

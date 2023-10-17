@@ -503,9 +503,9 @@ def create_task(request):
             user_tz = pytz.timezone(task.user.timezone)  
             now_local = timezone.localtime(timezone.now(), user_tz)
 
-            start_of_day = now_local.replace(hour=0, minute=0, second=0)
-            task.last_reset_date = start_of_day.date()
-            task.last_reset_time = start_of_day
+            middle_of_day = now_local.replace(hour=12, minute=0, second=0)
+            task.last_reset_date = middle_of_day.date()
+            task.last_reset_time = middle_of_day
 
             task.save()
             task.create_history()
@@ -542,9 +542,9 @@ def update_task(request, pk):
             user_tz = pytz.timezone(task.user.timezone)
             now_local = timezone.localtime(timezone.now(), user_tz)
 
-            start_of_day = now_local.replace(hour=0, minute=0, second=0)
-            task.last_reset_date = start_of_day.date()
-            task.last_reset_time = start_of_day
+            middle_of_day = now_local.replace(hour=12, minute=0, second=0)
+            task.last_reset_date = middle_of_day.date()
+            task.last_reset_time = middle_of_day
 
             task.save()
 
