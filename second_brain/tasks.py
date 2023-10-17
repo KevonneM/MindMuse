@@ -19,7 +19,7 @@ def refresh_tasks():
 
         # If the task's next reset date is today or in the past
         # AND the task hasn't been reset today yet
-        if ( next_reset_date <= now_date and (task.last_reset_time is None or timezone.localtime(task.last_reset_time, user_tz).date() < now_date)):
+        if ( next_reset_date == now_date and (task.last_reset_time is None or timezone.localtime(task.last_reset_time, user_tz).date() != now_date)):
 
             print(f"Resetting task {task.id}: next reset date = {next_reset_date}, now = {now}")
             # Create a new TaskHistory instance
