@@ -13,6 +13,8 @@ def refresh_tasks():
         now = timezone.localtime(timezone.now(), user_tz)
         now_date = now.date()
 
+        middle_of_day_local = now.replace(hour=12, minute=0, second=0)
+
         next_reset_date = task.calculate_next_reset_date()
         print(f"This is a {task.frequency} task")
         print(f"Task {task.id}: next reset date = {next_reset_date}, now = {now}")
@@ -22,13 +24,18 @@ def refresh_tasks():
         if ( next_reset_date == now_date and (task.last_reset_time is None or timezone.localtime(task.last_reset_time, user_tz).date() != now_date)):
 
             print(f"Resetting task {task.id}: next reset date = {next_reset_date}, now = {now}")
+
+            # Prevent initial duplication as we create task history object on task creation.
+            already_exists = TaskHistory.objects.filter(task=task, created_at=task.last_reset_time).exists()
+
             # Create a new TaskHistory instance
-            task.create_history()
+            if not already_exists
+                task.create_history()
 
             # Reset the task
             task.status = False
-            task.last_reset_date = now_date
-            task.last_reset_time = now
+            task.last_reset_date = middle_of_day_local.date()
+            task.last_reset_time = middle_of_day_local
             task.save()
         else:
             print(f"Not resetting task {task.id}")
