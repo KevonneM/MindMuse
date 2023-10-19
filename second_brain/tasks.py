@@ -25,18 +25,12 @@ def refresh_tasks():
 
             print(f"Resetting task {task.id}: next reset date = {next_reset_date}, now = {now}")
 
-            # Prevent initial duplication as we create task history object on task creation.
-            already_exists = TaskHistory.objects.filter(task=task, created_at=task.last_reset_time).exists()
-
-            # Create a new TaskHistory instance
-            if not already_exists:
-                task.create_history()
-
             # Reset the task
             task.status = False
             task.last_reset_date = middle_of_day_local.date()
             task.last_reset_time = middle_of_day_local
             task.save()
+            task.create_history()
         else:
             print(f"Not resetting task {task.id}")
 
