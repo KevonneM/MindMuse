@@ -29,7 +29,7 @@ def refresh_tasks():
             already_exists = TaskHistory.objects.filter(task=task, created_at=task.last_reset_time).exists()
 
             # Create a new TaskHistory instance
-            if not already_exists
+            if not already_exists:
                 task.create_history()
 
             # Reset the task
