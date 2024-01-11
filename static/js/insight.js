@@ -872,9 +872,11 @@ function stripTimeFromDate(dateObj) {
 
 // Split the date range into start and end dates and then check if currentLocalDate falls between them.
 function isDateWithinWeek(weekRange, dateToCheck) {
-    const [start, end] = weekRange.split(" - ").map(dateStr => new Date(dateStr));
-    const date = new Date(dateToCheck);
-    return date >= start && date <= end;
+    const [startStr, endStr] = weekRange.split(" - ");
+    const start = moment(startStr, "YYYY-MM-DD");
+    const end = moment(endStr, "YYYY-MM-DD");
+    const date = moment(dateToCheck, "YYYY-MM-DD");
+    return date.isSameOrAfter(start) && date.isSameOrBefore(end);
 }
 
 async function updateInsightOverview(year) {
@@ -896,7 +898,7 @@ async function updateInsightOverview(year) {
         const dailyLastData = taskData.daily_task_data.find(entry => moment(entry.date).isSame(currentLocalDate, 'day'));
         const dailyPrevDataIndex = taskData.daily_task_data.indexOf(dailyLastData) - 1;
         const dailyPrevData = dailyPrevDataIndex >= 0 ? taskData.daily_task_data[dailyPrevDataIndex] : { completion_rate: 0 };
-
+        console.log("currentLocalDate:", currentLocalDate);
         const weeklyLastData = taskData.weekly_task_data.find(entry => isDateWithinWeek(entry.date, currentLocalDate));
         const weeklyPrevDataIndex = taskData.weekly_task_data.indexOf(weeklyLastData) - 1;
         const weeklyPrevData = weeklyPrevDataIndex >= 0 ? taskData.weekly_task_data[weeklyPrevDataIndex] : { completion_rate: 0 };

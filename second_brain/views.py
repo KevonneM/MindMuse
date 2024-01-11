@@ -10,6 +10,7 @@ from calendar import month_name
 from django.db.models.functions import TruncDay
 from django.db.models import Count
 from .models import Event, Task, TaskHistory, Passion, PassionActivity, PassionCategory, Quote, QuoteOfTheDay
+from users.models import SecondBrainColorSelection
 from .forms import TaskForm, PassionForm, PassionActivityForm, QuoteForm
 from users.forms import EditProfileForm
 from users.models import Payment
@@ -124,6 +125,24 @@ def home(request):
 
         account_creation_year = user.date_joined.year
 
+        # Users preffered color selection
+        color_selection = get_object_or_404(SecondBrainColorSelection, user=request.user)
+        color_data = {
+            'background-color': color_selection.background_color,
+            'navbar-color': color_selection.navigation_bar_color,
+            'button-color': color_selection.button_color,
+            'tab-color': color_selection.tab_color,
+            'dropdown-color': color_selection.dropdown_color,
+            'logo-greeting-color': color_selection.logo_and_greeting_color,
+            'card-header-color': color_selection.card_header_color,
+            'card-interior-color': color_selection.card_interior_color,
+            'card-header-text-color': color_selection.title_text,
+            'button-text-color': color_selection.button_text,
+            'tab-text-color': color_selection.tab_text,
+            'dropdown-text-color': color_selection.dropdown_text,
+            'small-text-color': color_selection.text_color,
+        }
+
         context = {
             'events': visible_events,
             'daily_tasks': daily_tasks,
@@ -139,6 +158,7 @@ def home(request):
             'city_name': city_name,
             'last_tracked_city': user.last_tracked_city,
             'payment_status': payment_status,
+            'color_data': color_data,
         }
     else:
         context = {

@@ -6,11 +6,11 @@
 
 {% if user.is_authenticated %}
 
-<div class="container-fluid" style="height: calc(100vh - 75px); width: 100%;">
+<div id="custom-color-background" class="container-fluid" style="height: calc(100vh - 75px); width: 100%;">
 
     <div class="row">
         <div class="col-12 d-flex align-items-center justify-content-center">
-            <h1 class="mt-2 greeting" style="font-family: 'Frank Ruhl Libre', serif; color: #FFFFFF;">Hello, {{ request.user.first_name }} {{ request.user.last_name }}</h1>
+            <h1 id="custom-color-greeting" class="mt-2 greeting" style="font-family: 'Frank Ruhl Libre', serif; color: #FFFFFF;">Hello, {{ request.user.first_name }} {{ request.user.last_name }}</h1>
         </div>
     </div>
 
@@ -24,12 +24,12 @@
                         <div class="accordion mt-2" id="incomingEventsAccordion">
                             <div class="accordion-item">
                                 <h2 class="accordion-header" id="incomingEventsHeading">
-                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#incomingEventsCollapse" aria-expanded="true" aria-controls="incomingEventsCollapse">
+                                    <button id="custom-color-incoming-events-header" class="accordion-button custom-color-incoming-events-header-text" type="button" data-bs-toggle="collapse" data-bs-target="#incomingEventsCollapse" aria-expanded="true" aria-controls="incomingEventsCollapse">
                                         Incoming Weekly Events
                                     </button>
                                 </h2>
                                 <div id="incomingEventsCollapse" class="accordion-collapse collapse show" aria-labelledby="incomingEventsHeading" data-bs-parent="#incomingEventsAccordion">
-                                    <div class="accordion-body">
+                                    <div id="custom-color-incoming-events-interior" class="accordion-body">
                                         {% if events %}
                                         <ul class="list-group scrollable-list">
                                             {% for event in events %}
@@ -52,7 +52,7 @@
                                         </ul>
                                         <p class="no-events-message" style="display: none;">No events this week.</p>
                                         {% else %}
-                                        <p>No events this week.</p>
+                                        <p id="incomingSmallText">No events this week.</p>
                                         {% endif %}
                                     </div>
                                 </div>
@@ -60,12 +60,12 @@
 
                             <div class="accordion-item">
                                 <h2 class="accordion-header" id="scheduleHeading">
-                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#scheduleCollapse" aria-expanded="false" aria-controls="scheduleCollapse">
+                                    <button id="custom-color-schedule-header" class="accordion-button collapsed custom-color-schedule-header-text" type="button" data-bs-toggle="collapse" data-bs-target="#scheduleCollapse" aria-expanded="false" aria-controls="scheduleCollapse">
                                         Schedule
                                     </button>
                                 </h2>
                                 <div id="scheduleCollapse" class="accordion-collapse collapse" aria-labelledby="scheduleHeading" data-bs-parent="#incomingEventsAccordion">
-                                    <div class="accordion-body">
+                                    <div  id="custom-color-schedule-interior" class="accordion-body">
                                         <button type="button" class="btn btn-primary" onclick="loadDailyModal()">
                                             Daily
                                         </button>
@@ -78,7 +78,7 @@
                                             Monthly
                                         </button>
                                     </div>
-                                    <div class="accordion-body">
+                                    <div id="custom-color-schedule-interiorpt2" class="accordion-body">
                                         <a href="#" class="btn btn-primary" onclick="loadEventCreateModal(); return false;" style="display: inline-flex; align-items: center;">
                                             <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="margin-right: 5px;">
                                                 <path fill="#ffffff" d="M12 14a1 1 0 1 0-1-1a1 1 0 0 0 1 1Zm5 0a1 1 0 1 0-1-1a1 1 0 0 0 1 1Zm-5 4a1 1 0 1 0-1-1a1 1 0 0 0 1 1Zm5 0a1 1 0 1 0-1-1a1 1 0 0 0 1 1ZM7 14a1 1 0 1 0-1-1a1 1 0 0 0 1 1ZM19 4h-1V3a1 1 0 0 0-2 0v1H8V3a1 1 0 0 0-2 0v1H5a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3Zm1 15a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-9h16Zm0-11H4V7a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1ZM7 18a1 1 0 1 0-1-1a1 1 0 0 0 1 1Z"/>
@@ -128,9 +128,9 @@
                 <div class="col-lg-6 col-md-12 col-sm-12">
 
                     <div class="card mt-2">
-                        <div class="card-header" style="background-color: #673AB7;">
+                        <div id="custom-color-tasks-header" class="card-header" style="background-color: #673AB7;">
                             <div class="d-flex justify-content-between align-items-center">
-                            <span style="color: #FFFFFF;">Tasks</span>
+                            <span id="custom-color-tasks-header-text" style="color: #FFFFFF;">Tasks</span>
                                 <a href="#" class="btn btn-primary" onclick="loadCreateTaskModal('{% url 'second_brain:create_task' %}'); return false;" style="display: flex; align-items: center; justify-content: center;">
                                     <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="margin-right: 5px;">
                                         <g fill="#ffffff" fill-rule="evenodd" clip-rule="evenodd">
@@ -142,18 +142,18 @@
                                 </a>
                             </div>
                         </div>
-                        <ul class="nav nav-pills justify-content-center" id="myTab" role="tablist">
+                        <ul class="nav nav-pills justify-content-center dailyTaskListPills" id="myTab" role="tablist">
                             <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="daily-tab" data-bs-toggle="pill" data-bs-target="#daily" type="button" role="tab" aria-controls="daily" aria-selected="true">Daily</button>
+                            <button class="nav-link nav-link-daily active" id="daily-tab" data-bs-toggle="pill" data-bs-target="#daily" type="button" role="tab" aria-controls="daily" aria-selected="true">Daily</button>
                             </li>
                             <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="weekly-tab" data-bs-toggle="pill" data-bs-target="#weekly" type="button" role="tab" aria-controls="weekly" aria-selected="false">Weekly</button>
+                            <button class="nav-link nav-link-weekly" id="weekly-tab" data-bs-toggle="pill" data-bs-target="#weekly" type="button" role="tab" aria-controls="weekly" aria-selected="false">Weekly</button>
                             </li>
                             <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="monthly-tab" data-bs-toggle="pill" data-bs-target="#monthly" type="button" role="tab" aria-controls="monthly" aria-selected="false">Monthly</button>
+                            <button class="nav-link nav-link-monthly" id="monthly-tab" data-bs-toggle="pill" data-bs-target="#monthly" type="button" role="tab" aria-controls="monthly" aria-selected="false">Monthly</button>
                             </li>
                         </ul>
-                        <div class="tab-content" id="myTabContent">
+                        <div class="tab-content" id="myTabContent" style="border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
                             <div class="tab-pane fade show active" id="daily" role="tabpanel" aria-labelledby="daily-tab">
                             <ul id="dailyTaskList" class="scrollable-list" {% if not daily_tasks %}style="height: 210px; display: flex; align-items: center; justify-content: center; margin: 0; padding: 0;"{% endif %}>
                             {% for task in daily_tasks %}
@@ -195,12 +195,12 @@
                                     </div>
                                 </li>
                                 {% empty %}
-                                    <li class="no-tasks-message" style="list-style: none;">No daily tasks</li>
+                                    <li class="no-tasks-message" id="dailyTaskSmallText" style="list-style: none;">No daily tasks</li>
                             {% endfor %}
                             </ul>
                             </div>
                             <div class="tab-pane fade" id="weekly" role="tabpanel" aria-labelledby="weekly-tab">
-                            <ul class="scrollable-list" {% if not weekly_tasks %}style="height: 210px; display: flex; align-items: center; justify-content: center; margin: 0; padding: 0;"{% endif %}>
+                            <ul id="weeklyTaskList" class="scrollable-list" {% if not weekly_tasks %}style="height: 210px; display: flex; align-items: center; justify-content: center; margin: 0; padding: 0;"{% endif %}>
                             {% for task in weekly_tasks %}
                                 <li style="list-style: none;">
                                     <div class="d-flex justify-content-between align-items-center">
@@ -240,12 +240,12 @@
                                     </div>
                                 </li>
                                 {% empty %}
-                                    <li class="no-tasks-message " style="list-style: none;">No weekly tasks</li>
+                                    <li class="no-tasks-message " id="weeklyTaskSmallText" style="list-style: none;">No weekly tasks</li>
                             {% endfor %}
                             </ul>
                             </div>
                             <div class="tab-pane fade" id="monthly" role="tabpanel" aria-labelledby="monthly-tab">
-                            <ul class="scrollable-list" {% if not monthly_tasks %}style="height: 210px; display: flex; align-items: center; justify-content: center; margin: 0; padding: 0;"{% endif %}>
+                            <ul id="monthlyTaskList" class="scrollable-list" {% if not monthly_tasks %}style="height: 210px; display: flex; align-items: center; justify-content: center; margin: 0; padding: 0;"{% endif %}>
                             {% for task in monthly_tasks %}
                                 <li style="list-style: none;">
                                     <div class="d-flex justify-content-between align-items-center">
@@ -285,7 +285,7 @@
                                     </div>
                                 </li>
                                 {% empty %}
-                                    <li class="no-tasks-message" style="list-style: none;">No monthly tasks</li>
+                                    <li class="no-tasks-message" id="monthlyTaskSmallText" style="list-style: none;">No monthly tasks</li>
                             {% endfor %}
                             </ul>
                             </div>
@@ -327,9 +327,9 @@
             <div class="row">
                 <div class="col-12">
                     <div class="card mt-3">
-                        <div class="card-header">
+                        <div id="custom-color-passions-header" class="card-header">
                             <div class="d-flex justify-content-between align-items-center">
-                                <span style="color: #D3D3D3;">Passions ({{ passion_count }})</span>
+                                <span id="custom-color-passions-header-text" style="color: #D3D3D3;">Passions ({{ passion_count }})</span>
                                 <div>
                                     <button type="button" class="btn btn-primary" onclick="loadPassionCreateModal()" style="display: inline-flex; align-items: center;">
                                         <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle; margin-right: 5px;">
@@ -380,7 +380,7 @@
                                             </ul>
                                         </div>
                                     </div>
-                                    <h6 class="card-subtitle mb-2" style="color: #D3D3D3;">{{ passion_detail.passion.description }}</h6>
+                                    <h6 class="card-subtitle mb-2 passion-details" style="color: #D3D3D3;">{{ passion_detail.passion.description }}</h6>
                                     <div class="week-container">
                                         {% for i, day in passion_detail.week_days_range %}
                                             {% for index, date in passion_detail.dates %}
@@ -453,12 +453,12 @@
             <div class="row flex-column flex-lg-row">
                 <div class="card w-100 m-0 p-0" style="width: 100%;">
                     <!-- Time div -->
-                    <div class="card-header m-0 py-2 text-center" style="color: #D3D3D3; background-color: #673AB7; padding-left: 0 !important; padding-right: 0 !important;">
+                    <div id="custom-color-weather-header" class="card-header m-0 py-2 text-center custom-color-weather-header-text" style="color: #D3D3D3; background-color: #673AB7; padding-left: 0 !important; padding-right: 0 !important;">
                         <p id="day_of_week"></p>
                         <p id="date"></p>
                         <p id="current_time"></p>
                     </div>
-                    <div class="card-body" style="color: #D3D3D3;">
+                    <div id="custom-color-weather-interior" class="card-body" style="color: #D3D3D3;">
                         <h5 class="card-title" style="font-size: 50px; color: #FFFFFF;"><span id="city_name"></span></h5>
                         <div id="weather-info" class="card-text d-flex flex-column justify-content-center align-items-center">
                             <div class="d-flex justify-content-between w-100" style="padding-right: 10%;">
@@ -477,7 +477,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="card-footer weather-card-footer">
+                    <div id="custom-color-weather-footer" class="card-footer weather-card-footer">
                         <div class="d-flex justify-content-end">
                             <button class="btn btn-secondary me-2" id="useIP">
                                 <i class="fas fa-map-marker-alt"></i>
@@ -500,17 +500,17 @@
 
                 <div class="col-12 col-lg-6 mt-3" style="width: 100%;">
                     <div class="card-like-container rounded" style="background-color: #7C61B3;">
-                        <div class="d-flex justify-content-between" style="background-color: #673AB7;">
+                        <div id="custom-color-quotes-header" class="d-flex justify-content-between" style="background-color: #673AB7;">
                             <ul class="nav nav-tabs m-0 p-0" id="quoteTabs" role="tablist">
                                 <li class="nav-item" role="presentation">
-                                    <button class="nav-link active" id="quoteOfDay-tab" data-bs-toggle="tab" data-bs-target="#quoteOfDay" type="button" role="tab" aria-controls="quoteOfDay" aria-selected="true">Quotes of the Day</button>
+                                    <button class="nav-link active"style="height: 100%;" id="quoteOfDay-tab" data-bs-toggle="tab" data-bs-target="#quoteOfDay" type="button" role="tab" aria-controls="quoteOfDay" aria-selected="true">Quotes of the Day</button>
                                 </li>
                                 <li class="nav-item" role="presentation">
-                                    <button class="nav-link" id="savedQuotes-tab" data-bs-toggle="tab" data-bs-target="#savedQuotes" type="button" role="tab" aria-controls="savedQuotes" aria-selected="false">Saved Quotes</button>
+                                    <button class="nav-link" style="height: 100%;" id="savedQuotes-tab" data-bs-toggle="tab" data-bs-target="#savedQuotes" type="button" role="tab" aria-controls="savedQuotes" aria-selected="false">Saved Quotes</button>
                                 </li>
                             </ul>
                             <div>
-                                <button type="button" class="btn btn-primary me-2 mt-2" onclick="loadQuoteModal()">
+                                <button type="button" class="btn btn-primary me-2 mt-2 mb-2" onclick="loadQuoteModal()">
                                     <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle; margin-right: 5px;">
                                         <g fill="#ffffff" fill-rule="evenodd" clip-rule="evenodd">
                                             <path d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12Zm10-8a8 8 0 1 0 0 16a8 8 0 0 0 0-16Z"></path>
