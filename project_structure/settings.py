@@ -30,7 +30,7 @@ LEMON_MINDMUSE_TEST = config('LEMON_MINDMUSE_TEST')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['172.104.198.126', 'www.mindmuse.io', 'mindmuse.io']
+ALLOWED_HOSTS = ['172.104.198.126', 'www.mindmuse.io', 'mindmuse.io', '127.0.0.1']
 
 CSRF_TRUSTED_ORIGINS = [config('CSRF_TRUSTED_ORIGINS')]
 

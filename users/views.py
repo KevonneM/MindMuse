@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .forms import CustomUserCreationForm
 from django.contrib.auth import login, authenticate, get_user_model
 from django.contrib.auth.views import PasswordResetView
@@ -6,7 +6,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
-from .models import Payment, CustomUser
+from .models import Payment, CustomUser, SecondBrainColorSelection
 import hashlib
 import hmac
 import json
@@ -218,3 +218,69 @@ def get_update_payment_url(request):
         return JsonResponse({'error': 'Failed to retrieve URL'}, status=400)
     else:
         return HttpResponseBadRequest("Bad Request: Not an AJAX request")
+
+# Views for modification of app color scheme
+
+@csrf_exempt
+def update_color(request):
+    if request.method == 'POST' and request.user.is_authenticated and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        data = json.loads(request.body)
+
+        field_mapping = {
+            'background-color': 'background_color',
+            'navbar-color': 'navigation_bar_color',
+            'button-color': 'button_color',
+            'tab-color': 'tab_color',
+            'dropdown-color': 'dropdown_color',
+            'logo-greeting-color': 'logo_and_greeting_color',
+            'card-header-color': 'card_header_color',
+            'card-interior-color': 'card_interior_color',
+            'card-header-text-color': 'title_text',
+            'button-text-color': 'button_text',
+            'tab-text-color': 'tab_text',
+            'dropdown-text-color': 'dropdown_text',
+            'small-text-color': 'text_color'
+        }
+        updated_fields = {field_mapping[key]: value for key, value in data.items() if key in field_mapping}
+
+        color_selection, created = SecondBrainColorSelection.objects.get_or_create(
+            user=request.user,
+            defaults=updated_fields,
+        )
+        
+        if not created:
+            for field, value in updated_fields.items():
+                setattr(color_selection, field, value)
+            color_selection.save()
+
+        return JsonResponse({'status': 'success'})
+    return JsonResponse({'status': 'bad request'}, status=400)
+
+def get_color_selection(request):
+    if request.user.is_authenticated and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        color_selection = get_object_or_404(SecondBrainColorSelection, user=request.user)
+        color_data = {
+            'background-color': color_selection.background_color,
+            'navbar-color': color_selection.navigation_bar_color,
+            'button-color': color_selection.button_color,
+            'tab-color': color_selection.tab_color,
+            'dropdown-color': color_selection.dropdown_color,
+            'logo-greeting-color': color_selection.logo_and_greeting_color,
+            'card-header-color': color_selection.card_header_color,
+            'card-interior-color': color_selection.card_interior_color,
+            'card-header-text-color': color_selection.title_text,
+            'button-text-color': color_selection.button_text,
+            'tab-text-color': color_selection.tab_text,
+            'dropdown-text-color': color_selection.dropdown_text,
+            'small-text-color': color_selection.text_color,
+        }
+
+        return JsonResponse(color_data)
+    return JsonResponse({'status': 'not authenticated or not ajax'}, status=403)
+
+def reset_color(request):
+    if request.method == 'POST' and request.user.is_authenticated:
+        color_selection, _ = SecondBrainColorSelection.objects.get_or_create(user=request.user)
+        color_selection.reset_to_defaults()
+        return JsonResponse({'status': 'success'})
+    return JsonResponse({'status': 'bad request'}, status=400)

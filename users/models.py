@@ -27,6 +27,41 @@ class CustomUser(AbstractUser):
             self.age = age
         super().save(*args, **kwargs)
 
+class SecondBrainColorSelection(models.Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    background_color = models.CharField(max_length=7, default='#2D2350')
+    navigation_bar_color = models.CharField(max_length=7, default='#452475')
+    button_color = models.CharField(max_length=7, default='#7638C2')
+    tab_color = models.CharField(max_length=7, default='#A78EEF')
+    dropdown_color = models.CharField(max_length=7, default='#452475')
+    logo_and_greeting_color = models.CharField(max_length=7, default='#FFFFFF')
+    card_header_color = models.CharField(max_length=7, default='#673AB7')
+    card_interior_color = models.CharField(max_length=7, default='#58349D')
+    title_text = models.CharField(max_length=7, default='#D3D3D3')
+    button_text = models.CharField(max_length=7, default='#FFFFFF')
+    tab_text = models.CharField(max_length=7, default='#D3D3D3')
+    dropdown_text = models.CharField(max_length=7, default='#D3D3D3')
+    text_color = models.CharField(max_length=7, default='#D3D3D3')
+
+    def reset_to_defaults(self):
+        self.background_color = '#2D2350'
+        self.navigation_bar_color = '#452475'
+        self.button_color = '#7638C2'
+        self.tab_color = '#A78EEF'
+        self.dropdown_color = '#452475'
+        self.logo_and_greeting_color = '#FFFFFF'
+        self.card_header_color = '#673AB7'
+        self.card_interior_color = '#58349D'
+        self.title_text = '#D3D3D3'
+        self.button_text = '#FFFFFF'
+        self.tab_text = '#D3D3D3'
+        self.dropdown_text = '#D3D3D3'
+        self.text_color = '#D3D3D3'
+        self.save()
+
+    def __str__(self):
+        return f"{self.user.username}'s Color Selection"
+
 class Payment(models.Model):
     user = models.ForeignKey(CustomUser, null=True, blank=True, on_delete=models.CASCADE)
     payment_status = models.BooleanField(default=False)
