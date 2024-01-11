@@ -20,12 +20,19 @@ class CustomUser(AbstractUser):
         return self.timezone or timezone.get_default_timezone_name()
     
     def save(self, *args, **kwargs):
+        # New user flag
+        is_new_user = self._state.adding
+
         # Calculate age based on date of birth
         if self.date_of_birth:
             today = date.today()
             age = today.year - self.date_of_birth.year - ((today.month, today.day) < (self.date_of_birth.month, self.date_of_birth.day))
             self.age = age
         super().save(*args, **kwargs)
+
+        # Check flag and create color selection instance for the new user
+        if is_new_user:
+            SecondBrainColorSelection.objects.create(user=self)
 
 class SecondBrainColorSelection(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
