@@ -1,16 +1,17 @@
 {% extends 'base.html' %}
 {% load tz %}
+{% load custom_filters %}
 {% load static %}
 
 {% block content %}
 
 {% if user.is_authenticated %}
 
-<div id="custom-color-background" class="container-fluid" style="height: calc(100vh - 75px); width: 100%;">
+<div id="custom-color-background-home-html" class="container-fluid" style="background-color: {{ color_data|get_item:'background-color' }}; height: calc(100vh - 75px); width: 100%;">
 
     <div class="row">
         <div class="col-12 d-flex align-items-center justify-content-center">
-            <h1 id="custom-color-greeting" class="mt-2 greeting" style="font-family: 'Frank Ruhl Libre', serif; color: #FFFFFF;">Hello, {{ request.user.first_name }} {{ request.user.last_name }}</h1>
+            <h1 id="custom-color-greeting" class="mt-2 greeting" style="font-family: 'Frank Ruhl Libre', serif; color: {{ color_data|get_item:'logo-greeting-color' }};">Hello, {{ request.user.first_name }} {{ request.user.last_name }}</h1>
         </div>
     </div>
 
@@ -19,17 +20,17 @@
         <div class="col-lg-6 col-md-10 col-sm-12 order-2 order-lg-1">
             <div class="row">
                 <div class="col-lg-6 col-md-12 col-sm-12">
-                    <div class="card-header text-center custom-accordion" style="background-color: #7C61B3 !important;">
+                    <div class="card-header text-center custom-accordion">
                         <!-- Accordion div -->
                         <div class="accordion mt-2" id="incomingEventsAccordion">
                             <div class="accordion-item">
-                                <h2 class="accordion-header" id="incomingEventsHeading">
-                                    <button id="custom-color-incoming-events-header" class="accordion-button custom-color-incoming-events-header-text" type="button" data-bs-toggle="collapse" data-bs-target="#incomingEventsCollapse" aria-expanded="true" aria-controls="incomingEventsCollapse">
+                                <h2 class="accordion-header" id="incomingEventsHeading" style="color: {{ color_data|get_item:'card-header-text-color' }} !important;">
+                                    <button id="custom-color-incoming-events-header" class="accordion-button custom-color-incoming-events-header-text" type="button" data-bs-toggle="collapse" data-bs-target="#incomingEventsCollapse" aria-expanded="true" aria-controls="incomingEventsCollapse" style="background-color: {{ color_data|get_item:'card-header-color' }}; color: #D3D3D3;">
                                         Incoming Weekly Events
                                     </button>
                                 </h2>
                                 <div id="incomingEventsCollapse" class="accordion-collapse collapse show" aria-labelledby="incomingEventsHeading" data-bs-parent="#incomingEventsAccordion">
-                                    <div id="custom-color-incoming-events-interior" class="accordion-body">
+                                    <div id="custom-color-incoming-events-interior" class="accordion-body" style="background-color: {{ color_data|get_item:'card-interior-color' }};">
                                         {% if events %}
                                         <ul class="list-group scrollable-list">
                                             {% for event in events %}
@@ -52,15 +53,15 @@
                                         </ul>
                                         <p class="no-events-message" style="display: none;">No events this week.</p>
                                         {% else %}
-                                        <p id="incomingSmallText">No events this week.</p>
+                                        <p id="incomingSmallText" style="color: {{ color_data|get_item:'small-text-color' }};">No events this week.</p>
                                         {% endif %}
                                     </div>
                                 </div>
                             </div>
 
                             <div class="accordion-item">
-                                <h2 class="accordion-header" id="scheduleHeading">
-                                    <button id="custom-color-schedule-header" class="accordion-button collapsed custom-color-schedule-header-text" type="button" data-bs-toggle="collapse" data-bs-target="#scheduleCollapse" aria-expanded="false" aria-controls="scheduleCollapse">
+                                <h2 class="accordion-header" id="scheduleHeading" style="color: {{ color_data|get_item:'card-header-text-color' }} !important;">
+                                    <button id="custom-color-schedule-header" class="accordion-button collapsed custom-color-schedule-header-text" type="button" data-bs-toggle="collapse" data-bs-target="#scheduleCollapse" aria-expanded="false" aria-controls="scheduleCollapse" style="background-color: {{ color_data|get_item:'card-header-color' }}; color: #D3D3D3;">
                                         Schedule
                                     </button>
                                 </h2>
@@ -127,13 +128,13 @@
 
                 <div class="col-lg-6 col-md-12 col-sm-12">
 
-                    <div class="card mt-2">
-                        <div id="custom-color-tasks-header" class="card-header" style="background-color: #673AB7;">
+                    <div class="card mt-2" style="background-color: {{ color_data|get_item:'card-interior-color' }};">
+                        <div id="custom-color-tasks-header" class="card-header" style="background-color: {{ color_data|get_item:'card-header-color' }};">
                             <div class="d-flex justify-content-between align-items-center">
-                            <span id="custom-color-tasks-header-text" style="color: #FFFFFF;">Tasks</span>
-                                <a href="#" class="btn btn-primary" onclick="loadCreateTaskModal('{% url 'second_brain:create_task' %}'); return false;" style="display: flex; align-items: center; justify-content: center;">
+                            <span id="custom-color-tasks-header-text" style="color: {{ color_data|get_item:'card-header-text-color' }} !important;">Tasks</span>
+                                <a href="#" class="btn btn-primary" onclick="loadCreateTaskModal('{% url 'second_brain:create_task' %}'); return false;" style="display: flex; align-items: center; justify-content: center; color: {{ color_data|get_item:'button-text-color' }};">
                                     <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="margin-right: 5px;">
-                                        <g fill="#ffffff" fill-rule="evenodd" clip-rule="evenodd">
+                                        <g fill="{{ color_data|get_item:'button-text-color' }}" fill-rule="evenodd" clip-rule="evenodd">
                                             <path d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12Zm10-8a8 8 0 1 0 0 16a8 8 0 0 0 0-16Z"></path>
                                             <path d="M13 7a1 1 0 1 0-2 0v4H7a1 1 0 1 0 0 2h4v4a1 1 0 1 0 2 0v-4h4a1 1 0 1 0 0-2h-4V7Z"></path>
                                         </g>
@@ -142,20 +143,20 @@
                                 </a>
                             </div>
                         </div>
-                        <ul class="nav nav-pills justify-content-center dailyTaskListPills" id="myTab" role="tablist">
+                        <ul class="nav nav-pills justify-content-center dailyTaskListPills" id="myTab" role="tablist" style="background-color: {{ color_data|get_item:'card-interior-color' }};">
                             <li class="nav-item" role="presentation">
-                            <button class="nav-link nav-link-daily active" id="daily-tab" data-bs-toggle="pill" data-bs-target="#daily" type="button" role="tab" aria-controls="daily" aria-selected="true">Daily</button>
+                            <button class="nav-link nav-link-daily active" id="daily-tab" data-bs-toggle="pill" data-bs-target="#daily" type="button" role="tab" aria-controls="daily" aria-selected="true" style="background-color: {{ color_data|get_item:'tab-color' }} !important; color: {{ color_data|get_item:'tab-text-color' }} !important;">Daily</button>
                             </li>
                             <li class="nav-item" role="presentation">
-                            <button class="nav-link nav-link-weekly" id="weekly-tab" data-bs-toggle="pill" data-bs-target="#weekly" type="button" role="tab" aria-controls="weekly" aria-selected="false">Weekly</button>
+                            <button class="nav-link nav-link-weekly" id="weekly-tab" data-bs-toggle="pill" data-bs-target="#weekly" type="button" role="tab" aria-controls="weekly" aria-selected="false" style="color: {{ color_data|get_item:'tab-text-color' }} !important;">Weekly</button>
                             </li>
                             <li class="nav-item" role="presentation">
-                            <button class="nav-link nav-link-monthly" id="monthly-tab" data-bs-toggle="pill" data-bs-target="#monthly" type="button" role="tab" aria-controls="monthly" aria-selected="false">Monthly</button>
+                            <button class="nav-link nav-link-monthly" id="monthly-tab" data-bs-toggle="pill" data-bs-target="#monthly" type="button" role="tab" aria-controls="monthly" aria-selected="false" style="color: {{ color_data|get_item:'tab-text-color' }} !important;">Monthly</button>
                             </li>
                         </ul>
                         <div class="tab-content" id="myTabContent" style="border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
                             <div class="tab-pane fade show active" id="daily" role="tabpanel" aria-labelledby="daily-tab">
-                            <ul id="dailyTaskList" class="scrollable-list" {% if not daily_tasks %}style="height: 210px; display: flex; align-items: center; justify-content: center; margin: 0; padding: 0;"{% endif %}>
+                            <ul id="dailyTaskList" class="scrollable-list" style="background-color: {{ color_data|get_item:'card-interior-color' }}; {% if not daily_tasks %}height: 210px; display: flex; align-items: center; justify-content: center; margin: 0; padding: 0;{% endif %}">
                             {% for task in daily_tasks %}
                                 <li style="list-style: none;">
                                     <div class="d-flex justify-content-between align-items-center">
@@ -165,9 +166,9 @@
                                             <a class="task-title" onclick="loadTaskDetailsModal(event, {{ task.pk }}); event.preventDefault();">{{ task.title }}</a>
                                         </div>
                                         <div class="dropdown">
-                                            <button class="btn btn-primary btn-sm me-2 dropdown-toggle" type="button" id="taskDropdown{{task.pk}}" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <button class="btn btn-primary btn-sm me-2 dropdown-toggle" type="button" id="taskDropdown{{task.pk}}" data-bs-toggle="dropdown" aria-expanded="false" style="color: {{ color_data|get_item:'button-text-color' }};">
                                                 <svg width="16" height="16" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                    <path fill="#ffffff" d="M2 2h20v7H2V2Zm2 2v3h16V4H4Zm0 7v9h16v-9h2v11H2V11h2Zm2 1h12v2H6v-2Zm0 4h12v2H6v-2Z"/>
+                                                    <path fill="{{ color_data|get_item:'button-text-color' }}" d="M2 2h20v7H2V2Zm2 2v3h16V4H4Zm0 7v9h16v-9h2v11H2V11h2Zm2 1h12v2H6v-2Zm0 4h12v2H6v-2Z"/>
                                                 </svg>
                                             </button>
                                             <ul class="dropdown-menu" aria-labelledby="taskDropdown{{task.pk}}">
@@ -195,7 +196,7 @@
                                     </div>
                                 </li>
                                 {% empty %}
-                                    <li class="no-tasks-message" id="dailyTaskSmallText" style="list-style: none;">No daily tasks</li>
+                                    <li class="no-tasks-message" id="dailyTaskSmallText" style="list-style: none; color: {{ color_data|get_item:'small-text-color' }};">No daily tasks</li>
                             {% endfor %}
                             </ul>
                             </div>
@@ -327,20 +328,20 @@
             <div class="row">
                 <div class="col-12">
                     <div class="card mt-3">
-                        <div id="custom-color-passions-header" class="card-header">
+                        <div id="custom-color-passions-header" class="card-header" style="background-color: {{ color_data|get_item:'card-header-color' }};">
                             <div class="d-flex justify-content-between align-items-center">
-                                <span id="custom-color-passions-header-text" style="color: #D3D3D3;">Passions ({{ passion_count }})</span>
+                                <span id="custom-color-passions-header-text" style="color: {{ color_data|get_item:'card-header-text-color' }} !important;">Passions ({{ passion_count }})</span>
                                 <div>
-                                    <button type="button" class="btn btn-primary" onclick="loadPassionCreateModal()" style="display: inline-flex; align-items: center;">
+                                    <button type="button" class="btn btn-primary" onclick="loadPassionCreateModal()" style="display: inline-flex; align-items: center; color: {{ color_data|get_item:'button-text-color' }};">
                                         <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle; margin-right: 5px;">
-                                            <g fill="#ffffff" fill-rule="evenodd" clip-rule="evenodd">
+                                            <g fill="{{ color_data|get_item:'button-text-color' }}" fill-rule="evenodd" clip-rule="evenodd">
                                                 <path d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12Zm10-8a8 8 0 1 0 0 16a8 8 0 0 0 0-16Z"></path>
                                                 <path d="M13 7a1 1 0 1 0-2 0v4H7a1 1 0 1 0 0 2h4v4a1 1 0 1 0 2 0v-4h4a1 1 0 1 0 0-2h-4V7Z"></path>
                                             </g>
                                         </svg>
                                         <span style="vertical-align: middle;">Passion</span>
                                     </button>
-                                    <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#passionContent" aria-expanded="false" aria-controls="passionContent">
+                                    <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#passionContent" aria-expanded="false" aria-controls="passionContent" style="color: {{ color_data|get_item:'button-text-color' }}">
                                         <i class="fas fa-chevron-down"></i>
                                     </button>
                                 </div>
@@ -453,12 +454,12 @@
             <div class="row flex-column flex-lg-row">
                 <div class="card w-100 m-0 p-0" style="width: 100%;">
                     <!-- Time div -->
-                    <div id="custom-color-weather-header" class="card-header m-0 py-2 text-center custom-color-weather-header-text" style="color: #D3D3D3; background-color: #673AB7; padding-left: 0 !important; padding-right: 0 !important;">
+                    <div id="custom-color-weather-header" class="card-header m-0 py-2 text-center custom-color-weather-header-text" style="color: {{ color_data|get_item:'card-header-text-color' }} !important; background-color: {{ color_data|get_item:'card-header-color' }}; padding-left: 0 !important; padding-right: 0 !important;">
                         <p id="day_of_week"></p>
                         <p id="date"></p>
                         <p id="current_time"></p>
                     </div>
-                    <div id="custom-color-weather-interior" class="card-body" style="color: #D3D3D3;">
+                    <div id="custom-color-weather-interior" class="card-body" style="color: #D3D3D3; background-color: {{ color_data|get_item:'card-interior-color' }};">
                         <h5 class="card-title" style="font-size: 50px; color: #FFFFFF;"><span id="city_name"></span></h5>
                         <div id="weather-info" class="card-text d-flex flex-column justify-content-center align-items-center">
                             <div class="d-flex justify-content-between w-100" style="padding-right: 10%;">
@@ -477,15 +478,15 @@
                             </div>
                         </div>
                     </div>
-                    <div id="custom-color-weather-footer" class="card-footer weather-card-footer">
+                    <div id="custom-color-weather-footer" class="card-footer weather-card-footer" style="background-color: {{ color_data|get_item:'card-header-color' }};">
                         <div class="d-flex justify-content-end">
                             <button class="btn btn-secondary me-2" id="useIP">
                                 <i class="fas fa-map-marker-alt"></i>
                             </button>
-                            <button id="refreshButton" class="btn btn-primary me-2">
+                            <button id="refreshButton" class="btn btn-primary me-2" style="color: {{ color_data|get_item:'button-text-color' }}">
                                 <i class="fas fa-sync-alt"></i>
                             </button>
-                            <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#searchCollapse" aria-expanded="false" aria-controls="searchCollapse">
+                            <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#searchCollapse" aria-expanded="false" aria-controls="searchCollapse" style="color: {{ color_data|get_item:'button-text-color' }}">
                                 <i class="fas fa-search"></i>
                             </button>
                         </div>
@@ -499,20 +500,20 @@
                 </div>
 
                 <div class="col-12 col-lg-6 mt-3" style="width: 100%;">
-                    <div class="card-like-container rounded" style="background-color: #7C61B3;">
-                        <div id="custom-color-quotes-header" class="d-flex justify-content-between" style="background-color: #673AB7;">
+                    <div class="card-like-container rounded" style="color: #D3D3D3 !important;">
+                        <div id="custom-color-quotes-header" class="d-flex justify-content-between" style="background-color: {{ color_data|get_item:'card-header-color' }};">
                             <ul class="nav nav-tabs m-0 p-0" id="quoteTabs" role="tablist">
                                 <li class="nav-item" role="presentation">
-                                    <button class="nav-link active"style="height: 100%;" id="quoteOfDay-tab" data-bs-toggle="tab" data-bs-target="#quoteOfDay" type="button" role="tab" aria-controls="quoteOfDay" aria-selected="true">Quotes of the Day</button>
+                                    <button class="nav-link active"style="height: 100%; background-color: {{ color_data|get_item:'tab-color' }} !important; color: #D3D3D3;" id="quoteOfDay-tab" data-bs-toggle="tab" data-bs-target="#quoteOfDay" type="button" role="tab" aria-controls="quoteOfDay" aria-selected="true">Quotes of the Day</button>
                                 </li>
                                 <li class="nav-item" role="presentation">
-                                    <button class="nav-link" style="height: 100%;" id="savedQuotes-tab" data-bs-toggle="tab" data-bs-target="#savedQuotes" type="button" role="tab" aria-controls="savedQuotes" aria-selected="false">Saved Quotes</button>
+                                    <button class="nav-link" style="height: 100%; color: #D3D3D3" id="savedQuotes-tab" data-bs-toggle="tab" data-bs-target="#savedQuotes" type="button" role="tab" aria-controls="savedQuotes" aria-selected="false">Saved Quotes</button>
                                 </li>
                             </ul>
                             <div>
-                                <button type="button" class="btn btn-primary me-2 mt-2 mb-2" onclick="loadQuoteModal()">
+                                <button type="button" class="btn btn-primary me-2 mt-2 mb-2" onclick="loadQuoteModal()" style="color: {{ color_data|get_item:'button-text-color' }};">
                                     <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle; margin-right: 5px;">
-                                        <g fill="#ffffff" fill-rule="evenodd" clip-rule="evenodd">
+                                        <g fill="{{ color_data|get_item:'button-text-color' }}" fill-rule="evenodd" clip-rule="evenodd">
                                             <path d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12Zm10-8a8 8 0 1 0 0 16a8 8 0 0 0 0-16Z"></path>
                                             <path d="M13 7a1 1 0 1 0-2 0v4H7a1 1 0 1 0 0 2h4v4a1 1 0 1 0 2 0v-4h4a1 1 0 1 0 0-2h-4V7Z"></path>
                                         </g>
@@ -530,7 +531,7 @@
                                                 <div class="qotd-quote-content" style="display: none;">
                                                     <p class="quote">"{quote.quote}" - {quote.author}</p>
                                                 </div>
-                                                <div class="qotd-icon-container">
+                                                <div class="qotd-icon-container" style="background-color: {{ color_data|get_item:'card-interior-color' }};">
                                                     <i class="fas fa-save qotd-save-icon" title="Save quote" data-quote-id="{quote.id}"></i>
                                                 </div>
                                             </div>

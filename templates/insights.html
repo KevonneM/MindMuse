@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load custom_filters %}
 
 {% block content %}
 
@@ -7,10 +8,10 @@
     <div class="row pt-2">
         <div class="col-lg-6 d-flex align-items-center" >
             <div class="card w-100">
-                <div id="custom-color-overview-header" class="card-header" style="color: #D3D3D3; background-color: #673AB7;">
-                    <h4 id="custom-color-overview-header-text" class="text-center">Overview</h4>
+                <div id="custom-color-overview-header" class="card-header" style="color: #D3D3D3; background-color: {{ color_data|get_item:'card-header-color' }};">
+                    <h4 id="custom-color-overview-header-text" class="text-center" style="color: {{ color_data|get_item:'card-header-text-color' }} !important;">Overview</h4>
                 </div>
-                <div id="custom-color-overview-interior" class="card-body" style="color: #D3D3D3; background-color: #7C61B3;">
+                <div id="custom-color-overview-interior" class="card-body" style="color: #D3D3D3; background-color: {{ color_data|get_item:'card-interior-color' }};">
                     <div id="textCarousel" class="carousel carousel-dark slide w-100" data-bs-ride="carousel">
                         <div class="carousel-indicators" style="">
                             <button type="button" data-bs-target="#textCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
@@ -52,9 +53,9 @@
 
         <div class="col-lg-6">
             <div class="card">
-                <div id="custom-color-passion-insight-header" class="card-header">
+                <div id="custom-color-passion-insight-header" class="card-header" style="background-color: {{ color_data|get_item:'card-header-color' }}; color: {{ color_data|get_item:'card-header-text-color' }} !important;">
                     <div class="passion-title text-center" style="color: inherit;">
-                        <h4 id="custom-color-passion-header-text">Passion Insights</h4>
+                        <h4 id="custom-color-passion-header-text" style="color: {{ color_data|get_item:'card-header-text-color' }} !important;">Passion Insights</h4>
                     </div>
                     <hr>
                     <div class="d-flex align-items-center justify-content-between">
@@ -92,9 +93,9 @@
     <div class="row mt-2">
         <div class="col-lg-6">
             <div class="card">
-                <div id="custom-color-task-insight-header" class="card-header">
+                <div id="custom-color-task-insight-header" class="card-header" style="background-color: {{ color_data|get_item:'card-header-color' }}; color: {{ color_data|get_item:'card-header-text-color' }} !important;">
                     <div class="task-title text-center" style="color: inherit;">
-                        <h4 id="custom-color-task-header-text">Task</h4>
+                        <h4 id="custom-color-task-header-text" style="color: {{ color_data|get_item:'card-header-text-color' }} !important;">Task</h4>
                     </div>
                     <hr>
                     <div class="d-flex align-items-center justify-content-between">
@@ -138,9 +139,9 @@
 
         <div class="col-lg-6">
             <div class="card">
-                <div id="custom-color-event-insight-header" class="card-header">
+                <div id="custom-color-event-insight-header" class="card-header" style="background-color: {{ color_data|get_item:'card-header-color' }}; color: {{ color_data|get_item:'card-header-text-color' }} !important;">
                     <div class="task-title text-center" style="color: inherit;">
-                        <h4 id="custom-color-event-header-text">Event</h4>
+                        <h4 id="custom-color-event-header-text" style="color: {{ color_data|get_item:'card-header-text-color' }} !important;">Event</h4>
                     </div>
                     <hr>
                     <div class="d-flex align-items-center justify-content-between">
@@ -263,7 +264,6 @@
 
     .card-header {
     color: #FFFFFF;
-    background-color: #673AB7;
     }
 
     /* Card Body */
@@ -274,9 +274,8 @@
 
     /* Navigation tabs */
     .nav-tabs .nav-link.active {
-    background-color: #673AB7;
     color: #D3D3D3;
-    border-color: #673AB7;
+    border-color: #d3d3d3;
     }
 
     .nav-tabs .nav-link {
