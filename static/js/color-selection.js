@@ -80,10 +80,12 @@ function applyColor(field, value) {
         case 'background-color':
             let backgroundColorElements = [
                 'custom-color-background',
-                'custom-color-background-html'
+                'custom-color-background-html',
+                'custom-color-background-home-html'
             ];
             backgroundColorElements.forEach(elementId => {
                 let element = document.getElementById(elementId);
+                console.log('Element:', elementId, 'Value:', value);
                 if(element) element.style.setProperty('background-color', value, 'important');
             });
             break;
@@ -97,12 +99,11 @@ function applyColor(field, value) {
             /*document.getElementById('custom-color-navicon-3-back').setAttribute('fill', value);*/
             break;
         case 'button-color':
-            document.querySelectorAll('.btn-primary').forEach(button => {
-                button.style.setProperty('background-color', value, 'important');
-                button.style.setProperty('border-color', value, 'important');
-            });
-            break;
+            document.documentElement.style.setProperty('--btn-primary-bg', value);
+            document.documentElement.style.setProperty('--btn-primary-border', value);
+            break;            
         case 'tab-color':
+            document.documentElement.style.setProperty('--tab-active-bg', value);
             let tabColorElementsMain = [
                 '.nav-link-hub.active',
                 '.nav-link-insights.active',
@@ -217,9 +218,11 @@ function applyColor(field, value) {
                 '#custom-color-schedule-interiorpt2',
                 '#myTabContent',
                 '.dailyTaskListPills',
+                '#dailyTaskList',
                 '#passionContent',
                 '#custom-color-weather-interior',
                 '#quoteTabsContent',
+                '.qotd-icon-container',
             ];
 
             cardInteriors.forEach(selector => {
@@ -282,14 +285,9 @@ function applyColor(field, value) {
             });
             break;
         case 'dropdown-color':
-            let dropdowns = [
-                '.dropdown-menu',
-            ]
-
-            dropdowns.forEach(selector => {
-                document.querySelectorAll(selector).forEach(element => {
-                    element.style.setProperty('background-color', value, 'important');
-                });
+            document.documentElement.style.setProperty('--dropdown-bg-color', value);
+            document.querySelectorAll('.dropdown-menu').forEach(element => {
+                element.style.setProperty('background-color', value, 'important');
             });
             break;
         case 'button-text-color':
@@ -305,7 +303,9 @@ function applyColor(field, value) {
         case 'tab-text-color':
             let tabTextColorElements = [
                 '.nav-link-hub',
+                '#nav-hub-text',
                 '.nav-link-insights',
+                '#nav-ins-text',
                 '.nav-link-options',
                 '#daily-tab',
                 '#weekly-tab',

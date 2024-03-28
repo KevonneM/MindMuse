@@ -21,8 +21,6 @@ html {
 }
 
 .card {
-  background-color: #7C61B3;
-  background: rgba( 103, 58, 183, 0.75 );
   box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
   border-radius: 10px;
   border: 1px solid rgba( 255, 255, 255, 0.18 );
@@ -30,13 +28,21 @@ html {
 
 /* Overrides for Bootstrap 5 buttons #9575CD*/
 .btn-primary {
-  background-color: #7638C2 !important;
-  border-color: #7638C2 !important;
+  background-color: var(--btn-primary-bg);
+  border-color: var(--btn-primary-border);
 }
 
 .btn-primary:hover {
-  background-color: #492378 !important;
-  border-color: #492378 !important;
+  background-color: var(--btn-primary-bg) !important;
+  border-color: #d3d3d3 !important;
+}
+
+.nav-link.nav-link-weekly:not(.active) {
+  color: #D3D3D3 !important;
+}
+
+.nav-link.nav-link-monthly:not(.active) {
+  color: #D3D3D3 !important;
 }
 
 .hidden {
@@ -64,7 +70,6 @@ html {
 
 /* Closed */
 .accordion-button {
-  background-color: #7C61B3;
   color: #FFFFFF;
   border: none !important;
 }
@@ -163,14 +168,16 @@ html {
     background-color: #f7f7f7;
 }
 .weekly-calendar-dialog .btn-primary {
+  /*
     background-color: #7638C2;
     border-color: #7638C2;
+    */
     width: 25%;
     height: 40px;
 }
 .weekly-calendar-dialog .btn-primary:hover {
-    background-color: #492378;
-    border-color: #492378;
+    border-color: #FFFFFF;
+    border-width: 2px;
 }
 .weekly-calendar-dialog .btn-secondary {
     background-color: #6c757d;
