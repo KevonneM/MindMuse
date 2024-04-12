@@ -36,32 +36,32 @@ class CustomUser(AbstractUser):
 
 class SecondBrainColorSelection(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-    background_color = models.CharField(max_length=7, default='#2D2350')
-    navigation_bar_color = models.CharField(max_length=7, default='#452475')
-    button_color = models.CharField(max_length=7, default='#7638C2')
-    tab_color = models.CharField(max_length=7, default='#A78EEF')
-    dropdown_color = models.CharField(max_length=7, default='#452475')
+    background_color = models.CharField(max_length=7, default='#1C3B3B')
+    navigation_bar_color = models.CharField(max_length=7, default='#173234')
+    button_color = models.CharField(max_length=7, default='#0B485A')
+    tab_color = models.CharField(max_length=7, default='#1D8260')
+    dropdown_color = models.CharField(max_length=7, default='#000000')
     logo_and_greeting_color = models.CharField(max_length=7, default='#FFFFFF')
-    card_header_color = models.CharField(max_length=7, default='#673AB7')
-    card_interior_color = models.CharField(max_length=7, default='#58349D')
-    title_text = models.CharField(max_length=7, default='#D3D3D3')
+    card_header_color = models.CharField(max_length=7, default='#397574')
+    card_interior_color = models.CharField(max_length=7, default='#1B5657')
+    title_text = models.CharField(max_length=7, default='#FFFFFF')
     button_text = models.CharField(max_length=7, default='#FFFFFF')
-    tab_text = models.CharField(max_length=7, default='#D3D3D3')
+    tab_text = models.CharField(max_length=7, default='#FFFFFF')
     dropdown_text = models.CharField(max_length=7, default='#D3D3D3')
     text_color = models.CharField(max_length=7, default='#D3D3D3')
 
     def reset_to_defaults(self):
-        self.background_color = '#2D2350'
-        self.navigation_bar_color = '#452475'
-        self.button_color = '#7638C2'
-        self.tab_color = '#A78EEF'
-        self.dropdown_color = '#452475'
+        self.background_color = '#1C3B3B'
+        self.navigation_bar_color = '#173234'
+        self.button_color = '#0B485A'
+        self.tab_color = '#1D8260'
+        self.dropdown_color = '#000000'
         self.logo_and_greeting_color = '#FFFFFF'
-        self.card_header_color = '#673AB7'
-        self.card_interior_color = '#58349D'
-        self.title_text = '#D3D3D3'
+        self.card_header_color = '#397574'
+        self.card_interior_color = '#1B5657'
+        self.title_text = '#FFFFFF'
         self.button_text = '#FFFFFF'
-        self.tab_text = '#D3D3D3'
+        self.tab_text = '#FFFFFF'
         self.dropdown_text = '#D3D3D3'
         self.text_color = '#D3D3D3'
         self.save()

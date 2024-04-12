@@ -4,9 +4,9 @@ from .models import SecondBrainColorSelection
 def color_context(request):
     if not request.user.is_authenticated:
         return{'color_data': {
-            'background-color' : '#2D2350',
-            'navbar-color' : '#452475',
-            'button-color' : '#7638C2',
+            'background-color' : '#1D362E',
+            'navbar-color' : '#1D362E',
+            'button-color' : '#478484',
             'tab-color' : '#A78EEF',
             'dropdown-color' : '#452475',
             'logo-greeting-color' : '#FFFFFF',
@@ -40,17 +40,17 @@ def color_context(request):
         }
     else:
         color_data = {
-            'background-color' : '#2D2350',
-            'navbar-color' : '#452475',
-            'button-color' : '#7638C2',
-            'tab-color' : '#A78EEF',
-            'dropdown-color' : '#452475',
+            'background-color' : ' #1C3B3B',
+            'navbar-color' : '#173234',
+            'button-color' : '#0B485A',
+            'tab-color' : '#1D8260',
+            'dropdown-color' : '#000000',
             'logo-greeting-color' : '#FFFFFF',
-            'card-header-color' : '#673AB7',
-            'card-interior-color' : '#58349D',
-            'card-header-text-color' : '#D3D3D3',
+            'card-header-color' : '#397574',
+            'card-interior-color' : '#1B5657',
+            'card-header-text-color' : '#FFFFFF',
             'button-text-color' : '#FFFFFF',
-            'tab-text-color' : '#D3D3D3',
+            'tab-text-color' : '#FFFFFF',
             'dropdown-text-color' : '#D3D3D3',
             'small-text-color' : '#D3D3D3',
         }

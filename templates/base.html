@@ -1,6 +1,6 @@
 {% load custom_filters %}
 {% load static %}
-<html lang="en" id="custom-color-background-html" style="background-color: {{ color_data|get_item:'background-color' }} !important;">
+<html lang="en" id="custom-color-background-html" style="background-color: {% if user.is_authenticated %}{{ color_data|get_item:'background-color' }}{% else %}#1D362E{% endif %} !important;">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -131,7 +131,7 @@
             <div class="collapse navbar-collapse" id="navbarUnauthenticated">
               <ul class="navbar-nav ms-auto mt-2">
                 <li class="nav-item me-4">
-                  <button id="loginBtn" class="btn btn-primary d-md-inline d-block w-100 w-md-auto">Login</button>
+                  <button id="loginBtn" class="btn btn-primary d-md-inline d-block w-100 w-md-auto" style="background-color: 366267;">Login</button>
                 </li>
                 <li class="nav-item me-4">
                   <button id="signupBtn" class="btn btn-primary d-md-inline d-block w-100 w-md-auto">Sign Up</button>
@@ -152,7 +152,7 @@
       </div>
     </div>
     
-    <div id="custom-color-background" class="main-content" style="background-color: {{ color_data|get_item:'background-color' }} !important; height: 100vh; width: 100%; padding-top: 0; margin-top: 0">
+    <div id="custom-color-background" class="main-content" style="background-color: {% if user.is_authenticated %}{{ color_data|get_item:'background-color' }}{% else %}#1D362E{% endif %} !important; height: 100vh; width: 100%; padding-top: 0; margin-top: 0">
       <div class="offcanvas offcanvas-end" data-bs-theme="dark" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" id="offcanvasScrolling" aria-labelledby="offcanvasScrollingLabel">
         <div class="offcanvas-header">
           <h5 class="offcanvas-title" id="offcanvasScrollingLabel" style="color: #FFFFFF;">Customize Color Layout</h5>
