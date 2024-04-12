@@ -587,9 +587,9 @@ input[type="checkbox"].task-checkbox:checked + label:before {
 /* Neumorphic styling */
 .neumorphic {
   border-radius: 79px;
-  background: #673AB7;
-  box-shadow: inset 10px 10px 12px #46277c,
-              inset -10px -10px 12px #884df2;
+  background: #304140;
+  box-shadow: inset 10px 10px 12px #1c272b,
+              inset -10px -10px 12px #3c4b51;
 }
 
 /* Landing page card css */
