@@ -10,7 +10,7 @@
         <a href="{% url 'second_brain:weekly_calendar_change_week' next_week_start|date:"Y-m-d" %}" class="btn btn-primary change-week">Next Week &raquo;</a>
     </div>
     <div class="calendar weekly-calendar" style="overflow-x: auto;">
-        <div class="row" style="width: max-content;">
+        <div class="row" style="width: 100%;">
             {% for day in days %}
                 <div class="col">
                     <div class="card mb-2">
