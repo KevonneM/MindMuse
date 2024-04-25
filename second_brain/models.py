@@ -79,10 +79,11 @@ class Task(models.Model):
             return next_sunday
         elif self.frequency == 'M':
             # For monthly tasks, the next reset date is the first day of the next month
-            if now.month == 12:
-                next_month = now.replace(year=now.year+1, month=1, day=1)
+            last_reset_date = self.last_reset_date
+            if last_reset_date.month == 12:
+                next_month = last_reset_date.replace(year=last_reset_date.year+1, month=1, day=1)
             else:
-                next_month = now.replace(month=now.month+1, day=1)
+                next_month = last_reset_date.replace(month=last_reset_date.month+1, day=1)
             return next_month
 
     def __str__(self):
