@@ -349,7 +349,7 @@ function applyColor(field, value) {
 
 /* Js to reset to default page color values */
 function resetColors() {
-    fetch('users/reset_color/', {
+    fetch('/users/reset_color/', {
         method: 'POST',
         headers: {
             'X-CSRFToken': getCookie('csrftoken'),
