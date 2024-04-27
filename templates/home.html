@@ -203,7 +203,7 @@
                             <div class="tab-pane fade" id="weekly" role="tabpanel" aria-labelledby="weekly-tab">
                             <ul id="weeklyTaskList" class="scrollable-list" {% if not weekly_tasks %}style="height: 210px; display: flex; align-items: center; justify-content: center; margin: 0; padding: 0;"{% endif %}>
                             {% for task in weekly_tasks %}
-                                <li style="list-style: none;">
+                                <li class="mb-1" style="list-style: none;">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <div class="task-container">
                                             <input type="checkbox" id="taskCheckbox{{task.pk}}" class="task-checkbox" onclick="updateTaskStatus(this, {{task.pk}}, false)" {% if task.status %}checked{% endif %}>
@@ -248,7 +248,7 @@
                             <div class="tab-pane fade" id="monthly" role="tabpanel" aria-labelledby="monthly-tab">
                             <ul id="monthlyTaskList" class="scrollable-list" {% if not monthly_tasks %}style="height: 210px; display: flex; align-items: center; justify-content: center; margin: 0; padding: 0;"{% endif %}>
                             {% for task in monthly_tasks %}
-                                <li style="list-style: none;">
+                                <li class="mb-1" style="list-style: none;">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <div class="task-container">
                                             <input type="checkbox" id="taskCheckbox{{task.pk}}" class="task-checkbox" onclick="updateTaskStatus(this, {{task.pk}}, false)" {% if task.status %}checked{% endif %}>
