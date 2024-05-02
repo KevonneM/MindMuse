@@ -160,8 +160,11 @@ def lemon_squeezy_webhook(request):
 
     if event_name in ["order_created", "subscription_created", "subscription_payment_success", "subscription_updated", "subscription_resumed", "subscription_unpaused", "subscription_payment_recovered"]:
         if event_name == "subscription_updated":
-            cancelled = payload_json['data']['attributes'].get('cancelled', False)
-            payment_status = cancelled if isinstance(cancelled, bool) else False
+            cancelled_status = payload_json['data']['attributes'].get('cancelled', False)
+            if cancelled_status == True:
+                payment_status = False
+            else:
+                payment_status = True
         else:
             payment_status = True
     elif event_name in ["order_refunded", "subscription_cancelled", "subscription_expired", "subscription_paused", "subscription_payment_failed"]:
