@@ -382,7 +382,7 @@
                                         </div>
                                     </div>
                                     <h6 class="card-subtitle mb-2 passion-details" style="color: #D3D3D3;">{{ passion_detail.passion.description }}</h6>
-                                    <div class="week-container">
+                                    <div class="week-container d-flex flex-wrap">
                                         {% for i, day in passion_detail.week_days_range %}
                                             {% for index, date in passion_detail.dates %}
                                                 {% if index == i %}
