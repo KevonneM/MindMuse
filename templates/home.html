@@ -502,12 +502,12 @@
                 <div class="col-12 col-lg-6 mt-3" style="width: 100%;">
                     <div class="card-like-container rounded" style="color: #D3D3D3 !important;">
                         <div id="custom-color-quotes-header" class="d-flex justify-content-between" style="background-color: {{ color_data|get_item:'card-header-color' }};">
-                            <ul class="nav nav-tabs m-0 p-0" id="quoteTabs" role="tablist">
+                            <ul class="nav nav-tabs m-0 p-0 flex-column flex-sm-row flex-md-row" id="quoteTabs" role="tablist">
                                 <li class="nav-item" role="presentation">
                                     <button class="nav-link active"style="height: 100%; background-color: {{ color_data|get_item:'tab-color' }} !important; color: #D3D3D3;" id="quoteOfDay-tab" data-bs-toggle="tab" data-bs-target="#quoteOfDay" type="button" role="tab" aria-controls="quoteOfDay" aria-selected="true">Quotes of the Day</button>
                                 </li>
                                 <li class="nav-item" role="presentation">
-                                    <button class="nav-link" style="height: 100%; color: #D3D3D3" id="savedQuotes-tab" data-bs-toggle="tab" data-bs-target="#savedQuotes" type="button" role="tab" aria-controls="savedQuotes" aria-selected="false">Saved Quotes</button>
+                                    <button class="nav-link" style="height: 100%; width:100% ; color: #D3D3D3" id="savedQuotes-tab" data-bs-toggle="tab" data-bs-target="#savedQuotes" type="button" role="tab" aria-controls="savedQuotes" aria-selected="false">Saved Quotes</button>
                                 </li>
                             </ul>
                             <div>
