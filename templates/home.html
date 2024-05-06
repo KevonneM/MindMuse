@@ -37,7 +37,7 @@
                                                 {% with event.event.start_time|timezone:request.user.timezone as start_time %}
                                                 {% with event.event.end_time|timezone:request.user.timezone as end_time %}
                                                 {% if event.is_visible %}
-                                                    <li class="list-group-item d-flex flex-column flex-lg-column flex-md-row justify-content-between align-items-center" style="background-color: #7C61B3; color: #FFFFFF;">
+                                                    <li class="list-group-item d-flex flex-column flex-lg-column flex-md-row justify-content-between align-items-center" style="background-color: {{ color_data|get_item:'tab-color' }} !important; color: {{ color_data|get_item:'tab-text-color' }} !important;">
                                                         {{ event.event.title }}
 
                                                         <!-- This span will only display on medium screens -->
