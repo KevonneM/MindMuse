@@ -61,7 +61,10 @@ def home(request):
         today = now.date()
 
         # Making Sunday the first day of the week
-        week_start = today - timedelta(days=((today.weekday() + 1) % 7))
+        if today.weekday() == 6:
+            week_start = today
+        else:
+            week_start = today - timedelta(days=((today.weekday() + 1) % 7))
         week_end = week_start + timedelta(days=7)
 
         # Task info for hub display
@@ -328,11 +331,17 @@ def weekly_calendar(request, start_date=None):
 
     if user.is_authenticated:
         user_timezone = pytz.timezone(user.timezone)
+
+        now = timezone.now().astimezone(user_timezone)
+        today = now.date()
+
         if start_date:
             start_of_week = datetime.strptime(start_date, '%Y-%m-%d').replace(tzinfo=user_timezone)
+        elif today.weekday() == 6:
+            start_of_week = today
         else:
             now = timezone.now().astimezone(user_timezone)
-            start_of_week = now - timedelta(days=now.weekday() + 1 % 7)
+            start_of_week = today - timedelta(days=((today.weekday() + 1) % 7))
 
         end_of_week = start_of_week + timedelta(days=7)
         events = Event.objects.filter(user=user, start_time__gte=start_of_week, start_time__lt=end_of_week).order_by('start_time')
