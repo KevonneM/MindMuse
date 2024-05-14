@@ -6,18 +6,20 @@ from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponse, HttpResponseBadRequest
 from datetime import datetime, timedelta, date, time
+from dateutil.relativedelta import relativedelta
 from calendar import month_name
 from django.db.models.functions import TruncDay
 from django.db.models import Count
 from .models import Event, Task, TaskHistory, Passion, PassionActivity, PassionCategory, Quote, QuoteOfTheDay
 from users.models import SecondBrainColorSelection
-from .forms import TaskForm, PassionForm, PassionActivityForm, QuoteForm
+from .forms import TaskForm, PassionForm, PassionActivityForm, QuoteForm, EventForm
 from users.forms import EditProfileForm
 from users.models import Payment
 import json
 import requests
 import pytz
 import hashlib # for string to color function
+from insights.views import get_weekly_bins
 
 # Create your views here.
 
@@ -466,7 +468,7 @@ def create_event(request):
                 event = Event(user=user, title=title, start_time=start_datetime, end_time=end_datetime)
                 event.save()
 
-                return JsonResponse({"status": "success"})
+                return JsonResponse({"status": "success", "message": "Event created successfully!"})
         else:
             # Handle the case when any of the required values are missing
             return JsonResponse({"status": "error", "message": "Missing required values."})
@@ -475,18 +477,193 @@ def create_event(request):
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
             return render(request, "events/_create_event.html")
 
-def is_event_overlapping(user, start_time, end_time):
+@login_required
+def manage_events(request, year=None):
+    user = request.user
+    events = []
+
+    if user.is_authenticated:
+        user_timezone = pytz.timezone(user.timezone)
+        utc = pytz.timezone('UTC')
+
+        current_year = year if year else timezone.now().astimezone(user_timezone).year
+        current_year = int(current_year)
+        print(current_year)
+
+        start_of_year_local = user_timezone.localize(datetime(current_year, 1, 1, 0, 0, 0))
+        end_of_year_local = start_of_year_local + relativedelta(years=1) - timedelta(seconds=1)
+
+        start_of_year_utc = start_of_year_local.astimezone(utc)
+        end_of_year_utc = end_of_year_local.astimezone(utc)
+
+        events = list(Event.objects.filter(user=user, start_time__gte=start_of_year_utc, start_time__lte=end_of_year_utc))
+
+        weekly_bins = get_weekly_bins(start_of_year_local, end_of_year_local)
+        yearly_events_data = []
+
+        for week_start, week_end in weekly_bins:
+            weekly_events_data = []
+            for event in events:
+                if event.start_time >= week_start.astimezone(utc) and event.start_time <= week_end.astimezone(utc):
+                    print(f"Included Event: {event.title} on {event.start_time.astimezone(user_timezone).date()}")
+                    weekly_events_data.append({
+                        'id': event.id,
+                        "title": event.title,
+                        "start_date": event.start_time.astimezone(user_timezone).date(),
+                        "end_date": event.end_time.astimezone(user_timezone).date(),
+                        "start_time": event.start_time.astimezone(user_timezone).time(),
+                        "end_time": event.end_time.astimezone(user_timezone).time(),
+                    })
+
+            # Sort events by start_date before passing to template.
+            weekly_events_data.sort(key=lambda x: (x['start_date'], x['start_time']))
+            for data in weekly_events_data:
+                print(f"Event ID: {data['id']} on {data['start_date']}")
+
+
+            if weekly_events_data:
+                yearly_events_data.append({
+                    "week_start": week_start.date(),
+                    "week_end": week_end.date(),
+                    "events": weekly_events_data
+                })
+
+        context = {
+            'yearly_events_data': yearly_events_data,
+            'current_year': current_year,
+        }
+
+        if 'HTTP_X_REQUESTED_WITH' in request.META and request.META['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest':
+            return render(request, 'events/_manage_events.html', context)
+        else:
+            return redirect('second_brain:home')
+
+def delete_event(request, pk):
+    event = get_object_or_404(Event, pk=pk, user=request.user)
+    event_year = event.start_time.year
+
+    if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        event.delete()
+        return JsonResponse({'status': 'success', 'message': 'Event deleted successfully.', 'year': event_year})
+    elif request.method == 'POST':
+        event.delete()
+        return redirect('second_brain:home')
+    
+    elif request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return render(request, 'events/_event_confirm_delete.html', {'event': event})
+
+    else:
+        return HttpResponseBadRequest("Invalid request")
+
+@login_required
+def update_event(request, pk):
+    event = get_object_or_404(Event, pk=pk, user=request.user)
+
+    if request.method == 'POST':
+
+        form = EventForm(request.POST, instance=event)
+        user = request.user
+        title = request.POST.get("title")
+        start_date = request.POST.get("start_date")
+        start_time = request.POST.get("start_time")
+        end_date = request.POST.get("end_date")
+        end_time = request.POST.get("end_time")
+        
+        if start_date and start_time and end_date and end_time:
+            print("Form is valid")
+
+            start_date = datetime.strptime(start_date, '%B %d, %Y')
+            start_time = datetime.strptime(start_time, '%H:%M')
+            end_date = datetime.strptime(end_date, '%B %d, %Y')
+            end_time = datetime.strptime(end_time, '%H:%M')
+
+            user_timezone = pytz.timezone(request.user.timezone)
+            start_datetime = user_timezone.localize(start_date.replace(hour=start_time.hour, minute=start_time.minute))
+            end_datetime = user_timezone.localize(end_date.replace(hour=end_time.hour, minute=end_time.minute))
+            print("Start datetime:", start_datetime, "End datetime:", end_datetime)
+
+            if is_event_overlapping(request.user, start_datetime, end_datetime, event):
+                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                    print("Overlap detected, sending error response.")
+                    return JsonResponse({"status": "error", "message": "Event overlaps with an existing event."})
+                else:
+                    return render(request, 'events/_event_update.html', {
+                        'form': form, 
+                        'event': event, 
+                        'error': "Event overlaps with an existing event."
+                    })
+
+            else:
+                event.title = title
+                event.start_time = start_datetime
+                event.end_time = end_datetime
+                event.save()
+                print("Event saved successfully")
+                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                    return JsonResponse({"status": "success", "year": start_datetime.year})
+                else:
+                    return redirect('second_brain:home')
+        else:
+            print("Form is not valid")
+            print("Form errors:", form.errors.as_json())
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({"status": "error", "message": "Form is not valid."})
+            else:
+                return render(request, 'events/_event_update.html', {
+                    'form': form, 
+                    'event': event, 
+                    'error': "Form is not valid."
+                })
+    else:
+        print("Handling GET request")
+        form = EventForm(instance=event)
+        user_timezone = pytz.timezone(request.user.timezone)
+        start_date_localized = timezone.localtime(event.start_time, timezone=user_timezone).date()
+        end_date_localized = timezone.localtime(event.end_time, timezone=user_timezone).date()
+        start_time_localized = timezone.localtime(event.start_time, timezone=user_timezone).strftime('%H:%M')
+        end_time_localized = timezone.localtime(event.end_time, timezone=user_timezone).strftime('%H:%M')
+
+        print(start_date_localized)
+
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return render(request, 'events/_event_update.html', {
+                'form': form,
+                'event': event,
+                'start_date': start_date_localized,
+                'end_date': end_date_localized,
+                'start_time': start_time_localized,
+                'end_time': end_time_localized
+            })
+        else:
+            return render(request, 'events/_event_update.html', {
+                'form': form,
+                'event': event,
+                'start_date': start_date_localized,
+                'end_date': end_date_localized,
+                'start_time': start_time_localized,
+                'end_time': end_time_localized
+            })
+
+    return render(request, 'events/_event_update.html', {'form': form})
+
+def is_event_overlapping(user, start_time, end_time, event=None):
     overlapping_events = Event.objects.filter(
         user=user,
         start_time__lt=end_time,
         end_time__gt=start_time
     )
 
+    if event:
+        overlapping_events = overlapping_events.exclude(id=event.id)
+
     same_start_end_time = Event.objects.filter(
         user=user,
         start_time=start_time,
         end_time=end_time
     )
+
+    if event:
+        same_start_end_time = same_start_end_time.exclude(id=event.id)
 
     return overlapping_events.exists() or same_start_end_time.exists()
 
