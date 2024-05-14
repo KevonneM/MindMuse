@@ -1,0 +1,99 @@
+<div class="modal-content event-modal">
+    <div class="modal-header">
+        <h5 class="modal-title">Edit Event</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+        <form id="updateEventForm" method="post">
+            {% csrf_token %}
+            <div class="mb-3 event-form-group">
+                <label for="id_title" class="event-form-label">Title:</label>
+                <input type="text" name="title" id="id_title" class="event-form-input" value="{{ event.title }}" required>
+            </div>
+            <div class="mb-3 event-form-group">
+                <label for="id_start_date" class="event-form-label">Start Date:</label>
+                <input type="text" name="start_date" id="id_start_date" class="event-form-input" value="{{ start_date }}" required>
+            </div>
+            <div class="mb-3 event-form-group">
+                <label for="id_end_date" class="event-form-label">End Date:</label>
+                <input type="text" name="end_date" id="id_end_date" class="event-form-input" value="{{ end_date }}" required>
+            </div>
+            <div class="mb-3 event-form-group">
+                <label for="id_start_time" class="event-form-label">Start Time:</label>
+                <input type="time" name="start_time" id="id_start_time" class="event-form-input" value="{{ start_time }}" required>
+            </div>
+            <div class="mb-3 event-form-group">
+                <label for="id_end_time" class="event-form-label">End Time:</label>
+                <input type="time" name="end_time" id="id_end_time" class="event-form-input" value="{{ end_time }}" required>
+            </div>
+        </form>
+        <div class="modal-footer">
+            <button type="submit" class="btn event-btn-primary" form="updateEventForm">Update Event</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered event-error-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="errorModalLabel">Overlapping Events</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body event-error-body" id="errorModalBody">
+                <h1>This Event overlaps with an existing event.</h1>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+
+    .event-modal {
+        font-family: 'Roboto', sans-serif;
+    }
+
+    .event-modal .modal-body {
+        background-color: #f7f7f7;
+        padding: 30px;
+        border-radius: 12px;
+    }
+
+    .event-modal .event-form-input {
+        width: 100%;
+        height: 40px;
+        padding-left: 15px;
+        border-radius: 5px;
+        border: 2px solid var(--btn-primary-border);
+        background-color: #E1E1E1;
+    }
+
+    .event-modal .event-form-input:focus {
+        border: 2px solid #E1E1E1;
+    }
+
+    .event-modal .event-btn-primary {
+        background-color: var(--btn-primary-bg);
+        border-color: var(--btn-primary-border);
+        width: 100%;
+        height: 40px;
+        color: var(--btn-text-color);
+    }
+
+    .event-modal .event-btn-primary:hover {
+        background-color: var(--btn-primary-bg);
+        filter: brightness(90%);
+    }
+
+    /* Error Modal Styles */
+    .event-error-modal .modal-content {
+        background-color: #f7f7f7;
+    }
+
+    .event-error-modal .modal-body {
+        font-size: 18px;
+    }
+
+</style>

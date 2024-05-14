@@ -1,0 +1,79 @@
+{% load tz %}
+{% load custom_filters %}
+{% load static %}
+
+<div class="modal-header">
+    <button style="background-color: {{ color_data|get_item:'tab-color' }} !important;" onclick="loadEventManageModal({{ current_year|add:-1 }})" class="btn btn-outline-secondary">
+        <i class="fas fa-chevron-left" style="color: #FFFFFF;"></i>
+    </button>
+    <h5 class="modal-title me-2 ms-2">Events for {{ current_year }}</h5>
+    <button style="background-color: {{ color_data|get_item:'tab-color' }} !important;" onclick="loadEventManageModal({{ current_year|add:1 }})" class="btn btn-outline-secondary">
+        <i class="fas fa-chevron-right" style="color: #FFFFFF;"></i>
+    </button>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+
+<div class="modal-body management-modal">
+    {% if yearly_events_data %}
+        {% for week_data in yearly_events_data %}
+            <h6>Week of {{ week_data.week_start|date:"F j" }} - {{ week_data.week_end|date:"F j, Y" }}</h6>
+            {% if week_data.events %}
+                {% regroup week_data.events by start_date as event_list %}
+                {% for event_date in event_list %}
+                    <div class="card mb-2">
+                        <div class="card-header">{{ event_date.grouper|date:"l, F jS, Y" }}</div>
+                        <div class="card-body">
+                            {% for event in event_date.list %}
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="dropdown d-grid mb-1">
+                                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton{{ event.id }}" data-bs-toggle="dropdown" aria-expanded="false" style="width: 100%; display:block !important; white-space: normal !important; background-color: {{ color_data|get_item:'tab-color' }} !important;">
+                                                {{ event.title }} - {{ event.start_time|time:"h:i A" }} - {{ event.end_time|time:"h:i A" }}
+                                            </button>
+                                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ event.id }}" style="width: 100%;">
+                                                <li><a class="dropdown-item green" href="#" onclick="loadEventUpdateModal({{ event.id }})">Modify</a></li>
+                                                <li><a class="dropdown-item red" href="#" onclick="loadEventDeleteModal({{ event.id }})">Delete</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No events for this week.</p>
+            {% endif %}
+        {% endfor %}
+    {% else %}
+        <p>No events scheduled for this year.</p>
+    {% endif %}
+</div>
+
+
+
+<style>
+
+    .management-modal .dropdown-menu {
+        background-color: #000000 !important;
+    }
+
+    .management-modal .dropdown-item {
+        background-color: #000000 !important;
+    }
+
+    .management-modal .dropdown-item:hover {
+        background-color: #000000 !important;
+    }
+
+    .management-modal .red:hover {
+        background-color: #000000 !important;
+        color: red;
+    }
+
+    .management-modal .green:hover {
+        background-color: #000000 !important;
+        color: #1ED760;
+    }
+
+</style>
