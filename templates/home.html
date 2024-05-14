@@ -86,6 +86,12 @@
                                             </svg>
                                             Add Event
                                         </a>
+                                        <a href="#" class="btn btn-primary" onclick="loadEventManageModal(); return false;" style="display: inline-flex; align-items: center;">
+                                            <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="margin-right: 5px;">
+                                                <path fill="#ffffff" d="M12 14a1 1 0 1 0-1-1a1 1 0 0 0 1 1Zm5 0a1 1 0 1 0-1-1a1 1 0 0 0 1 1Zm-5 4a1 1 0 1 0-1-1a1 1 0 0 0 1 1Zm5 0a1 1 0 1 0-1-1a1 1 0 0 0 1 1ZM7 14a1 1 0 1 0-1-1a1 1 0 0 0 1 1ZM19 4h-1V3a1 1 0 0 0-2 0v1H8V3a1 1 0 0 0-2 0v1H5a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3Zm1 15a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-9h16Zm0-11H4V7a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1ZM7 18a1 1 0 1 0-1-1a1 1 0 0 0 1 1Z"/>
+                                            </svg>
+                                            Manage
+                                        </a>
                                     </div>
                                 </div>
                             </div>
@@ -122,6 +128,43 @@
                     <div class="modal-dialog">
                         <div class="modal-content" id="createEventModalContent">
                             <!-- js content -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="ManageEventModal" tabindex="-1" aria-labelledby="ManageEventModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content" id="ManageEventModalContent">
+                            <!-- js content -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="eventUpdateModal" tabindex="-1" aria-labelledby="eventUpdateModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content" id="eventUpdateModalContent">
+                            <!-- Content loaded by js -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="eventDeleteModal" tabindex="-1" aria-labelledby="eventDeleteModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content" id="eventDeleteModalContent">
+                            <!-- Content loaded by js -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Success Modal -->
+                <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="successModalLabel">Success</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body" id="successModalBody"></div>
                         </div>
                     </div>
                 </div>
@@ -1462,7 +1505,8 @@
                 if (xhr.status === 200) {
                     let response = JSON.parse(xhr.responseText);
                     if (response.status === "success") {
-                        window.location.href = "{% url 'second_brain:home' %}";
+                        myModal.hide();
+                        showAlertModal(response.message);
                     } else if (response.status === "error") {
                         // Set the error message
                         document.getElementById("errorModalBody").innerText = response.message;
@@ -1474,6 +1518,224 @@
             };
 
             xhr.send(formData);
+        });
+    }
+
+    /* Success modal for event creation. */
+    function showAlertModal(message) {
+        document.getElementById('successModalBody').innerText = message;
+        let successModal = new bootstrap.Modal(document.getElementById('successModal'));
+        successModal.show();
+    }
+
+    async function loadEventManageModal(year) {
+
+        let existingModal = bootstrap.Modal.getInstance(document.getElementById('ManageEventModal'));
+        if (existingModal) {
+            existingModal.hide();
+            existingModal.dispose();
+            // Explicitly clean up body class and styles
+            document.body.classList.remove('modal-open');
+            document.body.style.paddingRight = '';
+        }
+
+        let url = year ? `/manage-events/${year}/` : '/manage-events/';
+
+        let response = await fetch(url, {
+            headers: {'X-Requested-With': 'XMLHttpRequest'},
+            cache: 'no-cache'
+        });
+        let data = await response.text();
+
+        document.getElementById('ManageEventModalContent').innerHTML = data;
+
+        let backdrops = document.querySelectorAll('.modal-backdrop');
+        backdrops.forEach(backdrop => backdrop.remove());
+
+        var myModal = new bootstrap.Modal(document.getElementById('ManageEventModal'), {
+            keyboard: true       // Optional: Allows closing with the escape key
+        });
+        myModal.show();
+
+        myModal._element.addEventListener('hidden.bs.modal', function () {
+            document.body.style.removeProperty('overflow');
+        });
+    }
+
+    async function loadEventUpdateModal(eventId) {
+        let response = await fetch(`/events/${eventId}/edit/`, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        });
+        let data = await response.text();
+        console.log(data)
+        
+        document.getElementById('eventUpdateModalContent').innerHTML = data;
+
+        var myModal = new bootstrap.Modal(document.getElementById('eventUpdateModal'));
+        myModal.show();
+
+        const startDatepicker = document.getElementById('id_start_date');
+        const endDatepicker = document.getElementById('id_end_date');
+        const startTimePicker = document.getElementById('id_start_time');
+        const endTimePicker = document.getElementById('id_end_time');
+
+        console.log("Start Date:", startDatepicker.value);
+        console.log("End Date:", endDatepicker.value);
+        console.log("Start Time:", startTimePicker.value);
+        console.log("End Time:", endTimePicker.value);
+
+        const startPicker = new flatpickr(startDatepicker, {
+            dateFormat: 'F j, Y',
+            minDate: 'today',
+            onChange: function (selectedDates, dateStr, instance) {
+                endPicker.set('minDate', dateStr);
+                if (selectedDates[0].toDateString() === new Date().toDateString()) {
+                    startTimeFlatpickr.set('minTime', new Date());
+                } else {
+                    startTimeFlatpickr.set('minTime', null);
+                }
+            },
+        });
+
+        const endPicker = new flatpickr(endDatepicker, {
+            dateFormat: 'F j, Y',
+            minDate: 'today',
+            onChange: function (selectedDates, dateStr, instance) {
+                startPicker.set('maxDate', dateStr);
+            },
+        });
+
+        const startTimeFlatpickr = new flatpickr(startTimePicker, {
+            enableTime: true,
+            noCalendar: true,
+            dateFormat: 'h:i K',
+            time_24hr: false,
+            allowInput: true,
+            onChange: function (selectedDates, timeStr, instance) {
+                if (startDatepicker.value === endDatepicker.value) {
+                    endTimeFlatpickr.set('minTime', selectedDates[0]);
+                } else {
+                    endTimeFlatpickr.set('minTime', null);
+                }
+            },
+        });
+
+        const endTimeFlatpickr = new flatpickr(endTimePicker, {
+            enableTime: true,
+            noCalendar: true,
+            dateFormat: 'h:i K',
+            time_24hr: false,
+            allowInput: true,
+            onChange: function (selectedDates, timeStr, instance) {
+                if (startDatepicker.value === endDatepicker.value) {
+                    startTimeFlatpickr.set('maxTime', selectedDates[0]);
+                } else {
+                    startTimeFlatpickr.set('maxTime', null);
+                }
+            },
+        });
+
+        if (startPicker.selectedDates[0] && startPicker.selectedDates[0].toDateString() === new Date().toDateString()) {
+            startTimeFlatpickr.set('minTime', new Date());
+        }
+
+        // handles form submission
+        const form = document.getElementById('updateEventForm');
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const startDate = startDatepicker.value;
+            const endDate = endDatepicker.value;
+            const startTime = convertTo24HourFormat(startTimePicker.value);
+            const endTime = convertTo24HourFormat(endTimePicker.value);
+
+            const startDateTime = `${startDate} ${startTime}`;
+            const endDateTime = `${endDate} ${endTime}`;
+
+            console.log("Submitting startDate:", startDate);
+            console.log("Submitting endDate:", endDate);
+            console.log("Submitting startTime:", startTime);
+            console.log("Submitting endTime:", endTime);
+
+            const formData = new FormData(form);
+            formData.set('start_date', startDate);
+            formData.set('end_date', endDate);
+            formData.set('start_time', startTime);
+            formData.set('end_time', endTime);
+            console.log("FormData:", Array.from(formData.entries()));
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', `/events/${eventId}/edit/`, true);
+            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+            xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
+
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    let response = JSON.parse(xhr.responseText);
+                    if (response.status === 'success') {
+                        
+                        myModal.hide();
+                        loadEventManageModal(response.year);
+                    } else if (response.status === 'error') {
+                        
+                        document.getElementById('errorModalBody').innerText = response.message;
+                        
+                        let errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+                        errorModal.show();
+                    }
+                }
+            };
+
+            xhr.send(formData);
+        });
+    }
+
+    function convertTo24HourFormat(time) {
+        const [timePart, modifier] = time.split(' ');
+        let [hours, minutes] = timePart.split(':');
+        if (hours === '12') {
+            hours = '00';
+        }
+        if (modifier === 'PM' && hours !== '12') {
+            hours = parseInt(hours, 10) + 12;
+        }
+        return `${hours}:${minutes}`;
+    }
+
+    async function loadEventDeleteModal(eventId) {
+        let response = await fetch(`/events/${eventId}/delete/`, {
+            headers: {'X-Requested-With': 'XMLHttpRequest'}
+        });
+        let data = await response.text();
+        document.getElementById('eventDeleteModalContent').innerHTML = data;
+
+        var myModal = new bootstrap.Modal(document.getElementById('eventDeleteModal'));
+        myModal.show();
+
+        const deleteForm = document.getElementById('deleteEventForm');
+        deleteForm.addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+
+            let fetchResponse = await fetch(this.action, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                },
+                body: new URLSearchParams(formData)
+            });
+
+            let result = await fetchResponse.json();
+
+            if (result.status === 'success') {
+                myModal.hide();
+                loadEventManageModal(result.year);
+            } else {
+                alert('Failed to delete the event: ' + result.message);
+            }
         });
     }
 

@@ -18,6 +18,10 @@ urlpatterns = [
     path('monthly-calendar/', views.monthly_calendar, name='monthly_calendar'),
     path('monthly-calendar/<int:year>/<int:month>/', views.monthly_calendar, name='monthly_calendar_change_month'),
     path('create-event/', views.create_event, name='create_event'),
+    path('manage-events/', views.manage_events, name='manage_events'),
+    path('manage-events/<int:year>/', views.manage_events, name='manage_events_year'),
+    path('events/<int:pk>/delete/', views.delete_event, name="delete_event"),
+    path('events/<int:pk>/edit/', views.update_event, name="update_event"),
     path('get_event_status/', views.get_event_status, name='get_event_status'),
     # Task URLS
     path('tasks/<int:pk>/', views.task_detail, name='task_detail'),

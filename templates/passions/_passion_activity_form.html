@@ -3,7 +3,7 @@
 <div class="modal-body passion-modal">
   <div class="passion-card">
     <h2 class="text-center mb-4">Add Activity</h2>
-    <form method="POST" action="{% url 'second_brain:passion_activity_create' passion.pk %}">
+    <form id="passionActivityForm" method="POST" action="{% url 'second_brain:passion_activity_create' passion.pk %}">
       {% csrf_token %}
       <p>
         <label for="{{ form.date.id_for_label }}">Date:</label>
@@ -25,6 +25,7 @@
         <button type="submit" class="btn btn-primary">Save</button>
       </div>
     </form>
+    <div id="passionActivityFeedback"></div>
   </div>
 </div>
 

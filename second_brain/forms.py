@@ -1,6 +1,30 @@
 from django import forms
-from .models import Task, Passion, PassionActivity, Quote
+from .models import Task, Passion, PassionActivity, Quote, Event
 from  datetime import timedelta
+
+class EventForm(forms.ModelForm):
+    start_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
+    end_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
+    start_time = forms.TimeField(widget=forms.TimeInput(format='%H:%M'))
+    end_time = forms.TimeField(widget=forms.TimeInput(format='%H:%M'))
+
+    class Meta:
+        model = Event
+        fields = ['title', 'description', 'start_date', 'start_time', 'end_date', 'end_time']
+
+        labels = {
+            'title': 'Event Title',
+            'description': 'Event Description',
+            'start_date': 'Start Date',
+            'end_date': 'End Date',
+            'start_time': 'Start Time',
+            'end_time': 'End Time',
+        }
+
+        widgets = {
+            'title': forms.TextInput(attrs={'placeholder': 'Enter event title'}),
+            'description': forms.Textarea(attrs={'placeholder': 'Enter event description'}),
+        }
 
 class TaskForm(forms.ModelForm):
     title = forms.CharField(max_length=20, widget=forms.TextInput(attrs={'placeholder': 'Enter task title'}))
