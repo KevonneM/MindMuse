@@ -490,6 +490,8 @@ def manage_events(request, year=None):
         current_year = int(current_year)
         print(current_year)
 
+        today = timezone.localdate(timezone=user_timezone)
+
         start_of_year_local = user_timezone.localize(datetime(current_year, 1, 1, 0, 0, 0))
         end_of_year_local = start_of_year_local + relativedelta(years=1) - timedelta(seconds=1)
 
@@ -531,6 +533,7 @@ def manage_events(request, year=None):
         context = {
             'yearly_events_data': yearly_events_data,
             'current_year': current_year,
+            'today': today,
         }
 
         if 'HTTP_X_REQUESTED_WITH' in request.META and request.META['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest':
