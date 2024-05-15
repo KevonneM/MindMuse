@@ -85,12 +85,12 @@ html {
 
 /* Open or Active */
 .accordion-button:not(.collapsed) {
-  background-color: #673AB7;  /* Slightly darker shade for contrast */
+  /*/background-color: #673AB7;   Slightly darker shade for contrast */
   color: #ffffff;
 }
 
 .accordion-header {
-  background-color: #7C61B3;
+  /*background-color: #7C61B3;*/
   color: #ffffff;
 }
 
